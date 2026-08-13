@@ -9,9 +9,15 @@
 #   base-ref    The base branch name to diff against (e.g. "main").
 #               When omitted or when the remote is unavailable, all skills are validated.
 #
+# skill-validator reports errors and warnings separately, and signals which it
+# found through its exit status: 0 clean, 1 errors, 2 warnings only. Warnings
+# are advisory (deep reference nesting, description style), so only errors fail
+# the run — otherwise an advisory note on any skill blocks every pull request
+# that touches it.
+#
 # Exit codes:
-#   0  All validated skills passed.
-#   1  One or more skills failed validation.
+#   0  All validated skills passed, some possibly with warnings.
+#   1  One or more skills failed validation with errors.
 
 set -uo pipefail
 
@@ -50,15 +56,28 @@ if [ "${#changed_skills[@]}" -eq 0 ]; then
 fi
 
 FAILED=0
+WARNED=0
 for skill in "${changed_skills[@]}"; do
   if [ ! -d "$skill" ]; then
     echo "Skipping deleted skill: $skill"
     continue
   fi
 
+  STATUS=0
   skill-validator check --emit-annotations -o markdown "$skill/" \
-    | tee >(grep -v '^::' >> "${GITHUB_STEP_SUMMARY:-/dev/null}") || FAILED=1
+    | tee >(grep -v '^::' >> "${GITHUB_STEP_SUMMARY:-/dev/null}") || STATUS=$?
+
+  case $STATUS in
+    0) ;;
+    2) WARNED=$((WARNED + 1)) ;;
+    *) FAILED=1 ;;
+  esac
 done
+
+if [ $WARNED -ne 0 ]; then
+  echo ""
+  echo "$WARNED skill(s) validated with warnings. See the Job Summary for details."
+fi
 
 if [ $FAILED -ne 0 ]; then
   echo ""

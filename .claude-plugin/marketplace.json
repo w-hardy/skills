@@ -99,6 +99,54 @@
       "skills": [
         "./connect/deploy-to-connect"
       ]
+    },
+    {
+      "name": "hta",
+      "description": "Health technology assessment and health economic evaluation in R — NICE methods, decision-analytic and multistate modelling, survival extrapolation, evidence synthesis, costing, and reporting standards",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./hta/nice-economic-evaluation",
+        "./hta/ispor-smdm-good-practices",
+        "./hta/decision-modelling-hta",
+        "./hta/multistate-models-hta",
+        "./hta/discrete-event-simulation-hta",
+        "./hta/survival-analysis-hta",
+        "./hta/bayesian-cea-r-hta",
+        "./hta/network-meta-analysis-hta",
+        "./hta/population-adjusted-comparisons",
+        "./hta/hrg4-costing-grouper",
+        "./hta/cheers-2022-reporting",
+        "./hta/shiny-hta"
+      ]
+    },
+    {
+      "name": "biostatistics",
+      "description": "Applied biostatistics for clinical research in R — Bayesian regression, missing data, causal inference, prediction models, and reporting standards",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./biostatistics/brms-modelling",
+        "./biostatistics/missing-data-mice",
+        "./biostatistics/causal-inference-gmethods",
+        "./biostatistics/mediation-analysis",
+        "./biostatistics/clinical-prediction-models",
+        "./biostatistics/continuous-predictors-splines",
+        "./biostatistics/penalised-regression",
+        "./biostatistics/tripod-ai-reporting"
+      ]
+    },
+    {
+      "name": "ml-clinical",
+      "description": "Machine learning on tabular clinical data in R — supervised models, explainability, clustering, and dimensionality reduction",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./ml-clinical/ml-supervised-tabular",
+        "./ml-clinical/ml-explainability-clinical",
+        "./ml-clinical/clustering-clinical",
+        "./ml-clinical/dimensionality-reduction-clinical"
+      ]
     }
   ]
 }
