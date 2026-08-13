@@ -28,14 +28,6 @@ code this skill produces, is: **don't impute once and treat the result as real d
 several times, analyze each version separately, and pool the results so the final standard
 errors honestly reflect how much was unknown.**
 
-**In this repository:** the live imputation conventions are in
-`analysis/modelling_extension/R/modelling_funs.R` (`prepare_imputation()` /
-`build_meth()` / `build_pred_matrix()`): multilevel `2l.pmm`/`2l.bin` with the site cluster is
-the base case (`imputation_use_2l` in `R/settings.R`), the original single-level fixed-dummy
-specification is the pre-specified sensitivity analysis, QALYs/totals are passively imputed,
-and the MNAR delta sweep follows this skill's pattern-mixture recipe. Match those conventions
-before inventing new ones.
-
 ## Why this matters (read before writing code)
 
 A surprising amount of applied missing-data work goes wrong not because of the wrong method, but
