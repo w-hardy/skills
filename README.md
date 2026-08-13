@@ -31,6 +31,7 @@ Skills for open-source R and Python package developers, streamlining common work
 
 - **[create-release-checklist](./open-source/create-release-checklist/)** - Create a release checklist and GitHub issue for an R package, with automatic version calculation and customizable checklist generation
 - **[release-post](./open-source/release-post/)** - Create professional package release blog posts following Tidyverse or Shiny blog conventions, with support for both R and Python packages
+- **[maintainer-decline](./open-source/maintainer-decline/)** - Draft issue closure and decline responses as an open-source maintainer, covering won't-fix closures, redirects to other packages, intentional-design explanations, and deprecation notices
 
 ### R Package Development
 
@@ -80,6 +81,7 @@ Health economic evaluation and HTA in R — model structure, estimation, evidenc
 - **[ispor-smdm-good-practices](./hta/ispor-smdm-good-practices/)** - Apply the ISPOR-SMDM Modeling Good Research Practices reports when conceptualising, structuring, validating, or auditing a decision-analytic model, including model-type choice and the uncertainty taxonomy
 - **[decision-modelling-hta](./hta/decision-modelling-hta/)** - Build, review, and debug decision trees and cohort Markov models with heemod, covering transition matrices, ICERs, net benefit, and probabilistic sensitivity analysis
 - **[multistate-models-hta](./hta/multistate-models-hta/)** - Continuous-time and individual-level multistate models with flexsurv, msm, and hesim, covering transition intensities, clock-forward versus clock-reset timing, and individual-level simulation
+- **[hesim-ctstm-hta](./hta/hesim-ctstm-hta/)** - Implementation depth for the hesim IndivCtstm engine: params_surv_list assembly, mixed clock-reset and clock-forward transitions, pwexp background mortality with state-specific SMRs, define_rng PSA, and the native CEA
 - **[discrete-event-simulation-hta](./hta/discrete-event-simulation-hta/)** - Discrete event simulation for economic evaluation with simmer, for pathways where event history, competing events, or resource constraints and queues matter
 - **[survival-analysis-hta](./hta/survival-analysis-hta/)** - Parametric survival modelling and extrapolation with flexsurv, flexsurvcure, and survHE, covering distribution choice, restricted mean survival, KM curve reconstruction, and conversion to transition probabilities
 - **[bayesian-cea-r-hta](./hta/bayesian-cea-r-hta/)** - Post-process and present Bayesian cost-effectiveness analyses — PSA draws, cost-effectiveness planes, CEAC/CEAF curves, incremental net benefit, BCEA, and value of information (EVPI/EVPPI/EVSI)

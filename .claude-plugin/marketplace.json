@@ -41,7 +41,8 @@
       "strict": false,
       "skills": [
         "./open-source/release-post",
-        "./open-source/create-release-checklist"
+        "./open-source/create-release-checklist",
+        "./open-source/maintainer-decline"
       ]
     },
     {
@@ -110,6 +111,7 @@
         "./hta/ispor-smdm-good-practices",
         "./hta/decision-modelling-hta",
         "./hta/multistate-models-hta",
+        "./hta/hesim-ctstm-hta",
         "./hta/discrete-event-simulation-hta",
         "./hta/survival-analysis-hta",
         "./hta/bayesian-cea-r-hta",
