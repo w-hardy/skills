@@ -72,6 +72,45 @@ Skills for deploying and managing content on Posit Connect.
 
 - **[deploy-to-connect](./connect/deploy-to-connect/)** - Deploy or publish Python and R content to a Posit Connect server using rsconnect-python or the R rsconnect package. Covers interactive apps and dashboards, web APIs, rendered documents, and prepared bundles/manifests
 
+### Health Technology Assessment
+
+Health economic evaluation and HTA in R — model structure, estimation, evidence synthesis, costing, and reporting.
+
+- **[nice-economic-evaluation](./hta/nice-economic-evaluation/)** - Align economic evaluations to the NICE reference case and methods manual (PMG36), covering comparators, time horizon, discounting, utilities, the severity modifier, fully incremental analysis, and the DSU Technical Support Documents
+- **[ispor-smdm-good-practices](./hta/ispor-smdm-good-practices/)** - Apply the ISPOR-SMDM Modeling Good Research Practices reports when conceptualising, structuring, validating, or auditing a decision-analytic model, including model-type choice and the uncertainty taxonomy
+- **[decision-modelling-hta](./hta/decision-modelling-hta/)** - Build, review, and debug decision trees and cohort Markov models with heemod, covering transition matrices, ICERs, net benefit, and probabilistic sensitivity analysis
+- **[multistate-models-hta](./hta/multistate-models-hta/)** - Continuous-time and individual-level multistate models with flexsurv, msm, and hesim, covering transition intensities, clock-forward versus clock-reset timing, and individual-level simulation
+- **[discrete-event-simulation-hta](./hta/discrete-event-simulation-hta/)** - Discrete event simulation for economic evaluation with simmer, for pathways where event history, competing events, or resource constraints and queues matter
+- **[survival-analysis-hta](./hta/survival-analysis-hta/)** - Parametric survival modelling and extrapolation with flexsurv, flexsurvcure, and survHE, covering distribution choice, restricted mean survival, KM curve reconstruction, and conversion to transition probabilities
+- **[bayesian-cea-r-hta](./hta/bayesian-cea-r-hta/)** - Post-process and present Bayesian cost-effectiveness analyses — PSA draws, cost-effectiveness planes, CEAC/CEAF curves, incremental net benefit, BCEA, and value of information (EVPI/EVPPI/EVSI)
+- **[network-meta-analysis-hta](./hta/network-meta-analysis-hta/)** - Network meta-analysis and indirect treatment comparison with multinma and netmeta, covering heterogeneity, meta-regression, treatment ranking, and the consistency assumption
+- **[population-adjusted-comparisons](./hta/population-adjusted-comparisons/)** - Population-adjusted indirect comparisons (MAIC, STC, ML-NMR) for effect-modifier imbalance across trials, following NICE DSU TSD 17 and TSD 18
+- **[hrg4-costing-grouper](./hta/hrg4-costing-grouper/)** - Prepare inputs for, run, and interpret output from the NHS England HRG4+ National Costs Grouper, covering Record Definition Files, the dataset specifications, and diagnosing grouper validation failures
+- **[cheers-2022-reporting](./hta/cheers-2022-reporting/)** - Apply the CHEERS 2022 statement so economic evaluations are completely and transparently reported, for manuscript drafting, checklist completion, and reporting-quality appraisal
+- **[shiny-hta](./hta/shiny-hta/)** - Wrap an R health economic model in an interactive Shiny application, covering ui/server design, controlling recomputation, editable input tables, dynamic UI, and saving model state
+
+### Biostatistics
+
+Applied biostatistics for clinical research in R — estimation, causal questions, prediction, and reporting.
+
+- **[brms-modelling](./biostatistics/brms-modelling/)** - Write, debug, and review Bayesian regression models with brms, covering formulas, priors, fitting arguments, convergence diagnostics, posterior predictive checks, model comparison with loo, and reporting
+- **[missing-data-mice](./biostatistics/missing-data-mice/)** - Multiple imputation with mice following van Buuren's Flexible Imputation of Missing Data, covering predictor selection, convergence diagnostics, multilevel and longitudinal imputation, MNAR sensitivity analysis, and pooling
+- **[causal-inference-gmethods](./biostatistics/causal-inference-gmethods/)** - Estimate causal treatment effects from observational data using DAGs, propensity scores, inverse probability weighting, g-computation, doubly robust estimation, and target trial emulation
+- **[mediation-analysis](./biostatistics/mediation-analysis/)** - Decompose total effects into direct and indirect pathways using the counterfactual framework, covering natural and interventional effects, exposure-mediator interaction, and sensitivity analysis
+- **[clinical-prediction-models](./biostatistics/clinical-prediction-models/)** - Develop, validate, and appraise diagnostic and prognostic risk models, covering sample size, shrinkage, discrimination, calibration, decision curves, optimism correction, and external validation
+- **[continuous-predictors-splines](./biostatistics/continuous-predictors-splines/)** - Model continuous predictors with restricted cubic splines and fractional polynomials, covering knot placement, testing and reporting non-linearity, and the case against categorising
+- **[penalised-regression](./biostatistics/penalised-regression/)** - Fit and interpret ridge, LASSO, and elastic net with glmnet, covering lambda selection, regularisation paths, standardisation, and when penalisation actually helps
+- **[tripod-ai-reporting](./biostatistics/tripod-ai-reporting/)** - Apply the TRIPOD+AI reporting statement and PROBAST+AI risk-of-bias appraisal to prediction model studies, for manuscript drafting, checklist completion, and systematic review
+
+### Clinical Machine Learning
+
+Machine learning on tabular clinical data in R.
+
+- **[ml-supervised-tabular](./ml-clinical/ml-supervised-tabular/)** - Apply and appraise decision trees, random forests, gradient boosting, and neural networks on tabular clinical data, covering train/test design, cross-validation, tuning, calibration, and class imbalance
+- **[ml-explainability-clinical](./ml-clinical/ml-explainability-clinical/)** - Interrogate black-box models with permutation importance, partial dependence, accumulated local effects, SHAP, and LIME, and judge what those explanations do and do not establish
+- **[clustering-clinical](./ml-clinical/clustering-clinical/)** - Find and validate patient subgroups with k-means, hierarchical clustering, DBSCAN, and latent class analysis, with emphasis on establishing whether the clusters are real
+- **[dimensionality-reduction-clinical](./ml-clinical/dimensionality-reduction-clinical/)** - Reduce and visualise high-dimensional clinical or omics data with PCA, t-SNE, and UMAP, covering component choice, hyperparameters, and reading the output without over-reading it
+
 ## Installation
 
 ### Using `npx skills add` (Any Agent)
@@ -117,6 +156,9 @@ Install specific skill categories directly:
 /plugin install shiny@posit-dev-skills
 /plugin install quarto@posit-dev-skills
 /plugin install connect@posit-dev-skills
+/plugin install hta@posit-dev-skills
+/plugin install biostatistics@posit-dev-skills
+/plugin install ml-clinical@posit-dev-skills
 ```
 
 Each command installs all skills in that category.
@@ -181,6 +223,9 @@ This repository organizes skills into categories to make it easier to find and i
 | **shiny**       | Shiny app development and deployment (R and Python)         |
 | **quarto**      | Quarto document creation and publishing                     |
 | **connect**     | Posit Connect deployment and management                     |
+| **hta**         | Health technology assessment and health economic evaluation in R |
+| **biostatistics** | Applied biostatistics for clinical research in R          |
+| **ml-clinical** | Machine learning on tabular clinical data in R              |
 
 <!-- Future category ideas
 
