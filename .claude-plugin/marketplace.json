@@ -149,6 +149,28 @@
         "./ml-clinical/clustering-clinical",
         "./ml-clinical/dimensionality-reduction-clinical"
       ]
+    },
+    {
+      "name": "superpowers",
+      "description": "Vendored from obra/superpowers (MIT, Jesse Vincent) — a development methodology for coding agents: brainstorming, planning, TDD, systematic debugging, code review, and skill authoring",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./superpowers/using-superpowers",
+        "./superpowers/brainstorming",
+        "./superpowers/writing-plans",
+        "./superpowers/executing-plans",
+        "./superpowers/subagent-driven-development",
+        "./superpowers/dispatching-parallel-agents",
+        "./superpowers/test-driven-development",
+        "./superpowers/systematic-debugging",
+        "./superpowers/requesting-code-review",
+        "./superpowers/receiving-code-review",
+        "./superpowers/verification-before-completion",
+        "./superpowers/using-git-worktrees",
+        "./superpowers/finishing-a-development-branch",
+        "./superpowers/writing-skills"
+      ]
     }
   ]
 }

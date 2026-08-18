@@ -12,6 +12,7 @@ skills stay current, and is the source of truth for the personal ones.
 | `hta/` | Health economic evaluation and HTA in R (12 skills) |
 | `biostatistics/` | Applied biostatistics for clinical research in R (8 skills) |
 | `ml-clinical/` | Machine learning on tabular clinical data in R (4 skills) |
+| `superpowers/` | Vendored from [obra/superpowers](https://github.com/obra/superpowers), MIT (14 skills) |
 | `sync-skills.sh` | Drift check between this repo and the local claude.ai sync |
 | `.github/workflows/sync-upstream.yml` | Weekly upstream merge PR |
 | `FORK.md` | This file |
@@ -23,6 +24,15 @@ registered — expect occasional conflicts in those two and nowhere else.
 
 Anthropic-provided skills that ship with Claude (`docx`, `pdf`, `pptx`, `xlsx`,
 `skill-creator`, `morning`) are deliberately not vendored here.
+
+`superpowers/` is third-party code, not personally authored: it is a verbatim
+copy of the `skills/` tree from [obra/superpowers](https://github.com/obra/superpowers)
+at a pinned commit, under its own MIT licence. Do not edit those skills in place —
+fixes go upstream, and refreshes are a clean overwrite. See
+[`superpowers/README.md`](./superpowers/README.md) for the pinned version, what is
+deliberately left out (notably the session-start hook), and the refresh procedure.
+It is excluded from `sync-skills.sh`, which only tracks the personally-authored
+categories.
 
 ## Staying current with upstream
 
