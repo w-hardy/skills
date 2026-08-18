@@ -63,6 +63,15 @@ for skill in "${changed_skills[@]}"; do
     continue
   fi
 
+  # superpowers/ is vendored verbatim from obra/superpowers and is never edited
+  # here, so validator findings on it are not actionable. Its skills also link to
+  # each other with relative paths (they ship as one plugin), which the validator
+  # reports as errors because it checks each skill directory in isolation.
+  if [[ "$skill" == superpowers/* ]]; then
+    echo "Skipping vendored skill: $skill"
+    continue
+  fi
+
   STATUS=0
   skill-validator check --emit-annotations -o markdown "$skill/" \
     | tee >(grep -v '^::' >> "${GITHUB_STEP_SUMMARY:-/dev/null}") || STATUS=$?

@@ -113,6 +113,25 @@ Machine learning on tabular clinical data in R.
 - **[clustering-clinical](./ml-clinical/clustering-clinical/)** - Find and validate patient subgroups with k-means, hierarchical clustering, DBSCAN, and latent class analysis, with emphasis on establishing whether the clusters are real
 - **[dimensionality-reduction-clinical](./ml-clinical/dimensionality-reduction-clinical/)** - Reduce and visualise high-dimensional clinical or omics data with PCA, t-SNE, and UMAP, covering component choice, hyperparameters, and reading the output without over-reading it
 
+### Superpowers
+
+A development methodology for coding agents, vendored verbatim from [obra/superpowers](https://github.com/obra/superpowers) (MIT, Copyright (c) 2025 Jesse Vincent). See [superpowers/README.md](./superpowers/) for the pinned upstream version and what is deliberately left out.
+
+- **[using-superpowers](./superpowers/using-superpowers/)** - Establishes how to find and use skills at the start of a conversation, requiring skill invocation before any response
+- **[brainstorming](./superpowers/brainstorming/)** - Explore intent, requirements, and design before any creative work — creating features, building components, or modifying behaviour
+- **[writing-plans](./superpowers/writing-plans/)** - Turn a spec or set of requirements into a written implementation plan before touching code
+- **[executing-plans](./superpowers/executing-plans/)** - Execute a written implementation plan in a separate session with review checkpoints
+- **[subagent-driven-development](./superpowers/subagent-driven-development/)** - Execute implementation plans with independent tasks in the current session, dispatching each task to a subagent
+- **[dispatching-parallel-agents](./superpowers/dispatching-parallel-agents/)** - Fan out two or more independent tasks that share no state and have no sequential dependencies
+- **[test-driven-development](./superpowers/test-driven-development/)** - Apply the RED-GREEN-REFACTOR cycle when implementing any feature or bugfix, before writing implementation code
+- **[systematic-debugging](./superpowers/systematic-debugging/)** - Work any bug, test failure, or unexpected behaviour to root cause before proposing fixes
+- **[requesting-code-review](./superpowers/requesting-code-review/)** - Verify work meets requirements when completing tasks, implementing major features, or before merging
+- **[receiving-code-review](./superpowers/receiving-code-review/)** - Handle review feedback with technical rigour and verification, rather than performative agreement or blind implementation
+- **[verification-before-completion](./superpowers/verification-before-completion/)** - Run verification commands and confirm output before claiming work is complete, fixed, or passing
+- **[using-git-worktrees](./superpowers/using-git-worktrees/)** - Ensure an isolated workspace exists before feature work or plan execution, via native tools or a git worktree fallback
+- **[finishing-a-development-branch](./superpowers/finishing-a-development-branch/)** - Decide how to integrate work once implementation is complete and tests pass
+- **[writing-skills](./superpowers/writing-skills/)** - Create, edit, and verify skills before deployment, applying TDD to documentation
+
 ## Installation
 
 ### Using `npx skills add` (Any Agent)
@@ -161,6 +180,7 @@ Install specific skill categories directly:
 /plugin install hta@posit-dev-skills
 /plugin install biostatistics@posit-dev-skills
 /plugin install ml-clinical@posit-dev-skills
+/plugin install superpowers@posit-dev-skills
 ```
 
 Each command installs all skills in that category.
@@ -228,6 +248,7 @@ This repository organizes skills into categories to make it easier to find and i
 | **hta**         | Health technology assessment and health economic evaluation in R |
 | **biostatistics** | Applied biostatistics for clinical research in R          |
 | **ml-clinical** | Machine learning on tabular clinical data in R              |
+| **superpowers** | Agent development methodology vendored from [obra/superpowers](https://github.com/obra/superpowers) (MIT) |
 
 <!-- Future category ideas
 
@@ -243,6 +264,10 @@ We welcome contributions! Please see [CONTRIBUTING.md](./CONTRIBUTING.md) for gu
 ## License
 
 This repository is licensed under the MIT License. See [LICENSE](./LICENSE) for details.
+
+The `superpowers/` directory is vendored from [obra/superpowers](https://github.com/obra/superpowers)
+and is licensed under its own MIT License, Copyright (c) 2025 Jesse Vincent. See
+[superpowers/LICENSE](./superpowers/LICENSE).
 
 ## Resources
 
