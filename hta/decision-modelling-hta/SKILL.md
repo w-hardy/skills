@@ -9,7 +9,7 @@ This skill covers the two foundational decision-analytic model types in HTA — 
 
 > Sources: *R for Health Technology Assessment* (Baio et al., online at <https://gianluca.statistica.it/books/online/r-hta/>) — chapter mapping verified against the live ToC (Ch. 8 = decision trees, Ch. 9 = cohort Markov models), accessed 2026-07-03. The book itself builds both model types **by hand in base R** (forward/fold-back tree evaluation; array-based transition matrices), using `heemod` only to draw the state-transition diagram (`define_transition()` + `plot()`) — this skill's heemod-native workflow is a deliberate deviation, as stated above. Method claims (rate↔probability conversion, probabilistic base case, matrix constraints) verified against Ch. 9 §9.3.2 and §9.6. heemod function signatures cross-checked against the CRAN reference manual, accessed 2026-07-03.
 
-> **Version note.** heemod's actively maintained development happens on the aphp fork (`aphp/heemod`, currently ~1.1.0), which is ahead of the CRAN release. Function signatures here follow the current docs, but verify against the installed version's `?function` help before relying on an exact argument — heemod has renamed arguments across versions (e.g. `transition_matrix` → `transition`), and the survival/PSA functions in particular have evolved. When in doubt, run the relevant package vignette (`vignette("e_probabilistic", "heemod")`, `vignette("j_survival", "heemod")`) against the installed version first.
+> **Version note.** heemod is actively maintained by AP-HP (Kevin Zarca); the current CRAN release is **v1.1.0 (2025-06-16)**, with docs at <https://aphp.github.io/heemod/> (source mirror `aphp/heemod`). Function signatures below follow the current docs, but heemod's argument names and defaults have shifted across versions — arguments have been renamed across releases (e.g. `transition_matrix` → `transition`) and the survival/PSA helpers in particular have evolved — so verify against the installed version's `?function` help before relying on an exact argument. When in doubt, run the relevant package vignette (`vignette("e_probabilistic", "heemod")`, `vignette("j_survival", "heemod")`) against the installed version first.
 
 ## Why heemod, and when it's the wrong tool
 
@@ -59,7 +59,11 @@ PSA in heemod means: re-specify the relevant parameters via `define_psa()` with 
 
 For distribution *choice* (which family for which parameter type) — **defer to the `nice-economic-evaluation` skill's conventions** if there's any conflict, rather than re-deriving them here. The one structural rule worth stating up front: the several outgoing probabilities from a single state share a simplex constraint (must sum to ≤1), so model them jointly with `multinomial(...)` rather than as independent draws. Correlated parameters from the same regression (e.g. a survival model's joint parameter uncertainty, or cause-specific log-rates) need a correlation structure passed as the `correlation =` argument of `define_psa()`. That argument accepts **either** the output of `define_correlation(par1, par2, rho, ...)` **or** a plain correlation matrix directly (`correlation = matrix(...)`) — both are supported (heemod CRAN docs; Antoine Filipović-Pierucci et al., *heemod* JSS/arXiv §4.1, verified 2026-07-03). Only the correlated pairs need specifying; independence is the default and is often wrong for parameters that came out of the same fit.
 
-After `run_psa()`, `summary()` and `plot(psa_res, type = "ce")` give the CE-plane/CEAC from heemod directly, or hand the costs/effects to `BCEA::bcea()` if W wants BCEA's specific plots — both read from the same underlying samples.
+After `run_psa()`, `summary()` and `plot(psa_res, type = "ce")` (or `type = "ac"`
+for the acceptability curve) give the CE-plane/CEAC from heemod directly. For
+BCEA's specific plots, use heemod's wrapper `run_bcea(psa_res, ...)` (or
+`BCEA::import_heemod_outputs()`) rather than calling `BCEA::bcea()` on the raw
+output — both read from the same underlying samples.
 
 ## Common pitfalls (check these before trusting output)
 
@@ -72,3 +76,15 @@ After `run_psa()`, `summary()` and `plot(psa_res, type = "ce")` give the CE-plan
 ## Validating a transition matrix before running the model
 
 `scripts/check_transition_matrix.R` takes a heemod transition object (or a plain square numeric matrix) and checks: square, rows sum to 1 (within tolerance), no negative entries, absorbing states correctly self-looped. Run this on any newly-specified or edited matrix before calling `run_model()` — catching a row-sum error here is much faster than debugging it from a nonsensical ICER.
+
+## Sources
+
+- heemod reference manual & vignettes (CRAN v1.1.0, 2025-06-16; maintainer
+  AP-HP / Kevin Zarca): <https://aphp.github.io/heemod/>. API names above
+  (`define_*`, `C`, `define_psa`/`run_psa`, distribution parameterisations,
+  `compute_surv`/`define_surv_dist`, `run_model(method=)`, `plot(type=)`,
+  `run_bcea`) checked against the package man pages.
+- Rate→probability conversion `p = 1 - exp(-(H(t) - H(t-1)))`: standard
+  cohort state-transition modelling (e.g. Alarid-Escudero et al. 2023 tutorial).
+- Decision-tree/Markov concepts: R-HTA chapters 8–9 (see the sourcing note above
+  for the verified chapter mapping).
