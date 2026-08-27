@@ -1,14 +1,16 @@
 # Reconstructing IPD from a published Kaplan-Meier curve
 
 > Sources: R-HTA Ch. 7 (KM reconstruction); Guyot et al. (2012, BMC Med Res Methodol);
-> `survHE` pkgdown docs (`digitise()`, `make.ipd()`). Accessed 2026-07-03.
+> `survHE` 2.0.51 pkgdown/source docs (`digitise()`, `make.ipd()`), re-verified 2026-08-27.
+> Accessed 2026-07-03; re-verified 2026-08-27.
 
 When the only evidence for a comparator is a published KM curve (no patient-level data), the Guyot et al. (2012) algorithm reconstructs pseudo-individual-patient-data from the digitised curve plus the numbers-at-risk table. This pseudo-IPD can then be fitted with `flexsurvreg` exactly as if it were real data.
 
-## The two inputs the algorithm needs
+## What the algorithm needs
 
 1. **Digitised survival coordinates** — (time, survival probability) points read off the KM curve, capturing every step. Digitise by hand (clicking points) or automatically with `SurvdigitizeR`, which needs minimal user input. Saved as a text file.
 2. **Numbers-at-risk table** — the "n at risk" row usually printed beneath a KM plot, giving the number still at risk at each reported time. Saved as a second text file. This is what lets the algorithm recover censoring; without it the reconstruction is far less reliable.
+3. **Total number of events per arm (optional but valuable)** — Guyot et al.'s own evaluation found that accurate hazard ratios from the reconstructed data need at least one of the numbers-at-risk table *or* the total event count; the total-events count is the fallback that can partly rescue a reconstruction when the at-risk table isn't reported. Note `survHE::digitise()` takes no total-events argument — to use the count as a constraint, use the original Guyot code or `IPDfromKM::getIPD(..., tot.events = )`; at minimum, check the reconstructed event total against the published one after running `digitise()`.
 
 ## The survHE workflow
 
@@ -37,6 +39,7 @@ For more than one arm, run `digitise()` per arm and pass all the IPD files to `m
 
 ## Caveats to state every time
 
+- **Only reconstruct genuine all-cause KM curves.** The algorithm inverts the Kaplan-Meier estimator specifically; it does not know what it's being pointed at. A `1 − cumulative-incidence` curve from a competing-risks analysis, or a treatment-switching-adjusted curve (RPSFT, IPCW, two-stage), is not a KM curve, and running either through this algorithm produces pseudo-IPD with no valid interpretation — the algorithm's assumptions simply don't cover them.
 - **No patient-level covariates.** The reconstruction recovers only time, event, and arm — there are no individual covariates, so no subgroup or adjusted analysis is possible unless the source happens to report KM curves separately by subgroup.
 - **Reconstruction quality depends on the numbers-at-risk table.** With only the curve and no at-risk numbers, censoring is poorly identified and the pseudo-IPD can misrepresent the tail — which is exactly the region that drives extrapolation. Push to find the at-risk numbers; flag the limitation if they're unavailable.
 - **Digitisation error propagates.** Sloppy point-capture on the curve feeds straight through to the fitted model. Capture every step change, and sanity-check the reconstructed KM (`km_output`) against the published one before fitting.
