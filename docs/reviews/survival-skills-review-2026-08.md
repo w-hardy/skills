@@ -39,7 +39,7 @@ consistent; only two files in this tier were edited (single cross-reference line
 
 | Source | Version/date | Reference | Accessed |
 |---|---|---|---|
-| NICE health technology evaluations manual (PMG36), §4.2.24 and ch. 4 | current online edition | https://www.nice.org.uk/process/pmg36 | 2026-08-27 |
+| NICE health technology evaluations manual (PMG36), §4.2.24 and ch. 4 | current online edition | https://www.nice.org.uk/process/pmg36 | 2026-08-27; chapter-4 PDF verified 2026-08-28 |
 | NICE DSU TSD 14 (Latimer) — survival analysis for economic evaluations | June 2011 | https://sheffield.ac.uk/nice-dsu/tsds/survival-analysis | 2026-08-27 |
 | NICE DSU TSD 21 (Rutherford et al.) — flexible methods for survival analysis | 23 January 2020 | https://sheffield.ac.uk/nice-dsu/tsds/flexible-methods-survival-analysis | 2026-08-27; full PDF verified 2026-08-28 |
 | NICE DSU TSD 19 (Woods et al.) — partitioned survival analysis | 2 June 2017 | https://sheffield.ac.uk/nice-dsu/tsds/partitioned-survival-analysis | full PDF verified 2026-08-28 |
@@ -60,11 +60,11 @@ Evidence caveat: the session's egress proxy blocked direct fetches of `nice.org.
 `sheffield.ac.uk` and journal domains (403), so the 2026-08-27 review rested on
 search-engine-retrieved page text for those sources. On 2026-08-28 the repository owner
 supplied full copies of TSD 19, TSD 21, Sweeting 2023, Latimer 2013, Guyot 2012, Guyot 2017
-and R-HTA chapter 7, and every claim resting on those sources was re-verified against the
-documents themselves (see "Post-review source verification" below). Still search-verified
-only: the exact wording of PMG36 (including 4.2.24) and TSD 26 — re-check against the live
-documents before quoting them in a submission. Package/API claims never shared this caveat —
-they were verified by executing the installed packages.
+R-HTA chapter 7, and PMG36 chapter 4, and every claim resting on those sources was
+re-verified against the documents themselves (see "Post-review source verification" below).
+Still search-verified only: TSD 26 — re-check against the live document before quoting it in
+a submission. Package/API claims never shared this caveat — they were verified by executing
+the installed packages.
 
 ## Findings
 
@@ -222,7 +222,13 @@ the tier-2 `mapping-itc-psm-tsd22-18-19.md` description sentence-by-sentence; Gu
 confirms the KM-reconstruction inputs, the constant-within-interval censoring assumption, and
 the stated limitations; every R-HTA-attributed claim in the skill checks out against chapter
 7 (the AIC values and the ~1-year RMST gap match exactly); Guyot 2017 substantiates the
-external-information guidance and contradicts nothing.
+external-information guidance and contradicts nothing. PMG36 chapter 4 (verified from the
+owner-supplied chapter PDF): every verbatim quote of 4.2.24 in the repo reproduces the
+manual exactly (including NICE's own "technologies' use" plural possessive); the clause
+gives no implementation detail, so the repo's equal-hazards gloss is correctly presented as
+interpretation; chapter 4 is confirmed silent on background-mortality floors/life tables;
+and 4.6.21–4.6.24 cite TSD 14 and TSD 21 by name, strengthening the "de facto benchmark"
+framing.
 
 **Corrections made from the documents:**
 
@@ -235,6 +241,7 @@ external-information guidance and contradicts nothing.
 | km-reconstruction.md | Accuracy nuance: survival probabilities/medians reconstruct accurately even with limited information; it is *hazard ratios* that need at-risk numbers or total events and become unusable with neither | Guyot 2012 abstract, p. 6 |
 | survival-to-economic-model.md PSM; tsd14-21.md EAG list | State-transition cross-check upgraded from described practice to TSD 19's formal Recommendation 11 (alongside, not replacing, PartSA) | TSD 19 p. 58 |
 | advanced-survival-models.md external data | One sentence added: Guyot 2017 as the worked example of joint likelihood constraints vs post-hoc model selection | Guyot 2017 pp. 359-364 |
+| tsd14-21.md header + intro | "Section 4.6 survival-modelling clauses" made precise (4.6.20–4.6.26; 4.10.5 for presentation); provenance framing strengthened — PMG36 itself cites TSD 14/21 by name (4.6.21–4.6.24) and says extrapolation validity "should routinely be considered" (4.6.25) | PMG36 ch. 4 |
 
 One tension noted, no change made: R-HTA ch. 7's own cure example uses a gengamma base
 successfully on the colon data, while this skill warns that gengamma/gompertz cure bases can

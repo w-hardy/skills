@@ -1,6 +1,7 @@
 # TSD 14, 21 & 26 — Survival analysis, extrapolation and expert elicitation (methods)
 
-*Supports PMG36 4.2.24 and the section 4.6 survival-modelling clauses. Use alongside
+*Supports PMG36 4.2.24 and the survival-modelling paragraphs of section 4.6 (4.6.20–4.6.26;
+4.10.5 covers presenting survival estimates). Use alongside
 `../modelling-and-uncertainty.md` and `scripts/survival_extrapolation.R`. For fitting mechanics,
 cure/relative-survival models, KM reconstruction and PSA sampling, see `survival-analysis-hta`.*
 TSD 14 (Latimer 2011/2013): https://sheffield.ac.uk/nice-dsu/tsds/survival-analysis — TSD 21
@@ -11,9 +12,10 @@ https://sheffield.ac.uk/nice-dsu/tsds/full-list (all accessed 2026-08-27)
 ## The TSD 14 process (what EAGs and committees expect to see)
 Survival extrapolation should follow a transparent, justified process — not "pick the lowest
 AIC". This is a NICE DSU recommendation (TSD 14, Latimer 2011/2013) that committees and EAGs
-routinely expect to see followed; PMG36 itself asks for justified extrapolation, describes
-scenario analyses as *desirable*, and says they *should include* the no-further-benefit
-assumption (4.2.24) — the TSDs are advisory, but the de facto benchmark. Steps:
+routinely expect to see followed; PMG36 itself says extrapolation validity "should routinely
+be considered" (4.6.25), describes scenario analyses as *desirable*, and says they *should
+include* the no-further-benefit assumption (4.2.24) — the TSDs are advisory, but PMG36 cites
+TSD 14 and TSD 21 by name (4.6.21–4.6.24), making them the de facto benchmark. Steps:
 
 1. **Inspect the data** — Kaplan–Meier, number at risk, and the **smoothed hazard** over time.
    The shape of the hazard (monotonic, peaked, turning, bathtub) tells you which distributions
