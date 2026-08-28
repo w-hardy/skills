@@ -6,7 +6,7 @@
 cure/relative-survival models, KM reconstruction and PSA sampling, see `survival-analysis-hta`.*
 TSD 14 (Latimer 2011/2013): https://sheffield.ac.uk/nice-dsu/tsds/survival-analysis — TSD 21
 (Rutherford et al. 2020): https://sheffield.ac.uk/nice-dsu/tsds/flexible-methods-survival-analysis
-— TSD 26 (Mar 2025): https://sheffield.ac.uk/nice-dsu/tsds/expert-elicitation-tsd — full list:
+— TSD 26 (Oakley, Ren et al., Mar 2025): https://sheffield.ac.uk/nice-dsu/tsds/expert-elicitation-tsd — full list:
 https://sheffield.ac.uk/nice-dsu/tsds/full-list (all accessed 2026-08-27)
 
 ## The TSD 14 process (what EAGs and committees expect to see)
@@ -24,20 +24,24 @@ TSD 14 and TSD 21 by name (4.6.21–4.6.24), making them the de facto benchmark.
    non-significant test with few events is weak evidence FOR PH, not proof. If PH holds, a
    treatment-covariate model may be reasonable; if not, fit arms separately, use an AFT
    structure, or a covariate on an ancillary parameter.
-3. **Fit the standard parametric set** — TSD 14 (Latimer 2013, p. 749) defines five standard
-   models: exponential, Weibull, Gompertz, log-normal, log-logistic; generalised gamma (and
-   generalised F) are the "more flexible" extensions it says *should be considered* when the
-   standard five appear unsuitable — in practice gengamma is usually fitted alongside them.
-   Compare on AIC/BIC together with visual fit to the KM and, crucially, external
-   plausibility of the extrapolated tail.
+3. **Fit the standard parametric set** — follow TSD 14 and consider all six: exponential,
+   Weibull, Gompertz, log-normal, log-logistic and generalised gamma ("should all be
+   considered", TSD 14 p. 13 and Rec. 3); that is what `survival_extrapolation.R` fits. The
+   condensed journal version (Latimer 2013, p. 749) categorises differently, describing
+   generalised gamma / generalised F as "more flexible" extensions to consider when the
+   standard ones look unsuitable, rather than part of its five-model "standard" set — a
+   difference in categorisation, not a conflict. Compare on AIC/BIC together with visual fit
+   to the KM and, crucially, external plausibility of the extrapolated tail.
 4. **Assess external validity** — does the extrapolation agree with long-term registry/trial
    data, expected general-population mortality, and clinical expectation? Where follow-up
    allows, refit to an earlier data cut and compare the extrapolation against the later
    observed data. A fit implying implausible long-term survival (cure where none exists, or
    beating the general population) is rejected however good its in-trial AIC.
-5. **Deal with general-population mortality (TSD 21, not TSD 14).** TSD 14 treats external
-   data only as a validity comparator; TSD 21 (Rutherford et al., Jan 2020, p. 89) states
-   incorporation is "recommended … and is essential for cure models". The principled route is
+5. **Deal with general-population mortality (TSD 21, not TSD 14).** TSD 14 is silent on
+   general-population mortality (its external-data recommendations — Rec. 9 — cover validity
+   comparison, calibration and direct use of registry data, but never life tables); the
+   recommendation to incorporate it is TSD 21 (Rutherford et al., Jan 2020, p. 89):
+   "recommended … and is essential for cure models". The principled route is
    internal additive excess-hazard / relative-survival modelling — general-population hazard
    plus modelled excess hazard combined inside the likelihood (flexsurv's `bhazard`; see
    `survival-analysis-hta`) — which by construction cannot let modelled all-cause mortality
@@ -50,7 +54,9 @@ TSD 14 and TSD 21 by name (4.6.21–4.6.24), making them the de facto benchmark.
    tables on age, sex and calendar year; trial populations can be healthier OR sicker than the
    general population; the constraint is for all-cause OS, not PFS/time-on-treatment; check the
    effect on the incremental result; apply exactly ONE mechanism (floor, additive excess hazard,
-   or SMR adjustment) — never stacked.
+   or SMR adjustment) — never stacked. (The matching and sicker-population points are TSD 21's
+   own; the OS-only, incremental-effect and one-mechanism qualifications are good practice
+   rather than TSD text.)
 6. **Carry uncertainty forward** — present several plausible distributions as scenarios (not
    just the best fit), reflect parameter uncertainty in the PSA, and include a "no further
    benefit" family per PMG36 4.2.24 ("assuming the technology does not provide further benefit

@@ -42,7 +42,7 @@ See `references/heemod-markov-models.md` for a full worked Markov example (time-
 
 ## Survival-derived transition probabilities
 
-This is the part of decision modelling most likely to come up given W's EXPO survival work. Two ways to feed survival-model output into a transition matrix:
+This is where survival analysis and Markov modelling meet, and the most error-prone hand-off in a cost-effectiveness model. Two ways to feed survival-model output into a transition matrix:
 
 - **Manual conversion**: fit the survival model however you normally would (`flexsurv`, `survival`), extract the cumulative hazard at cycle boundaries, and convert to a conditional transition probability: `p_t = 1 - exp(-(H(t) - H(t-1)))`. This is what the book does by hand and gives full control — necessary when a transition's probability depends on a *cure* fraction, a *mixture*, or anything `heemod`'s built-in survival objects don't cover directly.
 - **`compute_surv()` from a fitted model**: heemod's `compute_surv(fit, time = model_time, type = "prob")` takes a fitted survival model (e.g. from `flexsurv::flexsurvreg()`) or a parametric form built with `define_surv_dist()`, and returns the conditional cycle-to-cycle transition probability — the packaged equivalent of the manual conversion above. Prefer this when the survival model is a standard parametric form, since it removes the hand-rolled hazard-to-probability step where off-by-one errors hide.

@@ -40,10 +40,10 @@ consistent; only two files in this tier were edited (single cross-reference line
 | Source | Version/date | Reference | Accessed |
 |---|---|---|---|
 | NICE health technology evaluations manual (PMG36), §4.2.24 and ch. 4 | current online edition | https://www.nice.org.uk/process/pmg36 | 2026-08-27; chapter-4 PDF verified 2026-08-28 |
-| NICE DSU TSD 14 (Latimer) — survival analysis for economic evaluations | June 2011 | https://sheffield.ac.uk/nice-dsu/tsds/survival-analysis | 2026-08-27 |
+| NICE DSU TSD 14 (Latimer) — survival analysis for economic evaluations | June 2011, updated March 2013 | https://sheffield.ac.uk/nice-dsu/tsds/survival-analysis | 2026-08-27; full PDF verified 2026-08-28 |
 | NICE DSU TSD 21 (Rutherford et al.) — flexible methods for survival analysis | 23 January 2020 | https://sheffield.ac.uk/nice-dsu/tsds/flexible-methods-survival-analysis | 2026-08-27; full PDF verified 2026-08-28 |
 | NICE DSU TSD 19 (Woods et al.) — partitioned survival analysis | 2 June 2017 | https://sheffield.ac.uk/nice-dsu/tsds/partitioned-survival-analysis | full PDF verified 2026-08-28 |
-| NICE DSU TSD 26 — expert elicitation for long-term survival outcomes | March 2025 (date per DSU site; supplied PDF lacked the title page) | https://sheffield.ac.uk/nice-dsu/tsds/expert-elicitation-tsd | 2026-08-27; body (§1–7) verified from PDF 2026-08-28 |
+| NICE DSU TSD 26 (Oakley, Ren, Forsyth, Gosling, Wilson, Latimer, Rutherford, Uttley, Fotheringham) — expert elicitation for long-term survival outcomes | March 2025 (confirmed from the title page, supplied 2026-08-28) | https://sheffield.ac.uk/nice-dsu/tsds/expert-elicitation-tsd | 2026-08-27; body (§1–7) verified from PDF and title page supplied 2026-08-28 |
 | NICE DSU TSD full list | current | https://sheffield.ac.uk/nice-dsu/tsds/full-list | 2026-08-27 |
 | `flexsurv` (Jackson) — docs, Distributions vignette, source | 2.3.2 (CRAN-current) | https://cran.r-project.org/package=flexsurv | 2026-08-27, executed locally |
 | `flexsurvcure` (Amdahl) — docs, README | 1.1.0 | https://cran.r-project.org/package=flexsurvcure | 2026-08-27, executed locally |
@@ -60,11 +60,11 @@ Evidence caveat: the session's egress proxy blocked direct fetches of `nice.org.
 `sheffield.ac.uk` and journal domains (403), so the 2026-08-27 review rested on
 search-engine-retrieved page text for those sources. On 2026-08-28 the repository owner
 supplied full copies of TSD 19, TSD 21, Sweeting 2023, Latimer 2013, Guyot 2012, Guyot 2017
-R-HTA chapter 7, PMG36 chapter 4, and TSD 26 (body sections 1–7; the supplied copy lacked
-the title page and appendices, so its "March 2025" date rests on the DSU site listing), and
-every claim resting on those sources was re-verified against the documents themselves (see
-"Post-review source verification" below). Package/API claims never shared this caveat — they
-were verified by executing the installed packages.
+R-HTA chapter 7, PMG36 chapter 4, and TSD 26 (body sections 1–7 from the supplied PDF; the
+title page — confirming the March 2025 date and the Oakley/Ren et al. authorship — was
+supplied separately on 2026-08-28), and every claim resting on those sources was re-verified
+against the documents themselves (see "Post-review source verification" below). Package/API
+claims never shared this caveat — they were verified by executing the installed packages.
 
 ## Findings
 
@@ -250,23 +250,122 @@ fail (flexsurvcure README + reproduced Hessian failures). The warning says "can 
 check convergence", not "always fails", so both are consistent; the stable-base default
 stands.
 
+## Follow-up review and remediation (2026-08-28, branch fix/survival-review-followup-2026-08)
+
+A bounded follow-up after PR #6 merged, addressing eight candidate issues identified
+post-merge. Each was independently verified against the current repository and authoritative
+sources before any edit; process as before (parallel specialist verification — HTA/NICE,
+survival/multistate mathematics with numerical R checks, R/package API with executable
+verification — orchestrator adjudication, implementation, independent final verification).
+
+| # | Candidate issue | Verdict | Evidence | Change |
+|---|---|---|---|---|
+| 1 | Competing-risk closed form `p_k = (ΔH_k/ΣΔH_j)(1−exp(−ΣΔH_j))` stated too generally | Confirmed — and the hypothesised condition itself was an under-statement | Independent derivation + numerical verification: exact under constant within-cycle hazards AND under the weaker fixed-ratio (proportional within-cycle hazards) condition, to machine precision; total exit probability exact unconditionally, so error only mis-allocates between causes (second-order in per-cycle ΔH_tot: ~0.1% at monthly cycles, ~19% at annual cycles with 87% event risk, Weibull shapes 0.35/4); `Exp(uQ)` matches the closed form to <1e−14 where they overlap | survival-to-economic-model.md: general integral, exactness conditions, error behaviour, sub-cycle fix, sharper hand-off; multistate-models-hta SKILL.md: receiving-end statement (constant-Q exactness, piecewise-Q/Aalen-Johansen/simulation otherwise). No inconsistent copies elsewhere (repo-wide sweep: the only competing-risk cycle formula; single-risk `1−exp(−rΔ)` conversions untouched and correct) |
+| 2 | TSD 14's standard set is six, not five | Confirmed in substance — the first review's own correction had over-corrected by applying Latimer 2013's (journal) categorisation to TSD 14 | Two independent verbatim reproductions of TSD 14's recommendation citing TSD 14 (Roche flexsurvPlus docs; ICON-in-R) + four peer-reviewed characterisations (incl. Bell Gorrod et al. 2019, Latimer co-author; Bullement et al. 2019); TSD 14 itself was unreachable through the proxy at the time, so the six-model substance was recorded as strongly corroborated but not page-verified; subsequently page-verified against the owner-supplied TSD 14 PDF — p. 13: "Exponential, Weibull, Gompertz, log-logistic, log normal and Generalised Gamma parametric models should all be considered", restated as Recommendation 3 (pp. 39–40) | tsd14-21.md step 3: six-model set restored (matching STD_DISTS and the file's own TSD 21 section, which had said "six standard distributions" throughout — the five-model edit had introduced a self-contradiction); Latimer 2013's five+flexible labelling attributed to the journal paper as different labelling, same advice |
+| 3 | KM reconstruction wrongly restricted to "all-cause" curves | Confirmed | Guyot 2012 inverts the KM estimator, whatever the endpoint; the valid/invalid line is KM estimator vs other estimands | km-reconstruction.md: valid targets = ordinary KM curves for suitable endpoints (OS, PFS, DFS/RFS, time to progression); invalid = 1−CIF, covariate-adjusted/model-derived, switching-adjusted curves. All other caveats preserved |
+| 4 | brms Cox vs coxph gloss implies coxph cannot yield survival curves | Confirmed | `survival::basehaz()` and `survfit.coxph` verified empirically (Breslow-type baseline; basehaz-implied survival = survfit to ~1e−16; cross-profile hazard ratio = exp(Δlp) exactly) | survival.md: distinction restated as smooth-jointly-estimated spline baseline (brms) vs post-hoc non-parametric step function flat beyond the last event (coxph), explicitly noting coxph does produce predicted curves |
+| 5 | brms claims unverified against current release | Confirmed as a gap; claims themselves all still correct | Current CRAN brms 2.23.0 (2025-09-08) built and installed from source alongside 2.20.4; no new survival families in NEWS/family-lists between versions; gengamma/gompertz/loglogistic error on live 2.23.0; cens() coding byte-identical; only survival-adjacent change 2.22.0's `bhaz` stratified-baseline term (no contradiction) | Version anchor added to the missing-families sentence ("verified against 2.20.4, unchanged in 2.23.0") |
+| 6 | Spline fits blocked solely by structural basis-coefficient correlation | Confirmed | Healthy k=2 spline (seed 22, n=500): PD covariance, clean predictions, \|ρ\|=0.9943 → blocked; crossing 0.99 on 10/25 seeds — a common false block | check_survival_fit.R: for flexsurvspline fits the extreme-correlation branch (which only runs once covariance is PD) now emits a clearly-worded note; non-spline fits keep the blocking classification (self-test's 12-obs gengamma still fails at \|ρ\|=0.9992); non-finite/non-symmetric/non-PD covariance, prediction and convergence failures remain blocking for all types; events-per-parameter note relabelled a rough, context-dependent rule of thumb; self-test extended with the deterministic spline case |
+| 7 | Eval coverage gaps for remaining failure modes | Confirmed | — | Five evals added (ids 9–13): competing exits, background-mortality mechanism/attribution, cessation vs loss-of-accrued-benefit, PFS/OS incoherence (no silent clamping; TSD 19 cross-check), KM endpoint scope (PFS valid / 1−CIF invalid). Behaviour-testing assertions per Skill Creator guidance |
+| 8 | Project-specific wording in generic skills | Confirmed within scope | — | "W's EXPO survival work" / "the EXPO recurrence model" / "exactly W's EXPO workflow" generalised in decision-modelling-hta (SKILL.md + heemod-markov-models.md). Remaining EXPO references in hesim-ctstm-hta, and project-specific engagement wording (client-specific mappings/notebook/HEAP references, not the literal "EXPO" string) in ispor-smdm-good-practices and bayesian-cea-r-hta, are outside this PR's scope and still await a separate clean-up |
+
+Note on issue 2: this supersedes the "five distributions" row in the *Post-review source
+verification* table above; that row records what was believed at the time and is retained as
+audit trail. The Latimer-2013-verified fact (the journal paper's five+flexible labelling)
+stands; its application to TSD 14 was the error.
+
+Validation for this follow-up: check_survival_fit.R self-test exits 0 (now including the
+spline regression case); survival_extrapolation.R demo exits 0; evals.json schema-validated
+(13 evals, unique ids); repo-wide sweep confirms no superseded wording remains
+("five standard", "all-cause KM", "leaves the baseline unspecified", EXPO refs in scope);
+competing-risk closed form verified numerically against the exact integral and against
+`Exp(uQ)`; brms claims verified on both installed 2.20.4 and source-built 2.23.0.
+
+Independent verification of the follow-up (fresh reviewer, adversarial): mathematics, TSD 14,
+KM, brms/coxph, evals and diff hygiene all passed (the fixed-ratio exactness proof, the
+quoted error magnitudes, the Breslow-baseline equivalences and the 2.23.0 family diff were
+all reproduced independently). One High finding was confirmed and fixed: the spline
+correlation relaxation keyed on model type rather than on which parameters correlate, so a
+genuine covariate near-ridge inside a spline fit was waved through as "structural" — the
+classification is now per pair (only gamma0…gammaK+1 basis pairs are downgraded to notes;
+covariate/anc pairs and all non-spline pairs remain blocking), with a collinear-covariate
+spline case added to the self-test (must be blocked). Two Mediums fixed: the multistate
+`Exp(uQ)` note now distinguishes occupancy from first-exit probabilities (they coincide only
+when destinations are not themselves left within the interval — a 38% discrepancy otherwise
+in the verifier's illness-death counter-example); the KM reference now notes that a
+time-to-progression KM censoring death is a net/latent curve — reconstructible, but not
+convertible to marginal transition probabilities. Low findings fixed: the annual-cycle error
+figure qualified as cycle-position-dependent (10–40%); "same advice: fit all six" softened to
+"same practical outcome"; `Exp(uQ)` "only when constant" relaxed (common time-scaling also
+exact); this report's description of which out-of-scope skills carry which engagement-specific
+wording corrected.
+
+Addendum (TSD 14 PDF, 2026-08-28): the owner subsequently supplied TSD 14 itself (June 2011,
+updated March 2013). Page-verified: the six-model recommendation appears verbatim at p. 13
+and as Recommendation 3 (pp. 39–40); generalised gamma is never framed as "more flexible" in
+TSD 14 — it applies that label to generalised F, Royston–Parmar splines and piecewise
+models instead (pp. 16–17) —
+confirming the "different labelling, same practical outcome" reconciliation with Latimer 2013
+(TSD 14's own Executive Summary uses a softer five-plus-flexible framing, an internal tension
+that strengthens the reconciliation); the model-selection algorithm (Figure 3, p. 44) and all
+other TSD 14-attributed statements (PH testing, arm-fitting, AIC/BIC + plausibility,
+treatment-effect-duration scenarios in Rec. 7) check out with no contradictions. One
+over-claim fixed: TSD 14's external-data recommendations (Rec. 9) go beyond validity
+comparison — they endorse calibration and direct use of registry data — while being entirely
+silent on general-population mortality specifically, which remains TSD 21's territory; step 5
+of the methods file reworded accordingly. With this, every source behind the survival skills,
+TSD 14 included, has been verified against the primary document itself.
+
+Pre-merge pass (2026-08-28): five candidate issues verified and addressed before merge. (1)
+Eval 10 still asserted "TSD 14 uses general-population mortality as an external-validity
+comparator", contradicting the TSD 14 page-verification (TSD 14 is silent on GPM
+specifically) — expected output and the affected assertion corrected. (2) The competing-risk
+hand-off criterion "more than about two exits compete" removed as arbitrary — the fixed-ratio
+exactness condition is count-independent; criteria are now within-cycle hazard-ratio
+variation, long/high-risk cycles, occupancy-vs-first-exit relevance, and semi-Markov clocks.
+(3) KM wording tightened from "any ordinary KM curve … is a valid target" to "a standard
+right-censored KM curve … subject to the method's censoring and numbers-at-risk assumptions"
+(eval 13's expected output aligned). (4) The TSD 14/Latimer 2013 sentence reworded to
+describe each source's categorisation accurately ("a difference in categorisation, not a
+conflict") instead of collapsing them to "same practical outcome". (5) The scenario-specific
+competing-risk error figures compressed to an explicitly illustrative parenthetical
+("scenario-specific figures, not general thresholds"); the full numbers remain in this
+report's follow-up table.
+
+A final adversarial pre-merge review of the complete PR diff (fresh reviewer, all areas)
+found no Critical or High issues; its three Medium findings — this docstring/step-5
+consistency gap in `survival_extrapolation.R`, a dropped "Remaining limitations" heading
+plus a stale superseded bullet in this report, and a contradictory background-mortality
+sentence in `mapping-itc-psm-tsd22-18-19.md` (which floored PFS and mis-attributed to TSD
+14) — were fixed, along with five Low hardenings (positional rather than name-based spline
+basis-pair classification in the checker, guarding against covariates literally named
+`gammaN`; a self-test assertion that the structural-correlation note path is genuinely
+exercised; first-exit-within-interval and integrated-intensity wording in the multistate
+bullet; a piecewise-models correction to the TSD 14 addendum above; and explicit labelling
+of which step-5 qualifications are TSD 21 text versus good practice). Behavioural evals 9–13
+were executed with-skill via the Skill Creator subagent pattern and graded 21/21 against
+their assertions (no repository behavioural runner exists; results in the session
+scratchpad). One deferred Low: step 4's general-population-mortality plausibility check sits
+under the TSD 14 heading — generic practice, disambiguated by step 5.
+
 ## Remaining limitations
 
-- TSD 19/21 and the key methodological papers have now been verified against full documents
-  (see above). Still search-verified only: PMG36's exact clause wording (including 4.2.24)
-  and TSD 26 — the owner attempted to supply both but the files did not reach the session;
-  re-verify on receipt, and re-check verbatim quotations against the live documents before
-  use in a submission.
-- The eval set has not been executed against a with-skill/baseline agent pair (requires the
-  Skill Creator run loop with a human in the loop).
+- All primary sources have been verified against full documents (see the source table and
+  addenda above); verbatim quotations should still be re-checked against the live documents
+  before use in an actual submission.
+- The eval set has been executed with-skill for evals 9–13 (21/21 assertions passing); the
+  full with-skill/baseline benchmarking loop for all 13 evals requires the Skill Creator run
+  loop with a human in the loop and has not been run.
 - `count-skill-tokens.py` could not run (tiktoken download blocked); token counts were
   approximated. All three frontmatter descriptions exceed the repo's 100-token description
   guideline — as do the comparator HTA skills. Left unchanged deliberately: trimming risks
   triggering regressions that cannot be eval-tested in this session. Flagged for a future
   description-optimisation pass with Skill Creator's trigger-eval loop.
 - Observations recorded for the maintainer, out of this review's scope: (1) leaked
-  "EXPO"-engagement references in `hta/hesim-ctstm-hta`, `hta/decision-modelling-hta`,
-  `hta/ispor-smdm-good-practices`, `hta/bayesian-cea-r-hta`; (2) per PMG36's update log,
+  engagement-specific content — "EXPO" references in `hta/hesim-ctstm-hta`, and
+  client-specific mapping/notebook/HEAP wording in `hta/ispor-smdm-good-practices` and
+  `hta/bayesian-cea-r-hta` (`hta/decision-modelling-hta`'s references were generalised in the
+  2026-08-28 follow-up); (2) per PMG36's update log,
   EQ-5D-5L (UK value set) applies to reference-case analyses from 27 August 2026 —
   `hta/nice-economic-evaluation/references/reference-case.md` should be checked; (3) the
   three background-mortality mechanisms across the HTA skills (floor, additive excess

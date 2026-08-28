@@ -174,14 +174,40 @@ check_survival_fit <- function(fit, horizon = NULL, bg_hazard = NULL,
         cc <- cov2cor(V)
         offdiag_mask <- lower.tri(cc)
         worst <- max(abs(cc[offdiag_mask]))
-        if (worst > rho_warn) {
-          idx <- which(offdiag_mask & abs(cc) == worst, arr.ind = TRUE)[1, , drop = FALSE]
-          pair_names <- paste(rownames(cc)[idx[1, 1]], colnames(cc)[idx[1, 2]], sep = " / ")
+        bad <- which(offdiag_mask & abs(cc) > rho_warn, arr.ind = TRUE)
+        if (nrow(bad) > 0) {
+          # High correlation between ADJACENT SPLINE BASIS COEFFICIENTS
+          # (gamma0..gammaK+1 in flexsurvspline fits) is structural
+          # (overlapping basis functions), not by itself evidence of a
+          # pathological fit: the covariance is already known to be positive
+          # definite on this branch and the prediction-validity checks below
+          # remain blocking, so those pairs are reported as notes. Every
+          # other extreme pair -- covariate coefficients, anc terms like
+          # gamma1(trt), and all pairs in non-spline fits -- keeps the
+          # blocking classification: there a near-ridge is a genuine
+          # identifiability signal. Classification is per pair, so a
+          # covariate ridge in a spline fit is still flagged even when a
+          # structural basis pair happens to correlate more strongly.
+          # Basis coefficients are identified by POSITION (flexsurv orders
+          # res.t/vcov as baseline parameters first, then covariate and anc
+          # coefficients), not by name -- a covariate a user happened to call
+          # "gamma2" must not be mistaken for a basis term.
           is_spline <- isTRUE(grepl("survspline", fit$dlist$name))
-          add_problem(st, sprintf(
-            "Parameters %s have |correlation| = %.4f (> %.2f) -- near-ridge likelihood, weak identifiability.%s",
-            pair_names, worst, rho_warn,
-            if (is_spline) " For spline models, high correlation among adjacent basis coefficients is structural/expected -- judge it against the prediction checks below rather than as a failure on its own." else ""))
+          n_base <- tryCatch(length(fit$dlist$pars), error = function(e) 0L)
+          for (r in seq_len(nrow(bad))) {
+            pair <- c(rownames(cc)[bad[r, 1]], colnames(cc)[bad[r, 2]])
+            val <- abs(cc[bad[r, 1], bad[r, 2]])
+            pair_names <- paste(pair, collapse = " / ")
+            if (is_spline && all(c(bad[r, 1], bad[r, 2]) <= n_base)) {
+              add_note(st, sprintf(
+                "Spline basis coefficients %s have |correlation| = %.4f (> %.2f) -- expected/structural for adjacent basis terms, not treated as a failure on its own; judge against the prediction-validity checks below.",
+                pair_names, val, rho_warn))
+            } else {
+              add_problem(st, sprintf(
+                "Parameters %s have |correlation| = %.4f (> %.2f) -- near-ridge likelihood, weak identifiability.",
+                pair_names, val, rho_warn))
+            }
+          }
         } else {
           add_note(st, sprintf("Largest pairwise parameter correlation: %.3f.", worst))
         }
@@ -205,7 +231,7 @@ check_survival_fit <- function(fit, horizon = NULL, bg_hazard = NULL,
       length(npars) == 1 && length(nevents) == 1 &&
       is.finite(npars) && is.finite(nevents) && nevents > 0) {
     add_note(st, sprintf(
-      "%d parameter(s) vs %d event(s) (%.1f events/parameter) -- informational; a low ratio (rule of thumb: below ~10) is a real identifiability risk even when the fit reports as converged.",
+      "%d parameter(s) vs %d event(s) (%.1f events/parameter) -- informational; a low ratio (rough rule of thumb: below ~10) can signal weak identifiability even when the fit reports as converged. Context-dependent, not a universal threshold.",
       npars, nevents, nevents / npars))
   }
   # else: fit$events not available on this object -- skip silently, as instructed.
@@ -453,7 +479,45 @@ if (sys.nframe() == 0) {
   ok_fp <- check_survival_fit(fit_fp, horizon = 40)
   if (!isTRUE(ok_fp)) fail("false-positive scenario (Gompertz shape truly 0) was flagged -- the SE-ratio false positive has returned")
 
-  ## 5. bg_hazard demonstration ------------------------------------------------
+  ## 5. Spline with extreme (structural) basis-coefficient correlation --------
+  ## Adjacent natural-spline basis coefficients are often correlated above
+  ## 0.99 on perfectly healthy fits (reproduced on ~10/25 seeds at k=2).
+  ## Regression test: such a fit must NOT be blocked when the covariance is
+  ## positive definite and the prediction checks pass -- the correlation is
+  ## reported as a note instead. (A non-spline near-ridge fit, e.g. test 2's
+  ## 12-observation gengamma, must remain blocked.)
+  cat("\n=== Spline fit with structural basis-coefficient correlation (expect: no problems) ===\n")
+  set.seed(22)
+  n_spl <- 500
+  t_spl <- rweibull(n_spl, shape = 1.3, scale = 10)
+  cens_spl <- runif(n_spl, 0, 30)
+  time_spl <- pmin(t_spl, cens_spl)
+  status_spl <- as.integer(t_spl <= cens_spl)
+  fit_spline <- flexsurvspline(Surv(time_spl, status_spl) ~ 1, k = 2, scale = "hazard")
+  cc_spl <- cov2cor(vcov(fit_spline))
+  max_rho_spl <- max(abs(cc_spl[lower.tri(cc_spl)]))
+  cat(sprintf("max |correlation| between spline coefficients: %.4f\n", max_rho_spl))
+  if (max_rho_spl <= 0.99) fail(sprintf(
+    "spline self-test no longer exercises the >0.99 structural-correlation note path (max |rho| = %.4f under this R/flexsurv version) -- adjust the seed/knots so the branch is genuinely tested", max_rho_spl))
+  ok_spline <- check_survival_fit(fit_spline, horizon = 30)
+  if (!isTRUE(ok_spline)) fail("healthy spline fit was blocked (structural basis-coefficient correlation must be a note, not a problem)")
+
+  ## 5b. Spline with genuinely collinear COVARIATES (expect: still blocked) --
+  ## The spline relaxation must apply only to basis-coefficient pairs
+  ## (gamma0..gammaK+1). Two near-duplicate covariates create a real
+  ## likelihood ridge between their coefficients; a spline fit containing
+  ## them must NOT be waved through.
+  cat("\n=== Spline fit with collinear covariates (expect: problems) ===\n")
+  set.seed(7)
+  x1 <- rnorm(n_spl)
+  x2 <- x1 + rnorm(n_spl, 0, 0.02)
+  d_col <- data.frame(time = time_spl, status = status_spl, x1 = x1, x2 = x2)
+  fit_spline_col <- flexsurvspline(Surv(time, status) ~ x1 + x2, data = d_col,
+                                    k = 1, scale = "hazard")
+  ok_spline_col <- check_survival_fit(fit_spline_col, horizon = 30)
+  if (!isFALSE(ok_spline_col)) fail("spline fit with collinear covariates was NOT blocked (covariate near-ridge must remain a problem even in spline fits)")
+
+  ## 6. bg_hazard demonstration ------------------------------------------------
   cat("\n=== bg_hazard demonstration: scalar background above the fitted early hazard (expect: flagged) ===\n")
   ok_bg_scalar <- check_survival_fit(fit_weibull, horizon = 1, bg_hazard = 0.08)
   if (!isFALSE(ok_bg_scalar)) fail("bg_hazard scalar demo did not flag a model hazard below background")

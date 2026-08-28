@@ -67,7 +67,7 @@ summary(res_homog)
 
 ## Time-inhomogeneous model: transitions that depend on `model_time`
 
-Two common sources of time-dependency: age-related background mortality, and a fitted survival model for disease-specific transitions (e.g. `flexsurv`, which is exactly W's EXPO workflow).
+Two common sources of time-dependency: age-related background mortality, and a fitted survival model for disease-specific transitions (e.g. from `flexsurv`).
 
 **Option A — let heemod derive transition probabilities from a fitted survival model.** If progression-free survival was fit with `flexsurv::flexsurvreg()`, `compute_surv()` converts it to the conditional cycle-to-cycle transition probability, evaluated at each `model_time`:
 
@@ -142,7 +142,7 @@ Two important gotchas confirmed from the heemod docs:
 - `beta()` takes **`shape1, shape2`**, not `mean`/`sd`. If you only have a mean and sd for a probability, either convert to shapes via method of moments first, or just use `binomial(prob, size)` instead, which takes the point estimate directly.
 - The several outgoing probabilities from a single state are not independent (they must keep summing to ≤1). Where a state splits its outflow across multiple destinations, prefer a single `multinomial(...)` over several independent `binomial`/`beta` draws, so the simplex constraint is respected.
 
-If two or more parameters came from the same regression (e.g. correlated log-rate and log-rate-ratio from one survival fit, as in the EXPO recurrence model), build a correlation structure with `define_correlation()` and pass it as the `correlation =` argument of `define_psa()` (it also accepts a raw correlation matrix). Independence is the default and understates joint uncertainty when parameters are actually correlated.
+If two or more parameters came from the same regression (e.g. correlated log-rate and log-rate-ratio from one survival fit), build a correlation structure with `define_correlation()` and pass it as the `correlation =` argument of `define_psa()` (it also accepts a raw correlation matrix). Independence is the default and understates joint uncertainty when parameters are actually correlated.
 
 ## Sanity checks before trusting the output
 

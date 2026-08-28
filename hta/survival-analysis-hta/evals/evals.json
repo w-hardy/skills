@@ -94,6 +94,67 @@
         "Response recommends the correct approach -- normboot.flexsurvreg() or applying fit$dlist$inv.transforms per-parameter (identity for shape, exp() only for rate) -- rather than a uniform exp() across all columns",
         "Response does not simply confirm the analyst's exp()-both-columns approach as correct"
       ]
+    },
+    {
+      "id": 9,
+      "prompt": "Our Markov model has a pre-progression state with two ways out: progression and pre-progression death. I've fitted two flexsurv Weibulls -- one to time-to-progression (censoring deaths) and one to time-to-pre-progression-death (censoring progressions). My plan is to compute 1 - S(t+1)/S(t) separately from each fitted curve and use those as the two transition probabilities out of the pre-progression state in the same cycle. The cycle length is 1 year and both events are fairly common in our data. Is that the right way to build the transition row?",
+      "expected_output": "Says this is not generally valid: the two exits compete, and converting each net/latent survival curve independently via 1 - S(t+1)/S(t) treats them as if the other risk did not exist -- the two probabilities can exceed the true exit probabilities (and even sum above 1) and the approach imposes an unstated independence assumption. Recommends a joint cause-specific calculation instead: use the cause-specific cumulative-hazard increments, with the total exit probability 1 - exp(-(dH_prog + dH_death)) split between causes in proportion to the increments -- stating that this closed form is exact only when the cause-specific hazards are constant within the cycle or keep a fixed ratio across it, and is otherwise a short-cycle approximation (relevant here because the cycles are 1 year and events are common). Points to proper multistate machinery (e.g. the multistate-models-hta skill, msm/hesim) as the robust route.",
+      "files": [],
+      "expectations": [
+        "Response states that independently converting each fitted curve with 1 - S(t+1)/S(t) and inserting both into the same transition row is not generally valid because the two exits compete",
+        "Response recommends a joint cause-specific-hazard calculation -- e.g. splitting the total exit probability 1 - exp(-sum of cause-specific cumulative-hazard increments) between causes in proportion to those increments -- or an explicit multistate approach, rather than the independent conversions",
+        "If the response presents the hazard-increment closed form, it states the within-cycle validity condition (cause-specific hazards constant within the cycle, or keeping a fixed ratio across it) rather than presenting the formula as universally exact",
+        "Response flags that with 1-year cycles and common events the approximation error is non-trivial, or recommends shortening the cycle / sub-cycle chaining / multistate software for this case",
+        "Response does not endorse the analyst's independent-conversion plan as correct"
+      ]
+    },
+    {
+      "id": 10,
+      "prompt": "For our 40-year OS extrapolation the EAG will expect us to deal with general-population mortality -- I think TSD 14 requires capping the modelled mortality with a general-population life-table floor? We already fitted our OS model as an excess-hazard model with flexsurv's bhazard argument against matched national life tables. Should I also apply the life-table floor to the extrapolated curve to be safe, and do the same for the PFS curve while I'm at it?",
+      "expected_output": "Corrects the attribution: TSD 14 does not specifically prescribe a general-population mortality floor or cap -- its external-data guidance is broader (comparison against, calibration to, and direct use of external/registry data) and never discusses life tables or background-mortality mechanics; the explicit recommendation to incorporate general-population mortality comes from TSD 21, which calls it recommended and essential for cure models (and PMG36 itself does not mandate a particular floor implementation). Distinguishes the mechanisms: external plausibility checking, the pragmatic post-hoc hazard floor, and internally modelled relative/excess survival. Since the model is already an internal excess-hazard (bhazard) model, background mortality is already structurally incorporated, so applying a post-hoc floor on top would double-apply the mechanism -- apply exactly one. The concept applies to all-cause OS, not to PFS.",
+      "files": [],
+      "expectations": [
+        "Response does not attribute the mortality floor/cap requirement to TSD 14 -- it notes TSD 14 does not specifically prescribe general-population mortality handling (its external-data guidance being broader), and attributes the incorporation recommendation to TSD 21 (and/or notes PMG36 does not itself mandate a floor)",
+        "Response distinguishes at least two distinct mechanisms among: external plausibility checking, a pragmatic post-hoc hazard floor, and internal relative/excess-survival (bhazard) modelling",
+        "Response advises AGAINST stacking the post-hoc floor on top of the already-fitted excess-hazard model (one background-mortality mechanism only)",
+        "Response says the general-population mortality constraint applies to all-cause OS and not to the PFS curve as proposed"
+      ]
+    },
+    {
+      "id": 11,
+      "prompt": "The committee wants a 'no continued treatment benefit' scenario: treatment is given for 2 years, and they assume no further benefit once it stops. Simplest implementation I can think of: from year 2 onwards I just set the treatment arm's OS curve equal to the comparator's OS curve, so the two curves are identical after the cutoff. Does that implement the scenario they're asking for?",
+      "expected_output": "Says no: setting S_treatment(t) = S_comparator(t) from year 2 makes the curves converge immediately, which takes away the survival benefit already accrued during the treated period -- that is the distinct, more pessimistic 'loss of accrued benefit' scenario. The standard 'no further benefit' scenario (PMG36 4.2.24's wording) equalises the HAZARDS (equivalently conditional survival) after the cutoff: from year 2 the treatment arm experiences the comparator's conditional survival, so the curves run parallel-in-hazard and remain separated by the benefit accrued up to year 2 -- they need not converge. May add that a gradual hazard-ratio-to-1 waning over an interval is a further scenario variant worth presenting.",
+      "files": [],
+      "expectations": [
+        "Response identifies that setting the treatment curve equal to the comparator curve at the cutoff removes the benefit already accrued, and names/describes this as a different (more pessimistic, loss-of-accrued-benefit / convergence) scenario",
+        "Response explains the intended no-further-benefit implementation: equal hazards (equal conditional survival) after the cutoff, applied to the treatment arm's surviving patients",
+        "Response states that under the correct implementation the accrued benefit is retained so the survival curves remain separated rather than converging",
+        "Response distinguishes the two scenarios explicitly (no-further-benefit vs loss-of-accrued-benefit) and/or mentions gradual hazard-ratio waning as an additional variant"
+      ]
+    },
+    {
+      "id": 12,
+      "prompt": "Our partitioned survival model uses an independently fitted log-logistic for PFS and a Weibull for OS. Beyond about year 8 of the 30-year horizon the extrapolated PFS curve rises above the OS curve, so the progressed-alive proportion S_OS(t) - S_PFS(t) goes negative. Easiest fix looks like clamping the progressed state to zero from year 8 in the trace -- any problem with that before I lock the model down?",
+      "expected_output": "Identifies the crossing as structural incoherence of independently fitted curves (negative progressed-alive occupancy is impossible), not a numerical detail to clamp away. Explains that silently truncating to zero hides the incoherence and distorts the trace (it implicitly forces PFS = OS beyond the crossing, changing state occupancy, costs and QALYs without any clinical rationale). Recommends addressing the cause: reconsider the distribution choices/extrapolations so S_PFS <= S_OS over the horizon, constrain or jointly model the endpoints, and/or build a state-transition model as a cross-check (per NICE DSU TSD 19's recommendation that state-transition modelling be used alongside partitioned survival). If a pragmatic constraint is used it must be transparent and its impact quantified, not silently applied.",
+      "files": [],
+      "expectations": [
+        "Response identifies the negative progressed-alive occupancy as structural incoherence between independently fitted PFS and OS curves, not a mere numerical artefact",
+        "Response does not endorse silently clamping the progressed state to zero as the fix -- it explains what the truncation hides or distorts, or requires the constraint be made transparent with its impact quantified",
+        "Response recommends at least one substantive remedy: refitting/re-choosing distributions so the curves stay coherent, constraining or jointly modelling PFS and OS, or cross-checking with a state-transition model",
+        "Response mentions the state-transition cross-check (e.g. TSD 19's recommendation of state-transition modelling alongside partitioned survival) or an equivalent structural alternative"
+      ]
+    },
+    {
+      "id": 13,
+      "prompt": "For the comparator arm of our indirect comparison I only have a published conference poster. It shows a PFS Kaplan-Meier curve with a numbers-at-risk table underneath, and separately a cumulative-incidence curve for progression that the authors produced from a competing-risks analysis treating death as a competing event. A colleague told me the Guyot reconstruction method is only valid for overall survival curves. Can I reconstruct pseudo-IPD from the PFS KM curve, and could I also run the reconstruction on 1 minus the cumulative-incidence curve to get progression data?",
+      "expected_output": "Corrects the colleague: the Guyot algorithm inverts the Kaplan-Meier estimator, so a standard right-censored KM curve for a suitable time-to-event endpoint can be reconstructed (subject to the method's censoring and numbers-at-risk assumptions) -- PFS, DFS/RFS, time to progression, not only OS. The PFS KM curve with its at-risk table is exactly what the method needs. The 1 - CIF curve, however, is NOT a KM curve -- it comes from a different estimator/estimand (competing-risks cumulative incidence), the reconstruction's assumptions do not cover it, and running it through the algorithm produces pseudo-IPD with no valid interpretation. Notes the usual caveats still apply to the PFS reconstruction (digitise every step, at-risk table quality, no patient-level covariates, pseudo-IPD uncertainty understated).",
+      "files": [],
+      "expectations": [
+        "Response states that Guyot reconstruction is valid for ordinary KM curves of suitable time-to-event endpoints generally (e.g. PFS), explicitly rejecting the claim that it is limited to overall survival",
+        "Response approves reconstructing the PFS KM curve (with its numbers-at-risk table) as a valid use of the method",
+        "Response refuses the 1 - cumulative-incidence curve: it is produced by a different estimator/estimand than the KM estimator, so the reconstruction's assumptions do not apply and the resulting pseudo-IPD would not be interpretable",
+        "Response mentions at least one standard reconstruction caveat that still applies (at-risk table quality, digitisation error, no patient-level covariates, or understated uncertainty)"
+      ]
     }
   ]
 }
