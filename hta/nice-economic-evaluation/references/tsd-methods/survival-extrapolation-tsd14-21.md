@@ -24,13 +24,14 @@ TSD 14 and TSD 21 by name (4.6.21–4.6.24), making them the de facto benchmark.
    non-significant test with few events is weak evidence FOR PH, not proof. If PH holds, a
    treatment-covariate model may be reasonable; if not, fit arms separately, use an AFT
    structure, or a covariate on an ancillary parameter.
-3. **Fit the standard parametric set** — exponential, Weibull, Gompertz, log-normal,
-   log-logistic and generalised gamma; TSD 14 puts all six in the set to be considered, and
-   that is what `survival_extrapolation.R` fits. The condensed journal version (Latimer 2013,
-   p. 749) labels the first five "standard" and generalised gamma / generalised F "more
-   flexible", to be added when the standard ones look unsuitable — different labelling, same
-   practical outcome: all six get fitted and compared. Compare on AIC/BIC together
-   with visual fit to the KM and, crucially, external plausibility of the extrapolated tail.
+3. **Fit the standard parametric set** — follow TSD 14 and consider all six: exponential,
+   Weibull, Gompertz, log-normal, log-logistic and generalised gamma ("should all be
+   considered", TSD 14 p. 13 and Rec. 3); that is what `survival_extrapolation.R` fits. The
+   condensed journal version (Latimer 2013, p. 749) categorises differently, describing
+   generalised gamma / generalised F as "more flexible" extensions to consider when the
+   standard ones look unsuitable, rather than part of its five-model "standard" set — a
+   difference in categorisation, not a conflict. Compare on AIC/BIC together with visual fit
+   to the KM and, crucially, external plausibility of the extrapolated tail.
 4. **Assess external validity** — does the extrapolation agree with long-term registry/trial
    data, expected general-population mortality, and clinical expectation? Where follow-up
    allows, refit to an earlier data cut and compare the extrapolation against the later

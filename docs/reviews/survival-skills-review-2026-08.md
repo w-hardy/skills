@@ -315,7 +315,21 @@ silent on general-population mortality specifically, which remains TSD 21's terr
 of the methods file reworded accordingly. With this, every source behind the survival skills,
 TSD 14 included, has been verified against the primary document itself.
 
-## Remaining limitations
+Pre-merge pass (2026-08-28): five candidate issues verified and addressed before merge. (1)
+Eval 10 still asserted "TSD 14 uses general-population mortality as an external-validity
+comparator", contradicting the TSD 14 page-verification (TSD 14 is silent on GPM
+specifically) — expected output and the affected assertion corrected. (2) The competing-risk
+hand-off criterion "more than about two exits compete" removed as arbitrary — the fixed-ratio
+exactness condition is count-independent; criteria are now within-cycle hazard-ratio
+variation, long/high-risk cycles, occupancy-vs-first-exit relevance, and semi-Markov clocks.
+(3) KM wording tightened from "any ordinary KM curve … is a valid target" to "a standard
+right-censored KM curve … subject to the method's censoring and numbers-at-risk assumptions"
+(eval 13's expected output aligned). (4) The TSD 14/Latimer 2013 sentence reworded to
+describe each source's categorisation accurately ("a difference in categorisation, not a
+conflict") instead of collapsing them to "same practical outcome". (5) The scenario-specific
+competing-risk error figures compressed to an explicitly illustrative parenthetical
+("scenario-specific figures, not general thresholds"); the full numbers remain in this
+report's follow-up table.
 
 - TSD 19/21 and the key methodological papers have now been verified against full documents
   (see above). Still search-verified only: PMG36's exact clause wording (including 4.2.24)
