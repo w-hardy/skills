@@ -250,6 +250,37 @@ fail (flexsurvcure README + reproduced Hessian failures). The warning says "can 
 check convergence", not "always fails", so both are consistent; the stable-base default
 stands.
 
+## Follow-up review and remediation (2026-08-28, branch fix/survival-review-followup-2026-08)
+
+A bounded follow-up after PR #6 merged, addressing eight candidate issues identified
+post-merge. Each was independently verified against the current repository and authoritative
+sources before any edit; process as before (parallel specialist verification — HTA/NICE,
+survival/multistate mathematics with numerical R checks, R/package API with executable
+verification — orchestrator adjudication, implementation, independent final verification).
+
+| # | Candidate issue | Verdict | Evidence | Change |
+|---|---|---|---|---|
+| 1 | Competing-risk closed form `p_k = (ΔH_k/ΣΔH_j)(1−exp(−ΣΔH_j))` stated too generally | Confirmed — and the hypothesised condition itself was an under-statement | Independent derivation + numerical verification: exact under constant within-cycle hazards AND under the weaker fixed-ratio (proportional within-cycle hazards) condition, to machine precision; total exit probability exact unconditionally, so error only mis-allocates between causes (second-order in per-cycle ΔH_tot: ~0.1% at monthly cycles, ~19% at annual cycles with 87% event risk, Weibull shapes 0.35/4); `Exp(uQ)` matches the closed form to <1e−14 where they overlap | survival-to-economic-model.md: general integral, exactness conditions, error behaviour, sub-cycle fix, sharper hand-off; multistate-models-hta SKILL.md: receiving-end statement (constant-Q exactness, piecewise-Q/Aalen-Johansen/simulation otherwise). No inconsistent copies elsewhere (repo-wide sweep: the only competing-risk cycle formula; single-risk `1−exp(−rΔ)` conversions untouched and correct) |
+| 2 | TSD 14's standard set is six, not five | Confirmed in substance — the first review's own correction had over-corrected by applying Latimer 2013's (journal) categorisation to TSD 14 | Two independent verbatim reproductions of TSD 14's recommendation citing TSD 14 (Roche flexsurvPlus docs; ICON-in-R) + four peer-reviewed characterisations (incl. Bell Gorrod et al. 2019, Latimer co-author; Bullement et al. 2019); TSD 14 itself unreachable through the proxy, so the six-model substance is strongly corroborated but not page-verified — recorded as such | tsd14-21.md step 3: six-model set restored (matching STD_DISTS and the file's own TSD 21 section, which had said "six standard distributions" throughout — the five-model edit had introduced a self-contradiction); Latimer 2013's five+flexible labelling attributed to the journal paper as different labelling, same advice |
+| 3 | KM reconstruction wrongly restricted to "all-cause" curves | Confirmed | Guyot 2012 inverts the KM estimator, whatever the endpoint; the valid/invalid line is KM estimator vs other estimands | km-reconstruction.md: valid targets = ordinary KM curves for suitable endpoints (OS, PFS, DFS/RFS, time to progression); invalid = 1−CIF, covariate-adjusted/model-derived, switching-adjusted curves. All other caveats preserved |
+| 4 | brms Cox vs coxph gloss implies coxph cannot yield survival curves | Confirmed | `survival::basehaz()` and `survfit.coxph` verified empirically (Breslow-type baseline; basehaz-implied survival = survfit to ~1e−16; cross-profile hazard ratio = exp(Δlp) exactly) | survival.md: distinction restated as smooth-jointly-estimated spline baseline (brms) vs post-hoc non-parametric step function flat beyond the last event (coxph), explicitly noting coxph does produce predicted curves |
+| 5 | brms claims unverified against current release | Confirmed as a gap; claims themselves all still correct | Current CRAN brms 2.23.0 (2025-09-08) built and installed from source alongside 2.20.4; no new survival families in NEWS/family-lists between versions; gengamma/gompertz/loglogistic error on live 2.23.0; cens() coding byte-identical; only survival-adjacent change 2.22.0's `bhaz` stratified-baseline term (no contradiction) | Version anchor added to the missing-families sentence ("verified against 2.20.4, unchanged in 2.23.0") |
+| 6 | Spline fits blocked solely by structural basis-coefficient correlation | Confirmed | Healthy k=2 spline (seed 22, n=500): PD covariance, clean predictions, \|ρ\|=0.9943 → blocked; crossing 0.99 on 10/25 seeds — a common false block | check_survival_fit.R: for flexsurvspline fits the extreme-correlation branch (which only runs once covariance is PD) now emits a clearly-worded note; non-spline fits keep the blocking classification (self-test's 12-obs gengamma still fails at \|ρ\|=0.9992); non-finite/non-symmetric/non-PD covariance, prediction and convergence failures remain blocking for all types; events-per-parameter note relabelled a rough, context-dependent rule of thumb; self-test extended with the deterministic spline case |
+| 7 | Eval coverage gaps for remaining failure modes | Confirmed | — | Five evals added (ids 9–13): competing exits, background-mortality mechanism/attribution, cessation vs loss-of-accrued-benefit, PFS/OS incoherence (no silent clamping; TSD 19 cross-check), KM endpoint scope (PFS valid / 1−CIF invalid). Behaviour-testing assertions per Skill Creator guidance |
+| 8 | Project-specific wording in generic skills | Confirmed within scope | — | "W's EXPO survival work" / "the EXPO recurrence model" / "exactly W's EXPO workflow" generalised in decision-modelling-hta (SKILL.md + heemod-markov-models.md). Remaining EXPO references in hesim-ctstm-hta, ispor-smdm-good-practices, bayesian-cea-r-hta are outside this PR's scope and still await a separate clean-up |
+
+Note on issue 2: this supersedes the "five distributions" row in the *Post-review source
+verification* table above; that row records what was believed at the time and is retained as
+audit trail. The Latimer-2013-verified fact (the journal paper's five+flexible labelling)
+stands; its application to TSD 14 was the error.
+
+Validation for this follow-up: check_survival_fit.R self-test exits 0 (now including the
+spline regression case); survival_extrapolation.R demo exits 0; evals.json schema-validated
+(13 evals, unique ids); repo-wide sweep confirms no superseded wording remains
+("five standard", "all-cause KM", "leaves the baseline unspecified", EXPO refs in scope);
+competing-risk closed form verified numerically against the exact integral and against
+`Exp(uQ)`; brms claims verified on both installed 2.20.4 and source-built 2.23.0.
+
 ## Remaining limitations
 
 - TSD 19/21 and the key methodological papers have now been verified against full documents
