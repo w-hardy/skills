@@ -49,6 +49,8 @@ This is the part of decision modelling most likely to come up given W's EXPO sur
 
 Either way, transition probabilities that depend on `model_time` make the model time-inhomogeneous automatically in heemod — no separate "mode" to switch on, you just reference `model_time` inside `define_parameters()` or directly in the transition matrix cell.
 
+For fitting the survival models themselves and propagating their parameter uncertainty into these transition probabilities, see the `survival-analysis-hta` skill.
+
 ## Cost-effectiveness outputs, discounting, and thresholds
 
 `run_model()` with `cost` and `effect` arguments gives total discounted cost and effect per strategy directly. For ICER, INMB, discount rates, and willingness-to-pay thresholds — **use the conventions in the `nice-economic-evaluation` skill** rather than picking values ad hoc here; that skill has the current PMG36 discount rate and threshold ranges. heemod's `discount()` function applies a rate but doesn't choose one for you.

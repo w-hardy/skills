@@ -140,7 +140,8 @@ hand them Python:
   set + splines, PH check, AIC/BIC, KM-vs-fit and hazard curves, RMST, a general-population
   mortality floor, and a no-continued-benefit scenario. Use when the finding is "the survival
   extrapolation is the problem" and they want to redo it properly. Remind them selection
-  rests on fit + plausibility + external data, not AIC alone.
+  rests on fit + plausibility + external data, not AIC alone. For the fitting mechanics behind
+  this workflow (cure/relative-survival models, PSA parameter sampling), see `survival-analysis-hta`.
 
 Show the user the numbers and what they imply (e.g. "weighted ICER £18,750 — below £25,000,
 so cost-effective at the ×1.2 severity weight"), not just a verdict.

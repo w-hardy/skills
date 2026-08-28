@@ -1,0 +1,99 @@
+{
+  "skill_name": "survival-analysis-hta",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "I fit six parametric distributions to our phase 3 OS data (n=214, 118 events, median follow-up 22 months) using flexsurvreg and gamma has the lowest AIC by about 4 points over log-logistic. I'm going to write up gamma as the base case for our 20-year lifetime horizon Markov model since it's the best statistical fit. Can you sanity check my model selection reasoning before I finalise the submission?",
+      "expected_output": "Pushes back on choosing gamma purely because of the lowest AIC; explains AIC only reflects fit to the observed ~22-month follow-up, not the 20-year extrapolation; recommends plotting/inspecting the extrapolated hazard out to 20 years and checking it against external plausibility (background mortality, registry data, clinical expectation) before finalising a base case; does not simply confirm gamma is correct.",
+      "files": [],
+      "expectations": [
+        "Response explicitly states that selecting the model on lowest AIC alone is insufficient / flags this as a known risk, not just implicitly moving on",
+        "Response recommends inspecting or plotting the extrapolated hazard out to the full 20-year horizon, not just the AIC comparison or the survival curve over the trial period",
+        "Response recommends checking the chosen distribution's extrapolation against external plausibility evidence (e.g. background/population mortality, registry data, or clinical expectation)",
+        "Response does not conclude the review by simply endorsing gamma as the correct choice on the basis of the AIC gap alone"
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "Two of my flexsurv fits for PFS (Weibull and generalized gamma) are basically tied on AIC (within 1 point) but when I extrapolate to 10 years the Weibull says 8% still progression-free and the gengamma says 31%. Which one should I use for the economic model, and why are they so different if the AIC is basically the same?",
+      "expected_output": "Explains that near-identical AIC reflects near-identical fit to the observed trial data only, and says nothing about how the two distributions behave once extrapolated beyond follow-up, which is why the 10-year tails diverge so much. Recommends comparing the two extrapolated hazard shapes and bringing in external plausibility evidence, or presenting both as a scenario / structural-uncertainty range, rather than picking a 'winner' from the near-tied AIC.",
+      "files": [],
+      "expectations": [
+        "Response explains that near-identical AIC does not imply near-identical extrapolations because AIC only reflects fit over the observed follow-up period",
+        "Response recommends comparing the extrapolated hazard shapes of the two models (not just the AIC or the two 10-year survival numbers) to understand the divergence",
+        "Response recommends resolving the choice using external plausibility evidence and/or presenting both distributions as scenarios reflecting structural uncertainty, rather than declaring one the winner from the ~1-point AIC difference",
+        "Response does not tell the user to just pick whichever of the two has the (marginally) lower AIC"
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "Our trial follow-up is only 18 months but the KM curve for relapse-free survival looks like it's flattened out around 30% for the last 4 months. My colleague wants to fit a flexsurvcure mixture cure model, say 30% of patients are cured, and use that cure fraction directly as a permanent long-term plateau in our 15-year model. Is that a reasonable use of flexsurvcure here?",
+      "expected_output": "Flags the identifiability problem: a 4-month apparent plateau at the end of an 18-month trial is not strong evidence of a genuinely cured fraction, and theta will likely be sensitive to which uncured distribution is chosen. Correctly frames the cure fraction theta as the asymptotic surviving proportion (S(t) approaches theta as t -> infinity, i.e. S(t) = theta + (1-theta)*S0(t) for the mixture form -- not a proportion who have already had the event). Also flags that even 'cured' patients should experience background/other-cause mortality over a 15-year horizon, so treating the cure fraction as a permanent flat 30% plateau is wrong regardless of identifiability -- recommends combining with background mortality (relative-survival framing) instead.",
+      "files": [],
+      "expectations": [
+        "Response identifies that a short apparent plateau (a few months, at the end of a short 18-month trial) is not adequate evidence of a genuinely cured fraction, and flags the identifiability concern explicitly",
+        "Response notes that the cure fraction estimate is sensitive to the choice of uncured distribution and recommends checking it isn't reported under just one",
+        "Response's description of the cure fraction is directionally correct: theta is the proportion who survive/never experience the event long-term (survival approaches theta as t increases), not a proportion who have already had the event -- it does not invert this",
+        "Response states that even a genuinely cured subgroup should still experience background/other-cause mortality over a 15-year horizon, so a flat permanent 30% plateau is not appropriate -- recommends combining the cure model with background mortality (e.g. a relative-survival framing)",
+        "Response does not simply endorse using the raw 30% estimate as a permanent long-term plateau"
+      ]
+    },
+    {
+      "id": 4,
+      "prompt": "I fitted a Gompertz model to progression-free survival with flexsurv (shape and rate are in fit$res). I need monthly transition probabilities for a heemod Markov model with 1-month cycles, 180 cycles total. Can you show me how to go from the fitted model object to a vector of per-cycle transition probabilities, and check whether the formula I've been using (1 - S(t)) is correct?",
+      "expected_output": "Corrects the analyst: 1 - S(t) is the unconditional cumulative probability of the event by time t, not the conditional per-cycle transition probability needed for a Markov model. Gives the correct formula tp(t, t+1) = 1 - S(t+1)/S(t) (or the equivalent cumulative-hazard form), and shows how to compute a length-180 vector of monthly transition probabilities from the fitted Gompertz shape/rate (or points to heemod::compute_surv() as the packaged equivalent).",
+      "files": [],
+      "expectations": [
+        "Response explicitly identifies that 1 - S(t) is the wrong formula for a per-cycle conditional transition probability (it is the unconditional cumulative event probability by time t, not conditional on surviving to t)",
+        "Response gives the correct conditional transition probability formula, tp(t, t+1) = 1 - S(t+1)/S(t), or an equivalent cumulative-hazard-difference form",
+        "Response shows how to extract the Gompertz shape/rate parameters from the flexsurv fit object and compute a vector of transition probabilities across the 180 monthly cycles, or explicitly references heemod::compute_surv() as the packaged equivalent"
+      ]
+    },
+    {
+      "id": 5,
+      "prompt": "The comparator arm in our indirect comparison only has a published OS Kaplan-Meier curve from a 2019 ASCO conference poster, no IPD available. I've digitised the curve and the risk table and I'm planning to reconstruct pseudo-IPD with survHE and then run a subgroup analysis by ECOG status on the reconstructed data, the same way we did for our own trial's real IPD. Does that work?",
+      "expected_output": "Explains that Guyot-algorithm pseudo-IPD reconstruction only recovers time, event, and arm -- there are no patient-level covariates -- so an ECOG subgroup analysis is not possible on the reconstructed data as planned, unless the source poster itself reported separate KM curves by ECOG subgroup. Also notes reconstruction quality depends on having the numbers-at-risk table, and that resulting uncertainty estimates understate the truth because the digitised curve is treated as exact.",
+      "files": [],
+      "expectations": [
+        "Response explicitly states that reconstructed pseudo-IPD from a digitised KM curve has no patient-level covariates, so the planned ECOG subgroup analysis is not possible on it as described",
+        "Response notes the ECOG subgroup analysis would only be feasible if the source poster separately reported KM curves broken out by ECOG subgroup",
+        "Response mentions at least one of: the importance of the numbers-at-risk table for reconstruction quality, or that confidence intervals from a model fitted to reconstructed pseudo-IPD understate true uncertainty since digitisation is treated as exact"
+      ]
+    },
+    {
+      "id": 6,
+      "prompt": "For our PSA I fitted a flexsurv Weibull model for OS and I'm sampling shape and scale independently from normal distributions using their individual SEs (1000 draws each) to build the transition probability uncertainty for the Markov model. Is that a valid way to propagate the survival model's uncertainty?",
+      "expected_output": "Flags that sampling shape and scale independently ignores their estimated correlation (from the fit's covariance matrix) and will distort the joint/induced uncertainty. Recommends sampling jointly via a multivariate normal on the transformed (real-line) parameter scale using the fit's vcov (e.g. MASS::mvrnorm, or flexsurv's own normboot.flexsurvreg()), back-transforming each draw with the fit's own per-parameter inverse transforms, and preserving that correlation through to the downstream transition probabilities rather than resampling those independently.",
+      "files": [],
+      "expectations": [
+        "Response identifies that sampling shape and scale independently is incorrect because it ignores the correlation between the two parameters implied by the fit's covariance matrix (vcov)",
+        "Response recommends joint multivariate-normal sampling on the transformed (real-line) parameter scale using the fitted model's covariance matrix (directly, or via flexsurv::normboot.flexsurvreg()), rather than independent univariate draws per parameter",
+        "Response notes that the resulting correlation should be preserved through to any downstream derived quantities (e.g. the transition probabilities), not broken by resampling them independently afterward"
+      ]
+    },
+    {
+      "id": 7,
+      "prompt": "Does flexsurv have a function that automatically picks the best-fitting distribution for me and just returns the winning model object directly, so I don't have to manually compare AIC across all the fits myself?",
+      "expected_output": "Does not invent a fictitious auto-select function. Correctly states that flexsurv has no single-call function that picks and returns one 'best' model; may mention survHE::fit.models() as a batch-fitting/comparison helper that prints or plots an AIC/BIC table across distributions, but is clear that this still doesn't auto-select a winner, and that survHE::markov_trace() is a plotting function for the output of three_state_mm() (not a model-selection tool) if it comes up at all. Reiterates that model choice is a judgement call needing an extrapolation-plausibility check, not something that should be fully automated away.",
+      "files": [],
+      "expectations": [
+        "Response does not claim that flexsurv or survHE has a function that automatically selects and returns a single best-fitting model without further user judgement",
+        "If survHE::fit.models() is mentioned, it is correctly described as batch-fitting and tabulating/plotting AIC-BIC comparisons across distributions rather than as an auto-selecting function",
+        "If survHE::markov_trace() is mentioned, it is correctly described as plotting the state-occupancy trace produced by three_state_mm() rather than as a function that fits, selects, or runs a model itself",
+        "Response reiterates that model choice requires an extrapolation-plausibility check in addition to (or instead of) any automated statistical-fit comparison"
+      ]
+    },
+    {
+      "id": 8,
+      "prompt": "For our PSA I fitted a Gompertz model to OS with flexsurv (shape and rate come out in fit$res.t). I'm drawing 1000 samples from a multivariate normal using fit$res.t's estimates and vcov(fit), then just running exp() on both the shape and rate columns to get natural-scale draws before computing S(t) for each PSA iteration. Can you check that back-transform step before I wire it into the rest of the model?",
+      "expected_output": "Flags that applying exp() to the Gompertz shape column is wrong: flexsurv's Gompertz shape parameter is estimated on the identity (untransformed) scale, not log, because it is unrestricted on the real line and can legitimately be negative (a negative shape gives a plateauing/defective survival distribution). Only rate is log-transformed. Blanket exp()-ing both columns forces every shape draw positive, silently discarding any negative-shape draws the fit actually supports and corrupting the resulting survival/RMST estimates. Recommends normboot.flexsurvreg(fit, B=1000) (or fit$dlist$inv.transforms applied per-parameter: identity for shape, exp() only for rate) instead of a blanket exp().",
+      "files": [],
+      "expectations": [
+        "Response identifies that exponentiating the Gompertz shape parameter is incorrect because flexsurv estimates Gompertz shape on the identity (untransformed) scale, not a log scale, precisely because shape can be negative",
+        "Response explains the consequence: blanket exp() on both columns forces all shape draws positive, which silently rules out negative-shape (plateauing/defective) draws the fit may genuinely support, distorting downstream survival/RMST estimates",
+        "Response recommends the correct approach -- normboot.flexsurvreg() or applying fit$dlist$inv.transforms per-parameter (identity for shape, exp() only for rate) -- rather than a uniform exp() across all columns",
+        "Response does not simply confirm the analyst's exp()-both-columns approach as correct"
+      ]
+    }
+  ]
+}

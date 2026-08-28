@@ -1,8 +1,9 @@
 # Fitting parametric survival models with flexsurv
 
 > Sources: R-HTA Ch. 7 (colon-cancer example; `flexsurvreg`, `hr_flexsurvreg`, distribution
-> menu, batch fitting via `survHE::fit.models()`); `flexsurv` and `survHE` CRAN/pkgdown docs.
-> Accessed 2026-07-03.
+> menu, batch fitting via `survHE::fit.models()`); `flexsurv` 2.3.2 and `survHE` 2.0.51
+> CRAN/pkgdown docs, re-verified 2026-08-27 incl. empirical fitting and survivor/hazard-function
+> derivation. Accessed 2026-07-03; re-verified 2026-08-27.
 
 Patterns for `flexsurvreg()`, the distribution menu, the AFT-vs-PH distinction, and putting covariates on location vs. ancillary parameters. Illustrative data: a single time-to-event outcome `Surv(years, status)` with a treatment covariate `rx`, mirroring the book's colon-cancer recurrence-free survival example.
 
@@ -13,14 +14,14 @@ Patterns for `flexsurvreg()`, the distribution menu, the AFT-vs-PH distinction, 
 | `dist` | Hazard shape | Notes |
 |---|---|---|
 | `"exp"` | Constant (λ) | Memoryless; rarely plausible for extrapolation but a useful baseline |
-| `"weibull"` | Monotonic increasing/decreasing/constant (λtᵃ) | AFT parameterisation in flexsurv; the default workhorse |
+| `"weibull"` | Monotonic increasing/decreasing/constant, h(t) ∝ t^(shape−1) | AFT parameterisation in flexsurv; `dist = "weibullPH"` gives the PH parameterisation of the same distribution instead; `"weibull"` is the default workhorse |
 | `"gamma"` | Monotonic, complex form | |
-| `"gompertz"` | Exponentially increasing/decreasing | PH form; used for human mortality at older ages; negative shape → survival doesn't reach 0 (relevant for cure) |
+| `"gompertz"` | Exponentially increasing/decreasing | PH form; used for human mortality at older ages; negative shape ⇒ a **defective** distribution — S(∞) > 0 and mean survival is infinite, so this should be a deliberate cure-like choice, not an accidental fit |
 | `"lnorm"` | Unimodal (rises then falls) | AFT; good when hazard peaks early then declines |
 | `"llogis"` | Decreasing, or unimodal like log-normal | AFT |
 | `"gengamma"` | Includes Weibull, gamma, log-normal as special cases | 3-parameter; flexible; the book's best fit for colon data. Needs enough data to identify 3 params |
 
-`flexsurv`'s parameterisations match the base R `d*` functions (`dweibull`, `dgompertz`, etc.), **not** `survreg`'s. The "Distributions reference" vignette in flexsurv is the authority on exact survivor functions and covariate-effect interpretations.
+`flexsurv`'s parameterisations match the base R `d*` functions (`dweibull`, `dgompertz`, etc.), **not** `survreg`'s. The "Distributions reference" vignette in flexsurv is the authority on exact survivor functions and covariate-effect interpretations. For delayed entry / left-truncated data (e.g. registry patients entering follow-up at diagnosis age), use counting-process notation — `Surv(start, stop, status)` — which `flexsurvreg` supports.
 
 ## Basic fit, single arm
 
@@ -37,8 +38,10 @@ The parameter estimates (mu, sigma, Q for gengamma) are mostly not directly inte
 ## Treatment effect: PH vs AFT, and where the covariate goes
 
 Two ways a covariate can act, with different interpretations:
-- **Proportional hazards (PH)**: covariate multiplies the hazard; effect is a constant hazard ratio `exp(β)`. Gompertz and the Weibull-PH form, and the hazard-scale spline, are PH.
-- **Accelerated failure time (AFT)**: covariate speeds/slows the time axis. Weibull (flexsurv's form), log-normal, log-logistic, generalised gamma are AFT.
+- **Proportional hazards (PH)**: covariate multiplies the hazard; effect is a constant hazard ratio `exp(β)`. Exponential, Gompertz, the Weibull-PH form (`dist = "weibullPH"`), and the hazard-scale spline are PH.
+- **Accelerated failure time (AFT)**: covariate speeds/slows the time axis. Exponential, Weibull (flexsurv's default form), gamma, log-normal, log-logistic, and generalised gamma are AFT.
+
+Exponential and Weibull are the only two families that are simultaneously PH and AFT, so only they let you convert a fitted coefficient into a constant hazard ratio. But check **which parameter the covariate sits on** (`fit$dlist$location`) before converting: for `dist = "weibull"` the covariate acts on log *scale* (a log-time effect), and log HR = −shape × the coefficient; for `dist = "exp"` (and `"gamma"`) the covariate acts on log *rate*, so for the exponential the coefficient already **is** the log HR — no negation, no shape multiplier (negating it reverses the treatment effect). The PH families above (Gompertz, `weibullPH`, hazard-scale spline) give a constant HR `exp(β)` by construction; the remaining AFT families (log-normal, log-logistic, generalised gamma) yield no constant HR at all (see the pitfalls in the main `SKILL.md`).
 
 By default a covariate added to the formula goes on the **location parameter**:
 
@@ -76,7 +79,7 @@ hrs <- hr_flexsurvreg(ggt_aft, t = seq(0.2, 15, 0.1),
                       newdata = data.frame(rx = c("Obs", "Lev+5FU")))
 ```
 
-A HR that drifts systematically away from a horizontal line is evidence against PH.
+A HR that drifts systematically away from a horizontal line is evidence against PH. The converse doesn't hold: a non-significant `cox.zph` test or a plausibly-parallel log-cumulative-hazard plot is an *absence of evidence against* PH, not confirmation of it — power is low with few events, so don't treat a clean-looking check as licence to skip the sensitivity of your conclusions to the PH assumption.
 
 ## Model choice quantities
 
