@@ -41,24 +41,30 @@ consistent; only two files in this tier were edited (single cross-reference line
 |---|---|---|---|
 | NICE health technology evaluations manual (PMG36), §4.2.24 and ch. 4 | current online edition | https://www.nice.org.uk/process/pmg36 | 2026-08-27 |
 | NICE DSU TSD 14 (Latimer) — survival analysis for economic evaluations | June 2011 | https://sheffield.ac.uk/nice-dsu/tsds/survival-analysis | 2026-08-27 |
-| NICE DSU TSD 21 (Rutherford et al.) — flexible methods for survival analysis | November 2020 | https://sheffield.ac.uk/nice-dsu/tsds/flexible-methods-survival-analysis | 2026-08-27 |
+| NICE DSU TSD 21 (Rutherford et al.) — flexible methods for survival analysis | 23 January 2020 | https://sheffield.ac.uk/nice-dsu/tsds/flexible-methods-survival-analysis | 2026-08-27; full PDF verified 2026-08-28 |
+| NICE DSU TSD 19 (Woods et al.) — partitioned survival analysis | 2 June 2017 | https://sheffield.ac.uk/nice-dsu/tsds/partitioned-survival-analysis | full PDF verified 2026-08-28 |
 | NICE DSU TSD 26 — expert elicitation for long-term survival outcomes | March 2025 | https://sheffield.ac.uk/nice-dsu/tsds/expert-elicitation-tsd | 2026-08-27 |
 | NICE DSU TSD full list | current | https://sheffield.ac.uk/nice-dsu/tsds/full-list | 2026-08-27 |
 | `flexsurv` (Jackson) — docs, Distributions vignette, source | 2.3.2 (CRAN-current) | https://cran.r-project.org/package=flexsurv | 2026-08-27, executed locally |
 | `flexsurvcure` (Amdahl) — docs, README | 1.1.0 | https://cran.r-project.org/package=flexsurvcure | 2026-08-27, executed locally |
 | `survHE` (Baio) — docs, source (giabaio/survHE) | 2.0.51 (2026-01-15) | https://cran.r-project.org/package=survHE | 2026-08-27, executed locally |
 | `brms` (Bürkner) — families, `?brmsformula`, source | 2.20.4 | https://cran.r-project.org/package=brms | 2026-08-27, executed locally |
-| Guyot et al., BMC Med Res Methodol — KM reconstruction | 2012 | https://link.springer.com/article/10.1186/1471-2288-12-9 | 2026-08-27 |
-| Latimer, Med Decis Making — survival model selection process | 2013 | https://journals.sagepub.com/doi/10.1177/0272989X12472398 | 2026-08-27 |
-| Sweeting et al., Med Decis Making — GPM incorporation methods | 2023 | https://journals.sagepub.com/doi/10.1177/0272989X231184247 | 2026-08-27 |
+| Guyot et al., BMC Med Res Methodol 12:9 — KM reconstruction | 2012 | https://link.springer.com/article/10.1186/1471-2288-12-9 | 2026-08-27; full PDF verified 2026-08-28 |
+| Guyot et al., Med Decis Making 37:353-366 — extrapolation with external information | 2017 | https://journals.sagepub.com/doi/10.1177/0272989X16670604 | full PDF verified 2026-08-28 |
+| Latimer, Med Decis Making 33:743-754 — survival model selection process | 2013 | https://journals.sagepub.com/doi/10.1177/0272989X12472398 | 2026-08-27; full PDF verified 2026-08-28 |
+| Sweeting et al., Med Decis Making 43(6):737-748 — GPM incorporation (excess hazard/cure) | 2023 | https://journals.sagepub.com/doi/10.1177/0272989X231184247 | 2026-08-27; full PDF verified 2026-08-28 |
+| *R for HTA* (Baio et al.), ch. 7 — survival analysis in HTA | online edition | https://gianluca.statistica.it/books/online/r-hta/ | saved copy verified 2026-08-28 |
 | Supporting literature on waning/marginal-vs-conditional effects, RMST under NPH | 2019–2025 | see `scratchpad` review matrices | 2026-08-27 |
 
 Evidence caveat: the session's egress proxy blocked direct fetches of `nice.org.uk`,
-`sheffield.ac.uk` and journal domains (403). NICE/TSD verification therefore rests on
-search-engine-retrieved page text (often verbatim clause text, corroborated across multiple
-independent retrievals) rather than the live documents. Package/API claims do not share this
-caveat — they were verified by executing the installed packages. Exact NICE clause wording
-should be re-checked against the live manual before being quoted in a submission.
+`sheffield.ac.uk` and journal domains (403), so the 2026-08-27 review rested on
+search-engine-retrieved page text for those sources. On 2026-08-28 the repository owner
+supplied full copies of TSD 19, TSD 21, Sweeting 2023, Latimer 2013, Guyot 2012, Guyot 2017
+and R-HTA chapter 7, and every claim resting on those sources was re-verified against the
+documents themselves (see "Post-review source verification" below). Still search-verified
+only: the exact wording of PMG36 (including 4.2.24) and TSD 26 — re-check against the live
+documents before quoting them in a submission. Package/API claims never shared this caveat —
+they were verified by executing the installed packages.
 
 ## Findings
 
@@ -203,12 +209,46 @@ corrected).
   `no_continued_benefit`; zero-survival guards verified finite and monotone; evals.json
   re-validated.
 
+## Post-review source verification (2026-08-28)
+
+After the PR was opened, the repository owner provided full copies of seven primary sources.
+Four verification agents re-checked every claim resting on them, page by page. Outcomes:
+
+**Confirmed (no change needed):** TSD 21 recommends incorporating background mortality
+(p. 89: "recommended … essential for cure models") — the review's central re-attribution
+holds; TSD 21's scope list and matching qualifications; Sweeting 2023 corroborates the
+bhazard-AIC-non-comparability caveat verbatim (p. 741); TSD 19 supports the PSM content and
+the tier-2 `mapping-itc-psm-tsd22-18-19.md` description sentence-by-sentence; Guyot 2012
+confirms the KM-reconstruction inputs, the constant-within-interval censoring assumption, and
+the stated limitations; every R-HTA-attributed claim in the skill checks out against chapter
+7 (the AIC values and the ~1-year RMST gap match exactly); Guyot 2017 substantiates the
+external-information guidance and contradicts nothing.
+
+**Corrections made from the documents:**
+
+| Location | Correction | Source |
+|---|---|---|
+| tsd14-21.md step 3 | TSD 14's *standard* set is five distributions (exp, Weibull, Gompertz, log-normal, log-logistic); generalised gamma/F are its "more flexible" extensions to consider when the five appear unsuitable — previously presented as a standard set of six | Latimer 2013 p. 749 |
+| tsd14-21.md step 5; survival_extrapolation.R docstring; advanced-survival-models.md | "TSD 21's preferred route" over-attributed: TSD 21 recommends *incorporation* but never names or compares the post-hoc floor; the internal-vs-floor comparison is now sourced to Sweeting 2023 ("more statistically coherent"; the switch "causes a discontinuity in the all-cause hazard function", p. 738) with TSD 21 quoted only for what it says | TSD 21 pp. 42, 44, 89; Sweeting 2023 p. 738 |
+| advanced-survival-models.md sources | TSD 21 date corrected: 23 January 2020 (not November 2020) | TSD 21 title page |
+| advanced-survival-models.md cure caveat | "per Latimer & Rutherford's guidance" replaced with TSD 21's own words ("essential for cure models") | TSD 21 p. 89 |
+| km-reconstruction.md | Accuracy nuance: survival probabilities/medians reconstruct accurately even with limited information; it is *hazard ratios* that need at-risk numbers or total events and become unusable with neither | Guyot 2012 abstract, p. 6 |
+| survival-to-economic-model.md PSM; tsd14-21.md EAG list | State-transition cross-check upgraded from described practice to TSD 19's formal Recommendation 11 (alongside, not replacing, PartSA) | TSD 19 p. 58 |
+| advanced-survival-models.md external data | One sentence added: Guyot 2017 as the worked example of joint likelihood constraints vs post-hoc model selection | Guyot 2017 pp. 359-364 |
+
+One tension noted, no change made: R-HTA ch. 7's own cure example uses a gengamma base
+successfully on the colon data, while this skill warns that gengamma/gompertz cure bases can
+fail (flexsurvcure README + reproduced Hessian failures). The warning says "can fail /
+check convergence", not "always fails", so both are consistent; the stable-base default
+stands.
+
 ## Remaining limitations
 
-- NICE/DSU documents could not be fetched directly (proxy 403); clause-level wording was
-  verified only through search-retrieved text, corroborated across sources. Confidence in
-  the directional findings is high; verbatim quotations should be re-checked against the
-  live documents.
+- TSD 19/21 and the key methodological papers have now been verified against full documents
+  (see above). Still search-verified only: PMG36's exact clause wording (including 4.2.24)
+  and TSD 26 — the owner attempted to supply both but the files did not reach the session;
+  re-verify on receipt, and re-check verbatim quotations against the live documents before
+  use in a submission.
 - The eval set has not been executed against a with-skill/baseline agent pair (requires the
   Skill Creator run loop with a human in the loop).
 - `count-skill-tokens.py` could not run (tiktoken download blocked); token counts were

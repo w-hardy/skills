@@ -117,18 +117,20 @@ rmst <- function(fit, tau, by = tau/2000, discount = 0) {
 #' Apply a general-population mortality FLOOR to an extrapolated curve.
 #'
 #' A modelled all-cause curve should not imply lower yearly mortality than the
-#' matched general population. TSD 14 uses general-population mortality only
-#' as an EXTERNAL-VALIDITY comparator; the recommendation to INCORPORATE it
-#' into the model is TSD 21 (Rutherford et al. 2020), and TSD 21's preferred
-#' route is the more principled internal additive excess-hazard / relative-
-#' survival model (general-population hazard + a modelled excess hazard
-#' combined inside the likelihood, e.g. flexsurv's `bhazard` — see the
-#' survival-analysis-hta skill), which structurally cannot go below p_bg.
-#' This function instead implements the cruder, pragmatic POST-HOC route: a
-#' floor on modelled mortality (equivalently a cap on conditional survival)
-#' applied AFTER fitting. It is simple, but produces a kink in the hazard (a
-#' jump, on a discrete cycle grid) where the floor first binds — unlike the
-#' smooth excess-hazard route (Sweeting et al. 2023 tutorial) — and should be
+#' matched general population. TSD 14 uses external data only as a validity
+#' comparator; TSD 21 (Rutherford et al., Jan 2020, p. 89) states that
+#' incorporating background mortality is "recommended ... and is essential
+#' for cure models". The principled route is an internal additive excess-
+#' hazard / relative-survival model (general-population hazard + a modelled
+#' excess hazard combined inside the likelihood, e.g. flexsurv's `bhazard` —
+#' see the survival-analysis-hta skill), which by construction cannot go
+#' below p_bg. This function instead implements the cruder, pragmatic
+#' POST-HOC route: a floor on modelled mortality (equivalently a cap on
+#' conditional survival) applied AFTER fitting. It is simple, but Sweeting
+#' et al. (2023, p. 738) note this switching approach "causes a
+#' discontinuity in the all-cause hazard function" where the floor first
+#' binds, and describe excess-hazard modelling as the more statistically
+#' coherent route. The floor should be
 #' presented as a scenario/sensitivity check, not silently folded into the
 #' base case. Apply exactly ONE background-mortality mechanism (this floor,
 #' an additive excess-hazard model, or an SMR-based adjustment) — never both.

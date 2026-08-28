@@ -69,7 +69,7 @@ Common in oncology. No transition probabilities at all: state membership is read
 - proportion **dead** at t = 1 − S_OS(t)
 - proportion **progressed (alive)** = S_OS(t) − S_PFS(t)
 
-The one structural pitfall: nothing constrains S_PFS(t) ≤ S_OS(t) when the two curves are fitted independently, so the "progressed" proportion can go negative at some t. Check for and handle crossing (e.g. constrain, or model jointly) before using the areas.
+The one structural pitfall: nothing constrains S_PFS(t) ≤ S_OS(t) when the two curves are fitted independently, so the "progressed" proportion can go negative at some t. Check for and handle crossing (e.g. constrain, or model jointly) before using the areas. More broadly, post-progression survival is only modelled *implicitly* in a PSM — NICE DSU TSD 19 (Recommendation 11) formally recommends building a state-transition model *alongside* the partitioned-survival analysis as a cross-check on that implicit assumption (while stopping short of recommending PSM be replaced); the `multistate-models-hta` skill covers the state-transition side.
 
 ## Propagating uncertainty (do not skip)
 

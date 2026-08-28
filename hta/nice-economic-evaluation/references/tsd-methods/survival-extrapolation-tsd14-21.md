@@ -22,25 +22,29 @@ assumption (4.2.24) — the TSDs are advisory, but the de facto benchmark. Steps
    non-significant test with few events is weak evidence FOR PH, not proof. If PH holds, a
    treatment-covariate model may be reasonable; if not, fit arms separately, use an AFT
    structure, or a covariate on an ancillary parameter.
-3. **Fit the standard parametric set** — exponential, Weibull, Gompertz, log-normal,
-   log-logistic, generalised gamma. Compare on AIC/BIC together with visual fit to the KM and,
-   crucially, external plausibility of the extrapolated tail.
+3. **Fit the standard parametric set** — TSD 14 (Latimer 2013, p. 749) defines five standard
+   models: exponential, Weibull, Gompertz, log-normal, log-logistic; generalised gamma (and
+   generalised F) are the "more flexible" extensions it says *should be considered* when the
+   standard five appear unsuitable — in practice gengamma is usually fitted alongside them.
+   Compare on AIC/BIC together with visual fit to the KM and, crucially, external
+   plausibility of the extrapolated tail.
 4. **Assess external validity** — does the extrapolation agree with long-term registry/trial
    data, expected general-population mortality, and clinical expectation? Where follow-up
    allows, refit to an earlier data cut and compare the extrapolation against the later
    observed data. A fit implying implausible long-term survival (cure where none exists, or
    beating the general population) is rejected however good its in-trial AIC.
-5. **Deal with general-population mortality (TSD 21, not TSD 14).** TSD 14 treats it only as an
-   EXTERNAL-VALIDITY comparator; TSD 21 (Rutherford et al. 2020) recommends INCORPORATING it
-   into the model. Preferred: internal additive excess-hazard / relative-survival modelling —
-   general-population hazard plus modelled excess hazard combined inside the likelihood
-   (flexsurv's `bhazard`; see `survival-analysis-hta`) — structurally prevents modelled
-   all-cause mortality falling below general-population mortality. Pragmatic alternative: a
-   post-hoc hazard FLOOR on the extrapolated curve (`apply_background_floor`) — the population
-   hazard is a floor on modelled mortality, equivalently a cap on conditional survival — simple,
-   but produces a kink in the hazard (a jump, on a discrete cycle grid) at the point the floor
-   first binds, unlike the smooth excess-hazard route (see Sweeting et al. 2023 for the
-   excess-hazard/cure tutorial). Match life
+5. **Deal with general-population mortality (TSD 21, not TSD 14).** TSD 14 treats external
+   data only as a validity comparator; TSD 21 (Rutherford et al., Jan 2020, p. 89) states
+   incorporation is "recommended … and is essential for cure models". The principled route is
+   internal additive excess-hazard / relative-survival modelling — general-population hazard
+   plus modelled excess hazard combined inside the likelihood (flexsurv's `bhazard`; see
+   `survival-analysis-hta`) — which by construction cannot let modelled all-cause mortality
+   fall below general-population mortality. Pragmatic alternative: a post-hoc hazard FLOOR on
+   the extrapolated curve (`apply_background_floor`) — the population hazard is a floor on
+   modelled mortality, equivalently a cap on conditional survival — simple, but Sweeting et
+   al. (2023, p. 738) note this switching approach "causes a discontinuity in the all-cause
+   hazard function" where the floor first binds and describe excess-hazard modelling as the
+   more statistically coherent route. Match life
    tables on age, sex and calendar year; trial populations can be healthier OR sicker than the
    general population; the constraint is for all-cause OS, not PFS/time-on-treatment; check the
    effect on the incremental result; apply exactly ONE mechanism (floor, additive excess hazard,
@@ -88,7 +92,10 @@ run by a trained facilitator. Use it to inform/validate an extrapolation and to 
 - **Immature data / few at risk in the tail** — check the extrapolation isn't driven by a
   handful of patients; state follow-up and events at the point extrapolation takes over.
 - **Partitioned survival models: PFS/OS incoherence** — independently fitted curves must not
-  cross (S_PFS ≤ S_OS everywhere); crossing implies negative progressed-alive occupancy.
+  cross (S_PFS ≤ S_OS everywhere); crossing implies negative progressed-alive occupancy. TSD
+  19 (Recommendation 11) formally recommends state-transition modelling be used *alongside*
+  the partitioned-survival analysis as a cross-check (while stopping short of recommending
+  PartSA be replaced).
 - Choosing the curve that maximises the technology's benefit without justification.
 
 RMST to a common horizon is useful supporting practice for comparing candidate fits and
