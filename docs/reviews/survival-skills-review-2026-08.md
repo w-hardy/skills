@@ -40,7 +40,7 @@ consistent; only two files in this tier were edited (single cross-reference line
 | Source | Version/date | Reference | Accessed |
 |---|---|---|---|
 | NICE health technology evaluations manual (PMG36), §4.2.24 and ch. 4 | current online edition | https://www.nice.org.uk/process/pmg36 | 2026-08-27; chapter-4 PDF verified 2026-08-28 |
-| NICE DSU TSD 14 (Latimer) — survival analysis for economic evaluations | June 2011 | https://sheffield.ac.uk/nice-dsu/tsds/survival-analysis | 2026-08-27 |
+| NICE DSU TSD 14 (Latimer) — survival analysis for economic evaluations | June 2011, updated March 2013 | https://sheffield.ac.uk/nice-dsu/tsds/survival-analysis | 2026-08-27; full PDF verified 2026-08-28 |
 | NICE DSU TSD 21 (Rutherford et al.) — flexible methods for survival analysis | 23 January 2020 | https://sheffield.ac.uk/nice-dsu/tsds/flexible-methods-survival-analysis | 2026-08-27; full PDF verified 2026-08-28 |
 | NICE DSU TSD 19 (Woods et al.) — partitioned survival analysis | 2 June 2017 | https://sheffield.ac.uk/nice-dsu/tsds/partitioned-survival-analysis | full PDF verified 2026-08-28 |
 | NICE DSU TSD 26 — expert elicitation for long-term survival outcomes | March 2025 (date per DSU site; supplied PDF lacked the title page) | https://sheffield.ac.uk/nice-dsu/tsds/expert-elicitation-tsd | 2026-08-27; body (§1–7) verified from PDF 2026-08-28 |
@@ -261,7 +261,7 @@ verification — orchestrator adjudication, implementation, independent final ve
 | # | Candidate issue | Verdict | Evidence | Change |
 |---|---|---|---|---|
 | 1 | Competing-risk closed form `p_k = (ΔH_k/ΣΔH_j)(1−exp(−ΣΔH_j))` stated too generally | Confirmed — and the hypothesised condition itself was an under-statement | Independent derivation + numerical verification: exact under constant within-cycle hazards AND under the weaker fixed-ratio (proportional within-cycle hazards) condition, to machine precision; total exit probability exact unconditionally, so error only mis-allocates between causes (second-order in per-cycle ΔH_tot: ~0.1% at monthly cycles, ~19% at annual cycles with 87% event risk, Weibull shapes 0.35/4); `Exp(uQ)` matches the closed form to <1e−14 where they overlap | survival-to-economic-model.md: general integral, exactness conditions, error behaviour, sub-cycle fix, sharper hand-off; multistate-models-hta SKILL.md: receiving-end statement (constant-Q exactness, piecewise-Q/Aalen-Johansen/simulation otherwise). No inconsistent copies elsewhere (repo-wide sweep: the only competing-risk cycle formula; single-risk `1−exp(−rΔ)` conversions untouched and correct) |
-| 2 | TSD 14's standard set is six, not five | Confirmed in substance — the first review's own correction had over-corrected by applying Latimer 2013's (journal) categorisation to TSD 14 | Two independent verbatim reproductions of TSD 14's recommendation citing TSD 14 (Roche flexsurvPlus docs; ICON-in-R) + four peer-reviewed characterisations (incl. Bell Gorrod et al. 2019, Latimer co-author; Bullement et al. 2019); TSD 14 itself unreachable through the proxy, so the six-model substance is strongly corroborated but not page-verified — recorded as such | tsd14-21.md step 3: six-model set restored (matching STD_DISTS and the file's own TSD 21 section, which had said "six standard distributions" throughout — the five-model edit had introduced a self-contradiction); Latimer 2013's five+flexible labelling attributed to the journal paper as different labelling, same advice |
+| 2 | TSD 14's standard set is six, not five | Confirmed in substance — the first review's own correction had over-corrected by applying Latimer 2013's (journal) categorisation to TSD 14 | Two independent verbatim reproductions of TSD 14's recommendation citing TSD 14 (Roche flexsurvPlus docs; ICON-in-R) + four peer-reviewed characterisations (incl. Bell Gorrod et al. 2019, Latimer co-author; Bullement et al. 2019); TSD 14 itself was unreachable through the proxy at the time, so the six-model substance was recorded as strongly corroborated but not page-verified; subsequently page-verified against the owner-supplied TSD 14 PDF — p. 13: "Exponential, Weibull, Gompertz, log-logistic, log normal and Generalised Gamma parametric models should all be considered", restated as Recommendation 3 (pp. 39–40) | tsd14-21.md step 3: six-model set restored (matching STD_DISTS and the file's own TSD 21 section, which had said "six standard distributions" throughout — the five-model edit had introduced a self-contradiction); Latimer 2013's five+flexible labelling attributed to the journal paper as different labelling, same advice |
 | 3 | KM reconstruction wrongly restricted to "all-cause" curves | Confirmed | Guyot 2012 inverts the KM estimator, whatever the endpoint; the valid/invalid line is KM estimator vs other estimands | km-reconstruction.md: valid targets = ordinary KM curves for suitable endpoints (OS, PFS, DFS/RFS, time to progression); invalid = 1−CIF, covariate-adjusted/model-derived, switching-adjusted curves. All other caveats preserved |
 | 4 | brms Cox vs coxph gloss implies coxph cannot yield survival curves | Confirmed | `survival::basehaz()` and `survfit.coxph` verified empirically (Breslow-type baseline; basehaz-implied survival = survfit to ~1e−16; cross-profile hazard ratio = exp(Δlp) exactly) | survival.md: distinction restated as smooth-jointly-estimated spline baseline (brms) vs post-hoc non-parametric step function flat beyond the last event (coxph), explicitly noting coxph does produce predicted curves |
 | 5 | brms claims unverified against current release | Confirmed as a gap; claims themselves all still correct | Current CRAN brms 2.23.0 (2025-09-08) built and installed from source alongside 2.20.4; no new survival families in NEWS/family-lists between versions; gengamma/gompertz/loglogistic error on live 2.23.0; cens() coding byte-identical; only survival-adjacent change 2.22.0's `bhaz` stratified-baseline term (no contradiction) | Version anchor added to the missing-families sentence ("verified against 2.20.4, unchanged in 2.23.0") |
@@ -299,6 +299,21 @@ figure qualified as cycle-position-dependent (10–40%); "same advice: fit all s
 "same practical outcome"; `Exp(uQ)` "only when constant" relaxed (common time-scaling also
 exact); this report's description of which out-of-scope skills carry which engagement-specific
 wording corrected.
+
+Addendum (TSD 14 PDF, 2026-08-28): the owner subsequently supplied TSD 14 itself (June 2011,
+updated March 2013). Page-verified: the six-model recommendation appears verbatim at p. 13
+and as Recommendation 3 (pp. 39–40); generalised gamma is never framed as "more flexible" in
+TSD 14 — that label is reserved for generalised F and Royston–Parmar splines (p. 17) —
+confirming the "different labelling, same practical outcome" reconciliation with Latimer 2013
+(TSD 14's own Executive Summary uses a softer five-plus-flexible framing, an internal tension
+that strengthens the reconciliation); the model-selection algorithm (Figure 3, p. 44) and all
+other TSD 14-attributed statements (PH testing, arm-fitting, AIC/BIC + plausibility,
+treatment-effect-duration scenarios in Rec. 7) check out with no contradictions. One
+over-claim fixed: TSD 14's external-data recommendations (Rec. 9) go beyond validity
+comparison — they endorse calibration and direct use of registry data — while being entirely
+silent on general-population mortality specifically, which remains TSD 21's territory; step 5
+of the methods file reworded accordingly. With this, every source behind the survival skills,
+TSD 14 included, has been verified against the primary document itself.
 
 ## Remaining limitations
 

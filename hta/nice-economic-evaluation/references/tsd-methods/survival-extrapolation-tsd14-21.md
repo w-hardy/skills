@@ -36,9 +36,11 @@ TSD 14 and TSD 21 by name (4.6.21–4.6.24), making them the de facto benchmark.
    allows, refit to an earlier data cut and compare the extrapolation against the later
    observed data. A fit implying implausible long-term survival (cure where none exists, or
    beating the general population) is rejected however good its in-trial AIC.
-5. **Deal with general-population mortality (TSD 21, not TSD 14).** TSD 14 treats external
-   data only as a validity comparator; TSD 21 (Rutherford et al., Jan 2020, p. 89) states
-   incorporation is "recommended … and is essential for cure models". The principled route is
+5. **Deal with general-population mortality (TSD 21, not TSD 14).** TSD 14 is silent on
+   general-population mortality (its external-data recommendations — Rec. 9 — cover validity
+   comparison, calibration and direct use of registry data, but never life tables); the
+   recommendation to incorporate it is TSD 21 (Rutherford et al., Jan 2020, p. 89):
+   "recommended … and is essential for cure models". The principled route is
    internal additive excess-hazard / relative-survival modelling — general-population hazard
    plus modelled excess hazard combined inside the likelihood (flexsurv's `bhazard`; see
    `survival-analysis-hta`) — which by construction cannot let modelled all-cause mortality
