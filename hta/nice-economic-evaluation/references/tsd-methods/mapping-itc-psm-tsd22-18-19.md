@@ -63,7 +63,9 @@ state membership read off the area between them (PFS, post-progression = OS−PF
   extrapolated tail (the classic PSM weakness — implausible long-term PPS).
 - A **state-transition (Markov) cross-check** is increasingly expected, to test whether the
   PSM's implied transitions are sensible.
-- Both curves extrapolated per TSD 14/21 with the background-mortality floor; the **structural
-  link between PFS and OS** acknowledged (PSM treats them as independent, which they are not).
+- Both curves extrapolated per TSD 14/21, with general-population mortality handled **once,
+  on all-cause OS only** (TSD 21: internal excess hazard, or a post-hoc floor — never applied
+  to PFS; see `survival-extrapolation-tsd14-21.md` step 5); the **structural link between PFS
+  and OS** acknowledged (PSM treats them as independent, which they are not).
 **Common errors:** independent extrapolation giving OS<PFS or implausible PPS in the tail; no
 Markov comparison; no sensitivity around the structural assumption.

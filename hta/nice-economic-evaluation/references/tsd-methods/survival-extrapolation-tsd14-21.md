@@ -54,7 +54,9 @@ TSD 14 and TSD 21 by name (4.6.21–4.6.24), making them the de facto benchmark.
    tables on age, sex and calendar year; trial populations can be healthier OR sicker than the
    general population; the constraint is for all-cause OS, not PFS/time-on-treatment; check the
    effect on the incremental result; apply exactly ONE mechanism (floor, additive excess hazard,
-   or SMR adjustment) — never stacked.
+   or SMR adjustment) — never stacked. (The matching and sicker-population points are TSD 21's
+   own; the OS-only, incremental-effect and one-mechanism qualifications are good practice
+   rather than TSD text.)
 6. **Carry uncertainty forward** — present several plausible distributions as scenarios (not
    just the best fit), reflect parameter uncertainty in the PSA, and include a "no further
    benefit" family per PMG36 4.2.24 ("assuming the technology does not provide further benefit

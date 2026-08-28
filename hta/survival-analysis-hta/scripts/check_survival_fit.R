@@ -188,12 +188,17 @@ check_survival_fit <- function(fit, horizon = NULL, bg_hazard = NULL,
           # identifiability signal. Classification is per pair, so a
           # covariate ridge in a spline fit is still flagged even when a
           # structural basis pair happens to correlate more strongly.
+          # Basis coefficients are identified by POSITION (flexsurv orders
+          # res.t/vcov as baseline parameters first, then covariate and anc
+          # coefficients), not by name -- a covariate a user happened to call
+          # "gamma2" must not be mistaken for a basis term.
           is_spline <- isTRUE(grepl("survspline", fit$dlist$name))
+          n_base <- tryCatch(length(fit$dlist$pars), error = function(e) 0L)
           for (r in seq_len(nrow(bad))) {
             pair <- c(rownames(cc)[bad[r, 1]], colnames(cc)[bad[r, 2]])
             val <- abs(cc[bad[r, 1], bad[r, 2]])
             pair_names <- paste(pair, collapse = " / ")
-            if (is_spline && all(grepl("^gamma[0-9]+$", pair))) {
+            if (is_spline && all(c(bad[r, 1], bad[r, 2]) <= n_base)) {
               add_note(st, sprintf(
                 "Spline basis coefficients %s have |correlation| = %.4f (> %.2f) -- expected/structural for adjacent basis terms, not treated as a failure on its own; judge against the prediction-validity checks below.",
                 pair_names, val, rho_warn))
@@ -490,8 +495,10 @@ if (sys.nframe() == 0) {
   status_spl <- as.integer(t_spl <= cens_spl)
   fit_spline <- flexsurvspline(Surv(time_spl, status_spl) ~ 1, k = 2, scale = "hazard")
   cc_spl <- cov2cor(vcov(fit_spline))
-  cat(sprintf("max |correlation| between spline coefficients: %.4f\n",
-              max(abs(cc_spl[lower.tri(cc_spl)]))))
+  max_rho_spl <- max(abs(cc_spl[lower.tri(cc_spl)]))
+  cat(sprintf("max |correlation| between spline coefficients: %.4f\n", max_rho_spl))
+  if (max_rho_spl <= 0.99) fail(sprintf(
+    "spline self-test no longer exercises the >0.99 structural-correlation note path (max |rho| = %.4f under this R/flexsurv version) -- adjust the seed/knots so the branch is genuinely tested", max_rho_spl))
   ok_spline <- check_survival_fit(fit_spline, horizon = 30)
   if (!isTRUE(ok_spline)) fail("healthy spline fit was blocked (structural basis-coefficient correlation must be a note, not a problem)")
 

@@ -303,7 +303,8 @@ wording corrected.
 Addendum (TSD 14 PDF, 2026-08-28): the owner subsequently supplied TSD 14 itself (June 2011,
 updated March 2013). Page-verified: the six-model recommendation appears verbatim at p. 13
 and as Recommendation 3 (pp. 39–40); generalised gamma is never framed as "more flexible" in
-TSD 14 — that label is reserved for generalised F and Royston–Parmar splines (p. 17) —
+TSD 14 — it applies that label to generalised F, Royston–Parmar splines and piecewise
+models instead (pp. 16–17) —
 confirming the "different labelling, same practical outcome" reconciliation with Latimer 2013
 (TSD 14's own Executive Summary uses a softer five-plus-flexible framing, an internal tension
 that strengthens the reconciliation); the model-selection algorithm (Figure 3, p. 44) and all
@@ -331,13 +332,30 @@ competing-risk error figures compressed to an explicitly illustrative parentheti
 ("scenario-specific figures, not general thresholds"); the full numbers remain in this
 report's follow-up table.
 
-- TSD 19/21 and the key methodological papers have now been verified against full documents
-  (see above). Still search-verified only: PMG36's exact clause wording (including 4.2.24)
-  and TSD 26 — the owner attempted to supply both but the files did not reach the session;
-  re-verify on receipt, and re-check verbatim quotations against the live documents before
-  use in a submission.
-- The eval set has not been executed against a with-skill/baseline agent pair (requires the
-  Skill Creator run loop with a human in the loop).
+A final adversarial pre-merge review of the complete PR diff (fresh reviewer, all areas)
+found no Critical or High issues; its three Medium findings — this docstring/step-5
+consistency gap in `survival_extrapolation.R`, a dropped "Remaining limitations" heading
+plus a stale superseded bullet in this report, and a contradictory background-mortality
+sentence in `mapping-itc-psm-tsd22-18-19.md` (which floored PFS and mis-attributed to TSD
+14) — were fixed, along with five Low hardenings (positional rather than name-based spline
+basis-pair classification in the checker, guarding against covariates literally named
+`gammaN`; a self-test assertion that the structural-correlation note path is genuinely
+exercised; first-exit-within-interval and integrated-intensity wording in the multistate
+bullet; a piecewise-models correction to the TSD 14 addendum above; and explicit labelling
+of which step-5 qualifications are TSD 21 text versus good practice). Behavioural evals 9–13
+were executed with-skill via the Skill Creator subagent pattern and graded 21/21 against
+their assertions (no repository behavioural runner exists; results in the session
+scratchpad). One deferred Low: step 4's general-population-mortality plausibility check sits
+under the TSD 14 heading — generic practice, disambiguated by step 5.
+
+## Remaining limitations
+
+- All primary sources have been verified against full documents (see the source table and
+  addenda above); verbatim quotations should still be re-checked against the live documents
+  before use in an actual submission.
+- The eval set has been executed with-skill for evals 9–13 (21/21 assertions passing); the
+  full with-skill/baseline benchmarking loop for all 13 evals requires the Skill Creator run
+  loop with a human in the loop and has not been run.
 - `count-skill-tokens.py` could not run (tiktoken download blocked); token counts were
   approximated. All three frontmatter descriptions exceed the repo's 100-token description
   guideline — as do the comparator HTA skills. Left unchanged deliberately: trimming risks

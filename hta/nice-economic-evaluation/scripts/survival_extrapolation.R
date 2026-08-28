@@ -117,8 +117,10 @@ rmst <- function(fit, tau, by = tau/2000, discount = 0) {
 #' Apply a general-population mortality FLOOR to an extrapolated curve.
 #'
 #' A modelled all-cause curve should not imply lower yearly mortality than the
-#' matched general population. TSD 14 uses external data only as a validity
-#' comparator; TSD 21 (Rutherford et al., Jan 2020, p. 89) states that
+#' matched general population. TSD 14 does not specifically address
+#' general-population mortality (its external-data guidance covers validity
+#' comparison, calibration and direct use of registry data, Rec. 9);
+#' TSD 21 (Rutherford et al., Jan 2020, p. 89) states that
 #' incorporating background mortality is "recommended ... and is essential
 #' for cure models". The principled route is an internal additive excess-
 #' hazard / relative-survival model (general-population hazard + a modelled
