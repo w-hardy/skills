@@ -28,7 +28,8 @@ TSD 14 and TSD 21 by name (4.6.21–4.6.24), making them the de facto benchmark.
    log-logistic and generalised gamma; TSD 14 puts all six in the set to be considered, and
    that is what `survival_extrapolation.R` fits. The condensed journal version (Latimer 2013,
    p. 749) labels the first five "standard" and generalised gamma / generalised F "more
-   flexible" — different labelling, same advice: fit all six. Compare on AIC/BIC together
+   flexible", to be added when the standard ones look unsuitable — different labelling, same
+   practical outcome: all six get fitted and compared. Compare on AIC/BIC together
    with visual fit to the KM and, crucially, external plausibility of the extrapolated tail.
 4. **Assess external validity** — does the extrapolation agree with long-term registry/trial
    data, expected general-population mortality, and clinical expectation? Where follow-up

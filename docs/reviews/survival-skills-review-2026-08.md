@@ -267,7 +267,7 @@ verification — orchestrator adjudication, implementation, independent final ve
 | 5 | brms claims unverified against current release | Confirmed as a gap; claims themselves all still correct | Current CRAN brms 2.23.0 (2025-09-08) built and installed from source alongside 2.20.4; no new survival families in NEWS/family-lists between versions; gengamma/gompertz/loglogistic error on live 2.23.0; cens() coding byte-identical; only survival-adjacent change 2.22.0's `bhaz` stratified-baseline term (no contradiction) | Version anchor added to the missing-families sentence ("verified against 2.20.4, unchanged in 2.23.0") |
 | 6 | Spline fits blocked solely by structural basis-coefficient correlation | Confirmed | Healthy k=2 spline (seed 22, n=500): PD covariance, clean predictions, \|ρ\|=0.9943 → blocked; crossing 0.99 on 10/25 seeds — a common false block | check_survival_fit.R: for flexsurvspline fits the extreme-correlation branch (which only runs once covariance is PD) now emits a clearly-worded note; non-spline fits keep the blocking classification (self-test's 12-obs gengamma still fails at \|ρ\|=0.9992); non-finite/non-symmetric/non-PD covariance, prediction and convergence failures remain blocking for all types; events-per-parameter note relabelled a rough, context-dependent rule of thumb; self-test extended with the deterministic spline case |
 | 7 | Eval coverage gaps for remaining failure modes | Confirmed | — | Five evals added (ids 9–13): competing exits, background-mortality mechanism/attribution, cessation vs loss-of-accrued-benefit, PFS/OS incoherence (no silent clamping; TSD 19 cross-check), KM endpoint scope (PFS valid / 1−CIF invalid). Behaviour-testing assertions per Skill Creator guidance |
-| 8 | Project-specific wording in generic skills | Confirmed within scope | — | "W's EXPO survival work" / "the EXPO recurrence model" / "exactly W's EXPO workflow" generalised in decision-modelling-hta (SKILL.md + heemod-markov-models.md). Remaining EXPO references in hesim-ctstm-hta, ispor-smdm-good-practices, bayesian-cea-r-hta are outside this PR's scope and still await a separate clean-up |
+| 8 | Project-specific wording in generic skills | Confirmed within scope | — | "W's EXPO survival work" / "the EXPO recurrence model" / "exactly W's EXPO workflow" generalised in decision-modelling-hta (SKILL.md + heemod-markov-models.md). Remaining EXPO references in hesim-ctstm-hta, and project-specific engagement wording (client-specific mappings/notebook/HEAP references, not the literal "EXPO" string) in ispor-smdm-good-practices and bayesian-cea-r-hta, are outside this PR's scope and still await a separate clean-up |
 
 Note on issue 2: this supersedes the "five distributions" row in the *Post-review source
 verification* table above; that row records what was believed at the time and is retained as
@@ -280,6 +280,25 @@ spline regression case); survival_extrapolation.R demo exits 0; evals.json schem
 ("five standard", "all-cause KM", "leaves the baseline unspecified", EXPO refs in scope);
 competing-risk closed form verified numerically against the exact integral and against
 `Exp(uQ)`; brms claims verified on both installed 2.20.4 and source-built 2.23.0.
+
+Independent verification of the follow-up (fresh reviewer, adversarial): mathematics, TSD 14,
+KM, brms/coxph, evals and diff hygiene all passed (the fixed-ratio exactness proof, the
+quoted error magnitudes, the Breslow-baseline equivalences and the 2.23.0 family diff were
+all reproduced independently). One High finding was confirmed and fixed: the spline
+correlation relaxation keyed on model type rather than on which parameters correlate, so a
+genuine covariate near-ridge inside a spline fit was waved through as "structural" — the
+classification is now per pair (only gamma0…gammaK+1 basis pairs are downgraded to notes;
+covariate/anc pairs and all non-spline pairs remain blocking), with a collinear-covariate
+spline case added to the self-test (must be blocked). Two Mediums fixed: the multistate
+`Exp(uQ)` note now distinguishes occupancy from first-exit probabilities (they coincide only
+when destinations are not themselves left within the interval — a 38% discrepancy otherwise
+in the verifier's illness-death counter-example); the KM reference now notes that a
+time-to-progression KM censoring death is a net/latent curve — reconstructible, but not
+convertible to marginal transition probabilities. Low findings fixed: the annual-cycle error
+figure qualified as cycle-position-dependent (10–40%); "same advice: fit all six" softened to
+"same practical outcome"; `Exp(uQ)` "only when constant" relaxed (common time-scaling also
+exact); this report's description of which out-of-scope skills carry which engagement-specific
+wording corrected.
 
 ## Remaining limitations
 
@@ -296,8 +315,10 @@ competing-risk closed form verified numerically against the exact integral and a
   triggering regressions that cannot be eval-tested in this session. Flagged for a future
   description-optimisation pass with Skill Creator's trigger-eval loop.
 - Observations recorded for the maintainer, out of this review's scope: (1) leaked
-  "EXPO"-engagement references in `hta/hesim-ctstm-hta`, `hta/decision-modelling-hta`,
-  `hta/ispor-smdm-good-practices`, `hta/bayesian-cea-r-hta`; (2) per PMG36's update log,
+  engagement-specific content — "EXPO" references in `hta/hesim-ctstm-hta`, and
+  client-specific mapping/notebook/HEAP wording in `hta/ispor-smdm-good-practices` and
+  `hta/bayesian-cea-r-hta` (`hta/decision-modelling-hta`'s references were generalised in the
+  2026-08-28 follow-up); (2) per PMG36's update log,
   EQ-5D-5L (UK value set) applies to reference-case analyses from 27 August 2026 —
   `hta/nice-economic-evaluation/references/reference-case.md` should be checked; (3) the
   three background-mortality mechanisms across the HTA skills (floor, additive excess
