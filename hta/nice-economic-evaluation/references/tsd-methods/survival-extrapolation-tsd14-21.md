@@ -76,12 +76,18 @@ Justify the added flexibility (don't over-fit); still check external validity an
 general-population mortality has been handled.
 
 ## Structured expert elicitation for long-term survival (TSD 26, March 2025)
-Bespoke DSU guidance for eliciting long-term survival where trial data are immature: a
-SHELF-based protocol eliciting survival probabilities at specified landmark times per treatment
-arm, with discussion of the underlying hazard behaviour — not just a point survival estimate.
-Experts give distributions, not point estimates, with internal-consistency and scenario checks,
-run by a trained facilitator. Use it to inform/validate an extrapolation and to weight scenarios
-(step 6) — not as informal endorsement of a chosen curve.
+Bespoke DSU guidance ("a companion to TSD 14 and TSD 21") for eliciting long-term survival
+where trial data are immature. Protocol-agnostic: any of the standard protocols (SHELF,
+Cooke's, Delphi, IDEA, MRC reference protocol) can be adapted — TSD 26's own worked example
+is SHELF-based, but it explicitly declines to recommend one protocol over another (Rec. 13).
+By default elicit a probability distribution of survival at **one** time point per treatment
+arm (not the survivor function at multiple landmarks), with explicit discussion of the
+underlying hazard behaviour (Recs. 1–2). Experts give distributions, not point estimates,
+with self-consistency and scenario checks, run by an experienced facilitator; aggregation is
+by behavioural consensus by default (performance weighting belongs with Cooke's method,
+Rec. 16). Use it to inform extrapolations and to *exclude* implausible models, reporting
+results for each remaining scenario (Rec. 19) — an improvement on the common practice of
+informal clinician validation of a chosen curve.
 
 ## Things a committee / EAG checks (and common errors)
 - **AIC-only selection** with no visual/external check — the single most common criticism.
