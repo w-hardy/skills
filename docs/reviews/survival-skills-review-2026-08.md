@@ -43,7 +43,7 @@ consistent; only two files in this tier were edited (single cross-reference line
 | NICE DSU TSD 14 (Latimer) — survival analysis for economic evaluations | June 2011, updated March 2013 | https://sheffield.ac.uk/nice-dsu/tsds/survival-analysis | 2026-08-27; full PDF verified 2026-08-28 |
 | NICE DSU TSD 21 (Rutherford et al.) — flexible methods for survival analysis | 23 January 2020 | https://sheffield.ac.uk/nice-dsu/tsds/flexible-methods-survival-analysis | 2026-08-27; full PDF verified 2026-08-28 |
 | NICE DSU TSD 19 (Woods et al.) — partitioned survival analysis | 2 June 2017 | https://sheffield.ac.uk/nice-dsu/tsds/partitioned-survival-analysis | full PDF verified 2026-08-28 |
-| NICE DSU TSD 26 — expert elicitation for long-term survival outcomes | March 2025 (date per DSU site; supplied PDF lacked the title page) | https://sheffield.ac.uk/nice-dsu/tsds/expert-elicitation-tsd | 2026-08-27; body (§1–7) verified from PDF 2026-08-28 |
+| NICE DSU TSD 26 (Oakley, Ren, Forsyth, Gosling, Wilson, Latimer, Rutherford, Uttley, Fotheringham) — expert elicitation for long-term survival outcomes | March 2025 (confirmed from the title page, supplied 2026-08-28) | https://sheffield.ac.uk/nice-dsu/tsds/expert-elicitation-tsd | 2026-08-27; body (§1–7) verified from PDF and title page supplied 2026-08-28 |
 | NICE DSU TSD full list | current | https://sheffield.ac.uk/nice-dsu/tsds/full-list | 2026-08-27 |
 | `flexsurv` (Jackson) — docs, Distributions vignette, source | 2.3.2 (CRAN-current) | https://cran.r-project.org/package=flexsurv | 2026-08-27, executed locally |
 | `flexsurvcure` (Amdahl) — docs, README | 1.1.0 | https://cran.r-project.org/package=flexsurvcure | 2026-08-27, executed locally |
@@ -60,11 +60,11 @@ Evidence caveat: the session's egress proxy blocked direct fetches of `nice.org.
 `sheffield.ac.uk` and journal domains (403), so the 2026-08-27 review rested on
 search-engine-retrieved page text for those sources. On 2026-08-28 the repository owner
 supplied full copies of TSD 19, TSD 21, Sweeting 2023, Latimer 2013, Guyot 2012, Guyot 2017
-R-HTA chapter 7, PMG36 chapter 4, and TSD 26 (body sections 1–7; the supplied copy lacked
-the title page and appendices, so its "March 2025" date rests on the DSU site listing), and
-every claim resting on those sources was re-verified against the documents themselves (see
-"Post-review source verification" below). Package/API claims never shared this caveat — they
-were verified by executing the installed packages.
+R-HTA chapter 7, PMG36 chapter 4, and TSD 26 (body sections 1–7 from the supplied PDF; the
+title page — confirming the March 2025 date and the Oakley/Ren et al. authorship — was
+supplied separately on 2026-08-28), and every claim resting on those sources was re-verified
+against the documents themselves (see "Post-review source verification" below). Package/API
+claims never shared this caveat — they were verified by executing the installed packages.
 
 ## Findings
 

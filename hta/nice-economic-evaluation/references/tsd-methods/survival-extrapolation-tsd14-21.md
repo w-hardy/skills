@@ -6,7 +6,7 @@
 cure/relative-survival models, KM reconstruction and PSA sampling, see `survival-analysis-hta`.*
 TSD 14 (Latimer 2011/2013): https://sheffield.ac.uk/nice-dsu/tsds/survival-analysis — TSD 21
 (Rutherford et al. 2020): https://sheffield.ac.uk/nice-dsu/tsds/flexible-methods-survival-analysis
-— TSD 26 (Mar 2025): https://sheffield.ac.uk/nice-dsu/tsds/expert-elicitation-tsd — full list:
+— TSD 26 (Oakley, Ren et al., Mar 2025): https://sheffield.ac.uk/nice-dsu/tsds/expert-elicitation-tsd — full list:
 https://sheffield.ac.uk/nice-dsu/tsds/full-list (all accessed 2026-08-27)
 
 ## The TSD 14 process (what EAGs and committees expect to see)
