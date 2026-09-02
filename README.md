@@ -159,7 +159,7 @@ npx skills add posit-dev/skills --agent claude-code --global
 Add this repository as a plugin marketplace in Claude Code:
 
 ```
-/plugin marketplace add posit-dev/skills
+/plugin marketplace add w-hardy/skills
 ```
 
 Then browse and install the skill categories you need through the Claude Code UI.
@@ -169,18 +169,18 @@ Then browse and install the skill categories you need through the Claude Code UI
 Install specific skill categories directly:
 
 ```
-/plugin install posit-dev@posit-dev-skills
-/plugin install github@posit-dev-skills
-/plugin install open-source@posit-dev-skills
-/plugin install ggsql@posit-dev-skills
-/plugin install r-lib@posit-dev-skills
-/plugin install shiny@posit-dev-skills
-/plugin install quarto@posit-dev-skills
-/plugin install connect@posit-dev-skills
-/plugin install hta@posit-dev-skills
-/plugin install biostatistics@posit-dev-skills
-/plugin install ml-clinical@posit-dev-skills
-/plugin install superpowers@posit-dev-skills
+/plugin install posit-dev@w-hardy-skills
+/plugin install github@w-hardy-skills
+/plugin install open-source@w-hardy-skills
+/plugin install ggsql@w-hardy-skills
+/plugin install r-lib@w-hardy-skills
+/plugin install shiny@w-hardy-skills
+/plugin install quarto@w-hardy-skills
+/plugin install connect@w-hardy-skills
+/plugin install hta@w-hardy-skills
+/plugin install biostatistics@w-hardy-skills
+/plugin install ml-clinical@w-hardy-skills
+/plugin install superpowers@w-hardy-skills
 ```
 
 Each command installs all skills in that category.
