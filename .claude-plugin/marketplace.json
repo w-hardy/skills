@@ -1,11 +1,11 @@
 {
-  "name": "posit-dev-skills",
+  "name": "w-hardy-skills",
   "owner": {
-    "name": "Garrick Aden-Buie (Posit, PBC)",
-    "email": "garrick@posit.co"
+    "name": "w-hardy",
+    "email": "51114571+w-hardy@users.noreply.github.com"
   },
   "metadata": {
-    "description": "A collection of Claude Skills for Posit development teams, and open-source users including tools for tidyverse workflows.",
+    "description": "w-hardy's fork of posit-dev/skills: the upstream Posit collection (Shiny, Quarto, r-lib, Connect, GitHub, open-source) plus health technology assessment (hta), biostatistics, clinical machine learning (ml-clinical), and a vendored copy of obra/superpowers.",
     "version": "0.1.0"
   },
   "plugins": [

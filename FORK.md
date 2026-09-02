@@ -13,6 +13,7 @@ skills stay current, and is the source of truth for the personal ones.
 | `biostatistics/` | Applied biostatistics for clinical research in R (8 skills) |
 | `ml-clinical/` | Machine learning on tabular clinical data in R (4 skills) |
 | `superpowers/` | Vendored from [obra/superpowers](https://github.com/obra/superpowers), MIT (14 skills) |
+| `.claude/settings.json` | Registers this fork's marketplace and enables every plugin for sessions opened in this repo |
 | `sync-skills.sh` | Drift check between this repo and the local claude.ai sync |
 | `.github/workflows/sync-upstream.yml` | Weekly upstream merge PR |
 | `FORK.md` | This file |
@@ -33,6 +34,34 @@ fixes go upstream, and refreshes are a clean overwrite. See
 deliberately left out (notably the session-start hook), and the refresh procedure.
 It is excluded from `sync-skills.sh`, which only tracks the personally-authored
 categories.
+
+## Marketplace identity
+
+The manifest in `.claude-plugin/marketplace.json` declares `"name": "w-hardy-skills"`.
+Upstream's manifest is named `posit-dev-skills`; this fork renames it because Claude
+Code resolves plugin ids (`hta@w-hardy-skills`) against the manifest's own `name`, not
+against the key a consumer writes in `extraKnownMarketplaces`. A consumer that registers
+this fork under `w-hardy-skills` while the manifest still says `posit-dev-skills` fails
+silently: no plugin resolves and the session falls back to user-scope installs. The
+rename also stops the fork colliding with the real posit-dev/skills marketplace when
+both are registered. Everything else in the manifest — `owner`, `metadata.description`
+— identifies the fork and the families it adds; the `plugins` list is upstream's plus
+the local categories.
+
+Consumers register it like this (this repo's own `.claude/settings.json` is the
+reference copy, and enables every plugin so a session here sees the whole collection):
+
+```json
+{
+  "extraKnownMarketplaces": {
+    "w-hardy-skills": { "source": { "source": "github", "repo": "w-hardy/skills" } }
+  },
+  "enabledPlugins": { "hta@w-hardy-skills": true }
+}
+```
+
+Renaming the marketplace again breaks every consumer at once, so any future change to
+`name` has to land in each consumer's `.claude/settings.json` first.
 
 ## Staying current with upstream
 

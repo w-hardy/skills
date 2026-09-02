@@ -1,0 +1,24 @@
+{
+  "extraKnownMarketplaces": {
+    "w-hardy-skills": {
+      "source": {
+        "source": "github",
+        "repo": "w-hardy/skills"
+      }
+    }
+  },
+  "enabledPlugins": {
+    "posit-dev@w-hardy-skills": true,
+    "github@w-hardy-skills": true,
+    "open-source@w-hardy-skills": true,
+    "r-lib@w-hardy-skills": true,
+    "ggsql@w-hardy-skills": true,
+    "shiny@w-hardy-skills": true,
+    "quarto@w-hardy-skills": true,
+    "connect@w-hardy-skills": true,
+    "hta@w-hardy-skills": true,
+    "biostatistics@w-hardy-skills": true,
+    "ml-clinical@w-hardy-skills": true,
+    "superpowers@w-hardy-skills": true
+  }
+}
