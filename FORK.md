@@ -38,10 +38,10 @@ categories.
 ## Marketplace identity
 
 The manifest in `.claude-plugin/marketplace.json` declares `"name": "w-hardy-skills"`.
-Upstream's manifest is named `posit-dev-skills`; this fork renames it because Claude
-Code resolves plugin ids (`hta@w-hardy-skills`) against the manifest's own `name`, not
+Upstream's manifest carries Posit's own marketplace name; this fork renames it because
+Claude Code resolves plugin ids (`hta@w-hardy-skills`) against the manifest's own `name`, not
 against the key a consumer writes in `extraKnownMarketplaces`. A consumer that registers
-this fork under `w-hardy-skills` while the manifest still says `posit-dev-skills` fails
+this fork under `w-hardy-skills` while the manifest still carries the upstream name fails
 silently: no plugin resolves and the session falls back to user-scope installs. The
 rename also stops the fork colliding with the real posit-dev/skills marketplace when
 both are registered. Everything else in the manifest — `owner`, `metadata.description`
