@@ -17,6 +17,8 @@ skills stay current, and is the source of truth for the personal ones.
 | `.claude/settings.json` | Registers this fork's marketplace and enables every plugin for sessions opened in this repo |
 | `sync-skills.sh` | Drift check between this repo and the local claude.ai sync |
 | `.github/workflows/sync-upstream.yml` | Weekly upstream merge PR |
+| `.github/workflows/refresh-vendored-skills.yml` | Weekly refresh PR for the vendored families |
+| `.github/vendored-skills.json` | Manifest of vendored sources the refresh workflow reads |
 | `FORK.md` | This file |
 
 Everything else comes from upstream and is left untouched, so upstream merges
@@ -78,9 +80,23 @@ demand from the Actions tab. When `posit-dev/skills` has new commits it merges
 them into a `sync-upstream` branch and opens a PR; if the merge conflicts it
 opens an issue instead.
 
+`superpowers/` and `tidymodels/` use a different mechanism, on a separate
+weekly workflow: `posit-dev/skills` shares git history with this fork, so it
+can be kept current with a plain `git merge`, but the vendored families are
+verbatim copies of an upstream directory with no shared history, so there is
+nothing to merge. `.github/workflows/refresh-vendored-skills.yml` instead
+reads `.github/vendored-skills.json`, clones each listed source at its ref,
+and overwrites the vendored tree — opening a PR when that differs from what
+is committed. See [`superpowers/README.md`](./superpowers/README.md) and
+[`tidymodels/README.md`](./tidymodels/README.md) for the per-family details.
+
 **GitHub disables scheduled workflows on forks by default.** Enable Actions on
 this repository once (Actions tab → *I understand my workflows, go ahead and
-enable them*) or the schedule will never fire.
+enable them*) or the schedules will never fire. Both workflows also need the
+repository setting Settings → Actions → General → Workflow permissions →
+*Allow GitHub Actions to create and approve pull requests* enabled, or `gh pr
+create` fails; each accepts a `VENDOR_PR_TOKEN` secret (a fine-grained PAT) as
+a fallback if you'd rather not enable that setting.
 
 To merge upstream by hand:
 

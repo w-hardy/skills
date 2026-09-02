@@ -35,11 +35,23 @@ find_skill_root() {
 }
 
 changed_skills=()
+diff_ok=0
 if [ -n "$BASE_REF" ]; then
-  while IFS= read -r file; do
-    root=$(find_skill_root "$file") && changed_skills+=("$root")
-  done < <(git diff --name-only "origin/${BASE_REF}...HEAD" 2>/dev/null | grep -v '^$')
-  mapfile -t changed_skills < <(printf '%s\n' "${changed_skills[@]:-}" | sort -u | grep -v '^$')
+  if changed_files=$(git diff --name-only "origin/${BASE_REF}...HEAD" 2>/dev/null); then
+    diff_ok=1
+    while IFS= read -r file; do
+      root=$(find_skill_root "$file") && changed_skills+=("$root")
+    done < <(printf '%s\n' "$changed_files" | grep -v '^$')
+    mapfile -t changed_skills < <(printf '%s\n' "${changed_skills[@]:-}" | sort -u | grep -v '^$')
+  fi
+fi
+
+# A diff that worked but touched no skill directory (e.g. only .github/scripts/
+# or a category README) means there is nothing to validate; falling back to
+# every skill here would fail the PR on pre-existing findings it did not touch.
+if [ "$diff_ok" -eq 1 ] && [ "${#changed_skills[@]}" -eq 0 ]; then
+  echo "No skill directories changed since origin/${BASE_REF}; nothing to validate."
+  exit 0
 fi
 
 if [ "${#changed_skills[@]}" -eq 0 ]; then

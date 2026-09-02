@@ -44,6 +44,13 @@ They keep resolving here because the plugin registered in
 
 ## Refreshing from upstream
 
+This is automated weekly by `.github/workflows/refresh-vendored-skills.yml`, driven
+by `.github/vendored-skills.json`; that workflow updates the provenance table above.
+Adding or removing upstream skills still needs a manual edit to
+`.claude-plugin/marketplace.json` and the root `README.md` — the workflow's PR body
+flags when one is needed but does not make the edit itself. The manual recipe below
+is what that workflow runs, for testing or a one-off refresh:
+
 ```bash
 git clone --depth 1 https://github.com/obra/superpowers /tmp/superpowers
 rm -rf superpowers/*/                 # skill directories only; keeps LICENSE and this file

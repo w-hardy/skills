@@ -1,0 +1,29 @@
+{
+  "_comment": "Manifest for skill families vendored verbatim from an upstream repo (no shared git history, so the merge-based sync-upstream.yml workflow cannot refresh them). Each entry: name = short id used in logs/report; upstream = <owner>/<repo> to clone; ref = branch/tag to check out; subdir = path inside the upstream clone that holds the skills; dest = local directory that subdir overwrites; exclude = upstream paths (relative to subdir) never copied into dest; license = 'upstream:<path in upstream clone>' to copy that file to '<dest>/LICENSE' after the overwrite, or 'local' when dest/LICENSE is locally authored (upstream ships none) and must survive the overwrite untouched; version_from = a JSON file inside the upstream clone whose .version fills the README's 'Upstream version' row, or null when upstream has no version to report; readme = the category README whose provenance table gets updated in place; plugin = the .claude-plugin/marketplace.json plugin whose skills array is checked against the skill directories under dest (mismatches are reported, never auto-edited).",
+  "sources": [
+    {
+      "name": "superpowers",
+      "upstream": "obra/superpowers",
+      "ref": "main",
+      "subdir": "skills",
+      "dest": "superpowers",
+      "exclude": [],
+      "license": "upstream:LICENSE",
+      "version_from": ".claude-plugin/plugin.json",
+      "readme": "superpowers/README.md",
+      "plugin": "superpowers"
+    },
+    {
+      "name": "tidymodels",
+      "upstream": "tidymodels/skills",
+      "ref": "main",
+      "subdir": "users/tabular-data-ml",
+      "dest": "tidymodels/tabular-data-ml",
+      "exclude": ["evals"],
+      "license": "local",
+      "version_from": null,
+      "readme": "tidymodels/README.md",
+      "plugin": "tidymodels"
+    }
+  ]
+}

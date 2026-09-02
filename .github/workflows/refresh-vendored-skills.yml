@@ -1,0 +1,109 @@
+name: Refresh Vendored Skills
+
+# Keeps the vendored skill families (superpowers/, tidymodels/) current with
+# their upstreams.
+#
+# superpowers/ and tidymodels/ are verbatim copies of an upstream directory
+# pinned at a commit, with no shared git history with their upstreams, so the
+# merge-based sync-upstream.yml workflow cannot refresh them. Instead, this
+# workflow runs .github/scripts/refresh-vendored-skills.sh, which clones each
+# source listed in .github/vendored-skills.json at its ref and overwrites the
+# vendored tree (preserving LICENSE and the category README). When that
+# leaves a diff, it opens a pull request; when it doesn't, it's a no-op.
+#
+# Runs weekly (an hour after sync-upstream.yml, and on demand). When upstream
+# has new commits it opens a pull request against `refresh-vendored-skills`;
+# it never touches .claude-plugin/marketplace.json or README.md itself, so if
+# upstream added or removed a skill directory, the PR body flags it for a
+# manual edit.
+#
+# Note: GitHub disables scheduled workflows on forks by default. Enable Actions
+# on this repository (Actions tab -> "I understand my workflows, go ahead and
+# enable them") or the schedule below will never fire.
+
+on:
+  schedule:
+    - cron: "0 7 * * 1" # Mondays, 07:00 UTC (an hour after sync-upstream.yml)
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pull-requests: write
+  issues: write
+
+env:
+  REFRESH_BRANCH: refresh-vendored-skills
+
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Configure git
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+      - name: Verify rsync and jq are available
+        run: |
+          command -v rsync
+          command -v jq
+
+      - name: Run refresh script
+        run: |
+          REPORT="$RUNNER_TEMP/report.md" bash .github/scripts/refresh-vendored-skills.sh
+
+      - name: Check for changes
+        id: check
+        run: |
+          if [ -z "$(git status --porcelain)" ]; then
+            echo "changed=false" >> "$GITHUB_OUTPUT"
+            echo "Vendored skills are up to date with upstream"
+          else
+            echo "changed=true" >> "$GITHUB_OUTPUT"
+            git status --porcelain
+          fi
+
+      - name: Push and open pull request
+        if: steps.check.outputs.changed == 'true'
+        # GH_REPO pins gh to this fork: in a fork checkout gh otherwise resolves
+        # its default repository to the parent (posit-dev/skills), so pr list
+        # finds nothing and pr create fails with "Resource not accessible by
+        # integration". VENDOR_PR_TOKEN (a fine-grained PAT) is an optional
+        # fallback if "Allow GitHub Actions to create and approve pull requests"
+        # is ever turned off for this repository.
+        env:
+          GH_REPO: ${{ github.repository }}
+          GH_TOKEN: ${{ secrets.VENDOR_PR_TOKEN || github.token }}
+        run: |
+          git checkout -B "$REFRESH_BRANCH"
+          git add -A
+          git commit -m "chore: refresh vendored skills from upstream"
+          git push --force-with-lease -u origin "$REFRESH_BRANCH"
+
+          body_file="$RUNNER_TEMP/pr-body.md"
+          {
+            echo "Automated refresh of the vendored skill families from their upstream sources,"
+            echo "driven by [\`.github/vendored-skills.json\`](https://github.com/${{ github.repository }}/blob/${REFRESH_BRANCH}/.github/vendored-skills.json)."
+            echo
+            echo "marketplace.json and README.md are deliberately **not** auto-edited by this"
+            echo "workflow — any skill added or removed upstream is flagged below instead and"
+            echo "needs a manual edit."
+            echo
+            cat "$RUNNER_TEMP/report.md"
+          } > "$body_file"
+
+          existing=$(gh pr list --head "$REFRESH_BRANCH" --state open --json number --jq '.[0].number')
+          if [ -n "$existing" ]; then
+            gh pr edit "$existing" --body-file "$body_file"
+            echo "Updated existing PR #$existing"
+          else
+            gh pr create \
+              --base "${{ github.ref_name }}" \
+              --head "$REFRESH_BRANCH" \
+              --title "chore: refresh vendored skills from upstream" \
+              --body-file "$body_file"
+          fi

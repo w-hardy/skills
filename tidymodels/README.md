@@ -34,6 +34,13 @@ what is carried here:
 
 ## Refreshing from upstream
 
+This is automated weekly by `.github/workflows/refresh-vendored-skills.yml`, driven
+by `.github/vendored-skills.json`; that workflow updates the provenance table above.
+Adding or removing upstream skills still needs a manual edit to
+`.claude-plugin/marketplace.json` and the root `README.md` — the workflow's PR body
+flags when one is needed but does not make the edit itself. The manual recipe below
+is what that workflow runs, for testing or a one-off refresh:
+
 ```bash
 git clone https://github.com/tidymodels/skills /tmp/tidymodels-skills
 rm -rf tidymodels/tabular-data-ml/SKILL.md tidymodels/tabular-data-ml/references
