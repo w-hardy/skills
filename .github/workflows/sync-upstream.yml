@@ -70,10 +70,8 @@ jobs:
 
       - name: Push and open pull request
         if: steps.check.outputs.behind != '0' && steps.merge.outputs.conflict == 'false'
-        # Falls back to VENDOR_PR_TOKEN (a fine-grained PAT) if "Allow GitHub
-        # Actions to create and approve pull requests" isn't enabled for this repo.
         env:
-          GH_TOKEN: ${{ secrets.VENDOR_PR_TOKEN || github.token }}
+          GH_TOKEN: ${{ github.token }}
         run: |
           git push --force-with-lease -u origin "$SYNC_BRANCH"
           existing=$(gh pr list --head "$SYNC_BRANCH" --state open --json number --jq '.[0].number')
@@ -89,9 +87,8 @@ jobs:
 
       - name: Open issue on conflict
         if: steps.check.outputs.behind != '0' && steps.merge.outputs.conflict == 'true'
-        # Same VENDOR_PR_TOKEN fallback as above.
         env:
-          GH_TOKEN: ${{ secrets.VENDOR_PR_TOKEN || github.token }}
+          GH_TOKEN: ${{ github.token }}
         run: |
           files=$(cat conflicts.txt)
           if gh issue list --state open --search "Upstream sync conflict in:title" --json number --jq '.[0].number' | grep -q .; then

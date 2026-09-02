@@ -69,14 +69,14 @@ jobs:
 
       - name: Push and open pull request
         if: steps.check.outputs.changed == 'true'
-        # gh pr create fails with "Resource not accessible by integration
-        # (createPullRequest)" until the repository setting Settings ->
-        # Actions -> General -> Workflow permissions -> "Allow GitHub Actions
-        # to create and approve pull requests" is enabled. Until then (or as
-        # a permanent alternative), a fine-grained PAT with contents + pull
-        # requests write access, stored as the VENDOR_PR_TOKEN repo secret,
-        # is used instead.
+        # GH_REPO pins gh to this fork: in a fork checkout gh otherwise resolves
+        # its default repository to the parent (posit-dev/skills), so pr list
+        # finds nothing and pr create fails with "Resource not accessible by
+        # integration". VENDOR_PR_TOKEN (a fine-grained PAT) is an optional
+        # fallback if "Allow GitHub Actions to create and approve pull requests"
+        # is ever turned off for this repository.
         env:
+          GH_REPO: ${{ github.repository }}
           GH_TOKEN: ${{ secrets.VENDOR_PR_TOKEN || github.token }}
         run: |
           git checkout -B "$REFRESH_BRANCH"
