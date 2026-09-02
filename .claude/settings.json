@@ -19,6 +19,7 @@
     "hta@w-hardy-skills": true,
     "biostatistics@w-hardy-skills": true,
     "ml-clinical@w-hardy-skills": true,
-    "superpowers@w-hardy-skills": true
+    "superpowers@w-hardy-skills": true,
+    "tidymodels@w-hardy-skills": true
   }
 }
