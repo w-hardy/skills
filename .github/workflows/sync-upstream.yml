@@ -70,8 +70,16 @@ jobs:
 
       - name: Push and open pull request
         if: steps.check.outputs.behind != '0' && steps.merge.outputs.conflict == 'false'
+        # GH_REPO pins gh to this fork. Without it, gh resolves the default
+        # repository of a fork checkout to the *parent* (posit-dev/skills), so
+        # `gh pr list` finds nothing here and `gh pr create` tries to open the
+        # PR upstream, where the token has no rights ("Resource not accessible
+        # by integration"). VENDOR_PR_TOKEN (a fine-grained PAT) is an optional
+        # fallback if "Allow GitHub Actions to create and approve pull requests"
+        # is ever turned off for this repository.
         env:
-          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+          GH_TOKEN: ${{ secrets.VENDOR_PR_TOKEN || github.token }}
         run: |
           git push --force-with-lease -u origin "$SYNC_BRANCH"
           existing=$(gh pr list --head "$SYNC_BRANCH" --state open --json number --jq '.[0].number')
@@ -87,8 +95,16 @@ jobs:
 
       - name: Open issue on conflict
         if: steps.check.outputs.behind != '0' && steps.merge.outputs.conflict == 'true'
+        # GH_REPO pins gh to this fork. Without it, gh resolves the default
+        # repository of a fork checkout to the *parent* (posit-dev/skills), so
+        # `gh pr list` finds nothing here and `gh pr create` tries to open the
+        # PR upstream, where the token has no rights ("Resource not accessible
+        # by integration"). VENDOR_PR_TOKEN (a fine-grained PAT) is an optional
+        # fallback if "Allow GitHub Actions to create and approve pull requests"
+        # is ever turned off for this repository.
         env:
-          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+          GH_TOKEN: ${{ secrets.VENDOR_PR_TOKEN || github.token }}
         run: |
           files=$(cat conflicts.txt)
           if gh issue list --state open --search "Upstream sync conflict in:title" --json number --jq '.[0].number' | grep -q .; then
