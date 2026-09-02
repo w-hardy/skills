@@ -63,11 +63,14 @@ for skill in "${changed_skills[@]}"; do
     continue
   fi
 
-  # superpowers/ is vendored verbatim from obra/superpowers and is never edited
-  # here, so validator findings on it are not actionable. Its skills also link to
-  # each other with relative paths (they ship as one plugin), which the validator
-  # reports as errors because it checks each skill directory in isolation.
-  if [[ "$skill" == superpowers/* ]]; then
+  # superpowers/ and tidymodels/ are vendored verbatim from obra/superpowers and
+  # tidymodels/skills and are never edited here, so validator findings on them
+  # are not actionable. superpowers skills link to each other with relative
+  # paths (they ship as one plugin), which the validator reports as errors
+  # because it checks each skill directory in isolation; tidymodels' upstream
+  # frontmatter declares `name: tidymodels` inside a `tabular-data-ml/`
+  # directory, which the validator also reports as an error.
+  if [[ "$skill" == superpowers/* || "$skill" == tidymodels/* ]]; then
     echo "Skipping vendored skill: $skill"
     continue
   fi
