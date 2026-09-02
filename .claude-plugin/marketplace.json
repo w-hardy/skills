@@ -171,6 +171,15 @@
         "./superpowers/finishing-a-development-branch",
         "./superpowers/writing-skills"
       ]
+    },
+    {
+      "name": "tidymodels",
+      "description": "Vendored from tidymodels/skills (MIT, tidymodels authors) — the tabular-data-ml user skill: supervised modelling on tabular data with the tidymodels framework, covering data spending, resampling, feature engineering, tuning, and evaluation",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./tidymodels/tabular-data-ml"
+      ]
     }
   ]
 }

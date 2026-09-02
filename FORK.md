@@ -13,6 +13,7 @@ skills stay current, and is the source of truth for the personal ones.
 | `biostatistics/` | Applied biostatistics for clinical research in R (8 skills) |
 | `ml-clinical/` | Machine learning on tabular clinical data in R (4 skills) |
 | `superpowers/` | Vendored from [obra/superpowers](https://github.com/obra/superpowers), MIT (14 skills) |
+| `tidymodels/` | Vendored from [tidymodels/skills](https://github.com/tidymodels/skills), MIT (1 skill) |
 | `.claude/settings.json` | Registers this fork's marketplace and enables every plugin for sessions opened in this repo |
 | `sync-skills.sh` | Drift check between this repo and the local claude.ai sync |
 | `.github/workflows/sync-upstream.yml` | Weekly upstream merge PR |
@@ -34,6 +35,13 @@ fixes go upstream, and refreshes are a clean overwrite. See
 deliberately left out (notably the session-start hook), and the refresh procedure.
 It is excluded from `sync-skills.sh`, which only tracks the personally-authored
 categories.
+
+`tidymodels/` is vendored the same way: a verbatim copy of the `users/tabular-data-ml`
+skill from [tidymodels/skills](https://github.com/tidymodels/skills) at a pinned commit.
+Its `LICENSE` is locally authored, not upstream's, because upstream's README claims MIT
+but ships no LICENSE file at the pinned commit. See
+[`tidymodels/README.md`](./tidymodels/README.md) for the pinned commit and the manual
+refresh recipe.
 
 ## Marketplace identity
 

@@ -132,6 +132,12 @@ A development methodology for coding agents, vendored verbatim from [obra/superp
 - **[finishing-a-development-branch](./superpowers/finishing-a-development-branch/)** - Decide how to integrate work once implementation is complete and tests pass
 - **[writing-skills](./superpowers/writing-skills/)** - Create, edit, and verify skills before deployment, applying TDD to documentation
 
+### tidymodels
+
+Vendored verbatim from [tidymodels/skills](https://github.com/tidymodels/skills) (MIT). See [tidymodels/README.md](./tidymodels/) for the pinned upstream commit and what is deliberately left out.
+
+- **[tabular-data-ml](./tidymodels/tabular-data-ml/)** - Build machine learning models using tidymodels for tabular data using proper data spending, resampling, and validation practices
+
 ## Installation
 
 ### Using `npx skills add` (Any Agent)
@@ -181,6 +187,7 @@ Install specific skill categories directly:
 /plugin install biostatistics@w-hardy-skills
 /plugin install ml-clinical@w-hardy-skills
 /plugin install superpowers@w-hardy-skills
+/plugin install tidymodels@w-hardy-skills
 ```
 
 Each command installs all skills in that category.
@@ -249,6 +256,7 @@ This repository organizes skills into categories to make it easier to find and i
 | **biostatistics** | Applied biostatistics for clinical research in R          |
 | **ml-clinical** | Machine learning on tabular clinical data in R              |
 | **superpowers** | Agent development methodology vendored from [obra/superpowers](https://github.com/obra/superpowers) (MIT) |
+| **tidymodels** | Supervised machine learning on tabular data with the tidymodels framework, vendored from [tidymodels/skills](https://github.com/tidymodels/skills) (MIT) |
 
 <!-- Future category ideas
 
@@ -268,6 +276,9 @@ This repository is licensed under the MIT License. See [LICENSE](./LICENSE) for 
 The `superpowers/` directory is vendored from [obra/superpowers](https://github.com/obra/superpowers)
 and is licensed under its own MIT License, Copyright (c) 2025 Jesse Vincent. See
 [superpowers/LICENSE](./superpowers/LICENSE).
+
+The `tidymodels/` directory is vendored from [tidymodels/skills](https://github.com/tidymodels/skills)
+under the MIT License. See [tidymodels/tabular-data-ml/LICENSE](./tidymodels/tabular-data-ml/LICENSE).
 
 ## Resources
 
