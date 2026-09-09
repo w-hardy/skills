@@ -158,9 +158,10 @@ spends the budget on code that may feed nothing.
 3. **Do the families match the histograms**, including any spike at zero cost or at the maximum
    QALY, and is treatment in the boundary component's formula? (`structural-values.md`.)
 4. **Are the arm means standardised**, or read off the coefficients under a non-identity link — and
-   with a group-level term, is `re_formula` the one the stated estimand needs? This is the most
-   consequential family of defects that looks like working code.
-   (`population-average-summaries.md`.)
+   with a group-level term, is `re_formula` the one the stated estimand needs? On an MCF cost model,
+   is the effect integrated over its arm-`t` distribution, or held at each patient's observed value
+   while the arm is flipped? This is the most consequential family of defects that looks like working
+   code. (`population-average-summaries.md`.)
 5. **Is missingness declared and handled** — proportions by arm, mechanism stated, `nobs()` checked
    against the randomised sample, an MNAR sensitivity analysis with a tipping point?
    (`missing-economic-outcomes.md`.)
@@ -191,11 +192,12 @@ skill will happily fit a model to cost data. It will not tell you:
 
 - that a QALY is an **area under a utility curve**, not a measurement, and that computing it wrongly
   is the most common error in the whole analysis;
-- that **baseline utility is imbalanced by chance in most trials** and that not adjusting for it
-  biases the incremental QALY estimate;
+- that **baseline utility is the strongest prognostic covariate available** and that adjusting for
+  it is what buys a usable interval — and, under a non-linear link, changes the estimand;
 - that the deliverable is the posterior of an **arm-level mean**, not individual predictions;
 - that costs and effects must be modelled **together**;
-- that a QALY of exactly 1 is usually a **structural** value, not a draw from a continuous density;
+- that a spike of QALYs at exactly 1 may be a **structural** value rather than a draw from a
+  continuous density, and how to tell that apart from a measurement artefact;
 - that the analysis is only finished when the draws reach the decision model **still paired**.
 
 Those are health-economics facts, not regression facts. That is this skill's content. The regression

@@ -22,6 +22,15 @@ density near it. Two are endemic in trial-based economic data:
 Both are common enough to matter. In the MenSS trial the spike at the maximum is visible in both
 arms, and it is a substantial fraction of the sample.
 
+**A value on the boundary is not by itself a structural value.** The source's criterion is *excess*
+frequency, and a mass at 1 has innocent sources: rounding, a capped or censored follow-up, and the
+measurement convention itself — an EQ-5D index takes only the values its value set defines, and 1 is
+the value of state 11111, with the next value down 0.883 on the UK 3L tariff and 0.950 on the
+England 5L value set. A continuous distribution can also simply pile up near a bound. The diagnostic
+is the gap: compare the count at the boundary with what a fitted continuous model puts in an equally
+wide interval just below it, and check that the QALY spike really is full health at *every* visit
+rather than one carried-forward or imputed utility.
+
 ## Why the obvious fixes fail
 
 **Fit an unconstrained Normal.** The model has support on the whole real line, so posterior
@@ -47,11 +56,17 @@ reported quantity". With complete data and an identity link the answer can legit
 **Shift the spike away and use a bounded family.** Subtract a small `eps` (0.01, say) from every
 QALY so nothing sits exactly at 1, then fit a Beta. Note this only works at all when the observed
 minimum is comfortably above `eps` — in the source's data the range was [0.61, 1], so nothing was
-pushed below 0. Now the support is right, but two problems remain. The shift biases every patient's
-outcome downward by `eps` — small, but systematic, and it does not cancel in the increment if the
-arms have different spike sizes. More importantly it **models the structural subgroup as though they
-were ordinary patients who happened to score high**, which is exactly the claim the spike
-contradicts. It is a workaround, not a model.
+pushed below 0. Now the support is right, but two problems remain. Be exact about the first,
+because the obvious complaint is wrong: a shift applied to *every* observation cancels out of a
+difference in raw arm means — `(ybar_1 − eps) − (ybar_0 − eps) = ybar_1 − ybar_0` — whatever the
+arms' spike sizes. It is moving only the observations *at* the boundary that fails to cancel,
+displacing the raw increment by `−eps × (p_1 − p_0)` for spike fractions `p_t`. What the common
+shift costs is sensitivity rather than bias: the Beta likelihood is non-linear in the data, so the
+*model-implied* increment is not invariant to `eps` even though the raw difference is. That is the
+source's own objection — the device is "potentially sensitive to the choice of the rescaling
+factor" — so refit at two or three values of `eps` and report the spread. More importantly it
+**models the structural subgroup as though they were ordinary patients who happened to score
+high**, which is exactly the claim the spike contradicts. It is a workaround, not a model.
 
 ## The hurdle / mixture model
 
@@ -96,7 +111,7 @@ brms has these families natively; there is no need to hand-roll the mixture:
 f_e <- bf(
   qaly_01 ~ arm + u0_c,      # the Beta part, for the non-structural
   zoi     ~ arm,             # P(at a boundary at all)
-  coi     ~ arm,             # P(that boundary is 1 | at a boundary)
+  coi     = 1,               # P(that boundary is 1 | at a boundary): fixed, no structural zeros
   family  = zero_one_inflated_beta()
 )
 f_c <- bf(
@@ -125,10 +140,21 @@ cost nothing", which is not a thing.
 ## Getting the arm mean out
 
 Do not read the arm mean off the continuous component. `posterior_epred()` on a hurdle or
-zero-one-inflated brms fit returns the **overall** expectation, mixture included — which is exactly
-`mu_e[t]` above — so the standardisation recipe in `population-average-summaries.md` works
-unchanged. That is the main practical reason to use the built-in families rather than fitting the
-two components as separate models and combining them by hand.
+zero-one-inflated brms fit returns the **overall** expectation, mixture included — `(1 − hu) · mu`
+for `hurdle_gamma`, `zoi · coi + (1 − zoi) · mu` for `zero_one_inflated_beta` (brms 2.23.0) — so the
+standardisation recipe in `population-average-summaries.md` works unchanged **for the effects
+model**. That is the main practical reason to use the built-in families rather than fitting the two
+components as separate models and combining them by hand. The cost model above is a different case:
+it carries `qaly_c` on its right-hand side, so it needs the arm-`t` integration from that file's
+"When the effect is on the cost equation's right-hand side" section, with the hurdle probability
+carried as the `(1 − hu)` factor that section describes.
+
+Check the correspondence with `mu_e[t]` rather than assuming it. `gamma_bar[t]` is the probability
+of a structural **one**, which is `zoi × coi`, not `zoi`, and the two-component formula is the
+model's own mean only when there is no mass at the other boundary — which is why `coi` is fixed
+above. Leave `coi` free on data with no zeros and its posterior settles just below 1, putting
+phantom mass at zero and pulling both arm means down. Where there really are spikes at both ends,
+`mu_e[t]` as written does not apply and the mean is `zoi · coi + (1 − zoi) · mu`.
 
 Check it: the posterior mean effect should sit between the non-structural mean and the boundary
 value, and the fitted proportion at the boundary should match the observed spike. A posterior

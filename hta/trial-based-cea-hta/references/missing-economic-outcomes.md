@@ -59,9 +59,10 @@ fit <- brm(f_e + f_c + set_rescor(FALSE), data = trial, prior = priors, seed = 1
 
 Note `mi(qaly)` on the right-hand side of the cost equation: it tells brms to use the *modelled*
 (partly imputed) effect, not the observed column, so the conditional cost model is defined for
-patients whose effect is missing. Using the raw `qaly` there would silently drop them. See
-`brms-modelling`'s `references/special-terms.md` for the mechanics and for the `mi()` vs
-`brm_multiple()` choice.
+patients whose effect is missing. A raw `qaly` there — or a centred column derived from it, which
+inherits the same NAs — is a missing *predictor*, and brms drops those rows with a warning even
+though the response carries `mi()` (`joint-cost-effect-models.md`). See `brms-modelling`'s
+`references/special-terms.md` for the mechanics and for the `mi()` vs `brm_multiple()` choice.
 
 ## When to use multiple imputation instead
 

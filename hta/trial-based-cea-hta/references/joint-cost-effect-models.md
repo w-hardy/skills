@@ -27,10 +27,13 @@ fit <- brm(f_e + f_c + set_rescor(TRUE), data = trial,
            prior = priors, chains = 4, seed = 1234)
 ```
 
-`set_rescor(TRUE)` estimates the residual correlation directly (`rescor__qaly__cost_k` in the
-draws). This is the most transparent specification when both outcomes are Gaussian — and it is the
-one to prefer in brms, because brms supports it natively. **It is only available for `gaussian()`
-and `student()` families** (verified in brms 2.23.0). The book makes the same point from the other
+`set_rescor(TRUE)` estimates the residual correlation directly (`rescor__qaly__costk` in the draws
+— brms strips non-alphanumeric characters from response names when it forms parameter names, so
+`cost_k` becomes the `costk` prefix here and in `b_costk_*` too). This is the most transparent
+specification when both outcomes are Gaussian — and it is the one to prefer in brms, because brms
+supports it natively. **It is only available when every submodel shares one
+family, and that family is `gaussian()` or `student()`** — a gaussian/student pair is refused too
+(verified in brms 2.23.0). The book makes the same point from the other
 direction: under joint Normality the MCF model *is* the seemingly-unrelated-regression model
 (Zellner 1962; Willan and Briggs 2006), because every marginal and conditional of a multivariate
 Normal stays Normal.
@@ -78,15 +81,19 @@ MCF earns its place when the outcomes are **not** Gaussian, because then `set_re
 unavailable and the conditional route links them inside a single model without one. That is the
 usual case for real economic data, so MCF is the workhorse. It carries two costs. One is a subtlety
 about population averages — see below and `population-average-summaries.md`. The other is missing
-data: putting the **observed** effect on the right-hand side of the cost equation leaves the cost
-model undefined for every patient whose effect is missing, and brms drops those rows from *both*
-submodels with only a warning ("Rows containing NAs were excluded from the model"), so the joint
-model silently becomes a complete-case analysis that throws away observed costs. Check `nobs(fit)`
-against the randomised sample. The fix is a pair: `qaly | mi()` on the effect submodel and
-`mi(qaly)` on the cost equation's right-hand side, so the cost model conditions on the modelled
-(partly imputed) effect. `mi(qaly)` without the addition term errors ("Response models of variables
-in 'mi' terms require specification of the addition argument 'mi'"); with both, every randomised row
-survives (verified on brms 2.23.0). See `missing-economic-outcomes.md`.
+data, in two layers. A missing **response** drops the row from *every* submodel of any brms
+multivariate model, with only a warning ("Rows containing NAs were excluded from the model"):
+20 rows with 5 missing effects give `N = 15` whether or not the effect is on the cost equation's
+right-hand side, and under `set_rescor(TRUE)` as well as `FALSE` (verified on brms 2.23.0). That
+complete-case collapse is general, not MCF's doing, and a bivariate model is not immune to it. What
+*is* MCF-specific is the second layer: the cost equation's predictor is the effect, so a centred
+column computed as a data step is `NA` for exactly the patients whose effect is missing, and brms
+drops rows on a missing predictor too — `qaly | mi()` on its own still left `N = 48` of 60 there. So
+the fix is a pair: `qaly | mi()` on the effect submodel and `mi(qaly)`, not the derived column, on
+the cost equation's right-hand side, so the cost model conditions on the modelled (partly imputed)
+effect. `mi(qaly)` without the addition term errors ("Response models of variables in 'mi' terms
+require specification of the addition argument 'mi'"); with both, every randomised row survives.
+Check `nobs(fit)` against the randomised sample either way. See `missing-economic-outcomes.md`.
 
 > **A slip in the source, worth knowing before you copy it.** In §5.2.2 the JAGS model computes
 > these
@@ -99,7 +106,8 @@ survives (verified on brms 2.23.0). See `missing-economic-outcomes.md`.
 > coefficient — and treat a sign flip between two routes to the same quantity as a bug signal.
 
 **Shared or correlated random effect.** Neither route above links two *different* families
-symmetrically: `set_rescor()` is Gaussian-only, and MCF makes one outcome a predictor of the other.
+symmetrically: `set_rescor()` needs one shared family, and MCF makes one outcome a predictor of the
+other.
 The third construction puts a latent term in both linear predictors and lets the two be correlated.
 
 ```r
@@ -180,10 +188,12 @@ for `Gamma(link = "log")`, where `alpha_i` is the shape for patient `i`'s arm, a
 that arm's SD. A **common** dispersion is then a constant factor on the whole equation and drops
 straight out, in either family, so it does not bias the arm means. Against an arm-specific fit the
 means move only through the changed weighting, and only once the mean model carries a covariate
-beyond arm (baseline utility, say). Under a correctly specified mean model both fits are consistent
-and that shift is small — under a couple of percent of the standardised increment in a check at a
-16:1 precision ratio with n = 400, Gamma and Gaussian alike; under a misspecified mean model they
-converge to different answers, again in either family.
+beyond arm (baseline utility, say). Under a correctly specified mean model both fits are consistent,
+so the difference between them is sampling variability rather than bias: over 300 replicates at a
+16:1 precision ratio with n = 400 the median shift was under 1% of the standardised increment but the
+upper decile was several times that, in both families, and both shrank as `n` grew. Quote it as a
+spread, not as a bound. Under a misspecified mean model the two converge to different answers, again
+in either family.
 
 What a common dispersion does get wrong, in either family, is the dispersion parameters and
 everything downstream of them: the posterior SD of the incremental cost, the width of the CE-plane
@@ -218,8 +228,9 @@ effect**, which is not the same thing as the arm's average cost, because `E[exp(
 The gap is a Jensen term and it grows with `beta2^2 * var(e)`.
 
 Under an identity link the two coincide, which is why the Normal/Normal models can read means off
-the coefficients directly. Under a log link they do not. Standardise instead — average the
-conditional mean over the observed distribution of effects within the arm — as set out in
+the coefficients directly. Under a log link they do not. Standardise instead — integrate the
+conditional mean over the effect distribution the arm *implies*, which is not the same as averaging
+over the effects patients were observed to have — as set out in
 `population-average-summaries.md`. This is the step most likely to be skipped, and it biases the
 incremental cost.
 

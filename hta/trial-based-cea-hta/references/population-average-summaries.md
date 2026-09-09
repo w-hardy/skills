@@ -36,16 +36,21 @@ then average — once per posterior draw. This preserves the posterior; nothing 
 library(tidybayes)
 
 arm_means <- trial |>
-  select(id, u0_c, qaly_c) |>              # every covariate in the model
+  select(id, u0_c) |>                      # every covariate in the submodel — all baseline
   tidyr::expand_grid(arm = c(0, 1)) |>     # counterfactually set the arm
-  add_epred_draws(fit, resp = "costk") |>  # conditional mean per patient per draw
+  add_epred_draws(fit, resp = "qaly") |>   # conditional mean per patient per draw
   group_by(.draw, arm) |>
   summarise(mu = mean(.epred), .groups = "drop") |>   # average over patients
   tidyr::pivot_wider(names_from = arm, values_from = mu)
 ```
 
+Every covariate carried into that frame must be **measured before randomisation**. A submodel with a
+post-randomisation predictor — the effect, on an MCF cost equation — cannot be standardised this way:
+the counterfactual arm and the retained value then belong to different worlds. That case has its own
+section below, and it is the one most often got wrong.
+
 `add_epred_draws()` returns the *expectation* of the outcome (`posterior_epred()` under the hood),
-which is what a mean cost needs. Three neighbouring functions are not interchangeable:
+which is what a mean cost or effect needs. Three neighbouring functions are not interchangeable:
 
 - `posterior_epred()` / `add_epred_draws()` — the conditional **mean**. This is the one you want.
   One exception bites in economic data: `cens()` and `trunc()` change the *likelihood* but not the
@@ -121,14 +126,124 @@ The source uses it that way, on the effects equation, and its results duly match
 
 **The place it is actually needed in that same model is the cost equation**, whose log link makes
 `mu.c[t] = exp(beta0 + beta1·arm)` the conditional mean cost at the arm-average effect rather than
-the arm's mean cost. Standardise the cost side.
+the arm's mean cost. The cost side needs both the covariate average and an integral over the arm's
+effect distribution — see the next section.
 
 Note also what the predictive route as coded does *not* fix: it draws `e*` at `mustar.e`, the fitted
 mean at centred baseline utility zero, so it marginalises over the outcome distribution but not over
 the covariate distribution. Under a non-identity link you need both — draw over the observed
-covariate values as well, as in the standardisation recipe above. The source gives the discrete-
-covariate case explicitly (Eq 5.9): average `g^-1(.)` over the covariate's levels weighted by their
-population frequencies, since centring only marginalises *continuous* covariates automatically.
+covariate values as well, as in the standardisation recipe above. What forces that is the link, not
+the covariate's type: centring delivers the population average for a binary and a continuous
+covariate alike under an identity link, and for neither under a log one. The source gives the
+discrete case explicitly (Eq 5.9) — average `g^-1(.)` over the covariate's levels weighted by their
+population frequencies — which is a convenient finite sum, not something centring achieved.
+
+## When the effect is on the cost equation's right-hand side
+
+An MCF cost model (`joint-cost-effect-models.md`) carries the **effect** as a predictor, and the
+effect is post-randomisation. The estimand is
+
+```
+mu_c(t) = E_X[ E_{e | T=t, X} { E[c | e, T=t, X] } ]
+```
+
+— the cost mean integrated over the effect distribution **the simulated arm implies**, then averaged
+over the covariates. Setting `arm = t` in `newdata` while leaving each patient's observed `qaly_c` in
+place does not do that: it crosses a counterfactual arm with a factual effect, so the cost mean is
+averaged over the allocation-weighted mixture of *both* arms' effect distributions — the same mixture
+for every `t`. The arm means then differ only by `exp(beta1)`, and the reported mean cost is averaged
+over a different effect distribution from the reported mean effect.
+
+That mixture equals each arm's own law only when the centred effect is identically distributed in
+both arms — common effect dispersion, no arm-by-covariate term, effect centred within arm — and under
+an identity-link cost model linear in the effect it does not matter at all. The operative condition
+is that `ebar` be **each arm's own** mean: centring on the pooled mean instead leaves the treatment
+shift in the term, and measured at the true parameters that is as wrong as not centring at all —
++52% either way, against +0.1% for within-arm centring. Those are the source's Normal/Normal
+conditions, which is why the
+error stays hidden there. It bites under what this skill recommends elsewhere: arm-specific
+dispersion, an arm-by-baseline interaction, a non-Normal effect family, or `mi(qaly)`, which puts the
+**uncentred** effect on the right-hand side. In a Gamma-log check with `sigma_e` of 0.10 and 0.20 the
+incremental cost came out 6% low; with the uncentred effect, 53% high.
+
+**Closed form**, when the effect submodel is Gaussian and the effect enters the cost linear predictor
+linearly. The inner integral is then the Normal moment generating function, so nothing is simulated:
+
+```r
+ebar    <- tapply(trial$qaly, trial$arm, mean)   # one centring constant per arm, named "0"/"1"
+b2      <- as_draws_df(fit)$b_costk_qaly_c       # length S, recycles down an S x N matrix
+mu_cost <- matrix(NA_real_, brms::ndraws(fit), 2)
+
+for (a in c(0, 1)) {
+  nd  <- transform(trial, arm = a, qaly_c = 0)               # effect term at a finite reference
+  m   <- posterior_epred(fit, newdata = nd, resp = "qaly")   # S x N: E[e | a, X_i]
+  s   <- posterior_epred(fit, newdata = nd, resp = "qaly", dpar = "sigma")  # S x N: sd(e | a, X_i)
+  eta <- posterior_linpred(fit, newdata = nd, resp = "costk")               # S x N, log scale
+  mu_cost[, a + 1] <- rowMeans(exp(eta + b2 * (m - ebar[[as.character(a)]]) + 0.5 * b2^2 * s^2))
+}
+```
+
+Subtract **arm `a`'s own** centring constant, not the one belonging to the patient's observed arm,
+and look it up by name: `ebar` is a named length-2 vector, so `ebar[a]` with the 0/1 arm code is a
+silent indexing bug (`ebar[0]` is `numeric(0)`; `ebar[1]` is arm 0's constant). `dpar = "sigma"`
+returns the effect SD on the response scale for each row, so a distributional `sigma ~ arm` is
+handled. The exponentiated variance term does not cancel out of the increment even when dispersion
+is common — it is a multiplier on both arm means — so dropping `0.5 * b2^2 * s^2` and plugging the
+mean effect into the exponent is a *separate* error, the Jensen one, worth about 1.6% in the check
+above with a common dispersion and 6.7% with an arm-specific one.
+
+**Nested Monte Carlo**, when the effect family is not Gaussian and you do not want to do the
+integral. Check first whether it is elementary: a Gamma effect has one too, since
+`E[exp(b·e)] = (1 − b/rate)^(−shape)` for `b < rate`, and Gamma is the family this skill reaches for
+on a flipped QALY. That closed form also exposes something the simulation hides — for `b ≥ rate` the
+marginal mean cost is **infinite**, and nested Monte Carlo returns a plausible finite number anyway
+(at `b/rate = 1.125`, truth `Inf` against a simulated 1.6e7). Raising `R` will not reveal it,
+because the estimator's own variance is infinite there; only the algebra will. For a Beta or
+`zero_one_inflated_beta` effect the integral is not elementary, but it is one-dimensional, so
+`integrate()` over the effect density is exact to tolerance and carries no inner Monte Carlo noise.
+
+Where you do simulate, draw the effect from its arm-`a` predictive distribution and push each draw
+through the cost mean:
+
+```r
+R  <- 200                                                    # inner draws per patient
+i  <- rep(seq_len(nrow(nd)), R)                              # (1..N, 1..N, ...) — not `each`
+es <- posterior_predict(fit, newdata = nd[i, ], resp = "qaly")
+mu_cost[, a + 1] <- rowMeans(exp(eta[, i] + b2 * (es - ebar[[as.character(a)]])))
+```
+
+That goes inside the same `for (a in ...)` loop and reuses its `nd`, `eta` and `b2`. The `rep()`
+without `each` is load-bearing: it makes column `j` of `es` the effect drawn for patient `i[j]` at
+the same posterior draw as `eta[, i][, j]`, so `rowMeans()` averages over patients and inner draws
+in one pass.
+
+The linear predictor is linear in the effect term whatever the families are, so
+`eta[, i] + b2 * (es - ebar[[as.character(a)]])` rebuilds it per draw and you then apply the cost
+family's own mean function: `exp()` above for `Gamma(link = "log")`, the identity for `gaussian()`,
+and `(1 - hu) * exp(.)` for `hurdle_gamma()` with the arm-`a` hurdle probability from
+`dpar = "hu"` — which is a constant factor only while `hu` itself does not carry the effect; if it
+does, it goes inside the average with the rest.
+Putting the drawn effects into `newdata` instead does not work — `newdata` is shared by every draw,
+so it cannot carry a per-draw effect. `posterior_predict()` is right here and `posterior_epred()` is
+not: the integral is over the effect *distribution*, not its mean. The inner draws leave Monte Carlo
+noise inside each posterior draw and inflate the posterior SD, so raise `R` until the SD stops
+moving, and chunk over patients rather than materialising `S x N x R`.
+
+One thing that looks like the error and is not: averaging the fitted conditional mean over the
+patients **actually in arm `a`**, observed effects and all, is consistent for `mu_c(a)` under
+randomisation. It is simply not standardised, so the two arms rest on different covariate samples.
+
+**Under `mi()`, two things change.** On a `qaly | mi()` plus `mi(qaly)` fit the cost equation's
+predictor is the raw `qaly` column, not `qaly_c`, so zeroing `qaly_c` zeroes a column the model does
+not contain. Set `nd$qaly <- 0` instead, take `ebar` as **0** because `mi()` puts the *uncentred*
+effect on the right-hand side, and read the coefficient from `bsp_costk_miqaly` — `mi()` terms get
+the special-effects `bsp_` prefix, not `b_`. The rest of the closed form is unchanged.
+
+The second change is a trap. `posterior_epred()` and `posterior_linpred()` with `newdata` return
+`NA` for every row whose `qaly` is `NA` in `newdata`, without a warning, where the same call with no
+`newdata` uses the imputed latent value (verified on brms 2.23.0). `mean()` over that frame is `NA`,
+and `na.rm = TRUE` quietly turns the standardisation into a complete-case one. Replacing the effect
+column as above avoids it; leaving the observed column in place does not.
 
 ## Preserving the pairing
 
@@ -160,8 +275,8 @@ If missingness was handled by multiple imputation rather than in-model `mi()`
 1. Fit the model to imputation `m`, or take imputation `m`'s block of draws.
 2. For each posterior draw of that fit, compute the conditional mean for every participant **in
    imputation `m`'s own completed frame**, with the arm set counterfactually, and average over
-   participants — the recipe above, unchanged. That yields one `S_m × T` matrix per imputation, per
-   outcome.
+   participants — the recipe above, unchanged, including the arm-`t` integration wherever the cost
+   model carries the effect. That yields one `S_m × T` matrix per imputation, per outcome.
 3. **Stack** the `M` matrices row-wise into one `(M · S_m) × T` matrix, for cost and effect alike
    and in the same row order, so the pairing survives the stacking.
 

@@ -82,11 +82,23 @@ using the same rate, and say which resource-use period each cost covers.
 **Always include baseline utility as a covariate in the effects model.** (§5.2.1.) This is not optional
 tidying; it is the single most consequential covariate in a within-trial CEA.
 
-Randomisation balances baseline utility *in expectation*, not in any particular trial. Because
-follow-up utility is strongly correlated with baseline utility, a chance imbalance at baseline
-propagates directly into the QALY difference and is indistinguishable from a treatment effect.
-Adjusting removes that component and, as a bonus, reduces the residual variance and so tightens the
-incremental estimate.
+Get the reason right, because the usual one is overstated. Randomisation already makes the
+*unadjusted* arm difference unbiased for the marginal effect, averaged over randomisations; a chance
+baseline imbalance makes it noisier, not biased, and "the arms differ at baseline" is not on its own
+a defect to report. Two real reasons remain. **Precision**: under an identity link a prognostic
+baseline cuts the treatment estimate's variance by roughly `1 − rho^2`, so at a baseline–outcome
+correlation of 0.75 the interval is about a third narrower for nothing. **Conditioning**: given the
+imbalance this trial actually realised, the unadjusted estimate is displaced by the baseline slope
+times that imbalance, and the adjusted one is not — which is what matters when the deliverable is
+one trial's posterior rather than a long run of them. The source's own reason is narrower still:
+randomisation is usually performed on the clinical endpoint, not on `(e, c)`, so the economic
+baselines may be unbalanced.
+
+One consequence to carry forward. Under a **non-linear** link, adjusting also changes the estimand:
+the treatment coefficient of an adjusted non-linear model is a conditional effect, not the marginal
+contrast a CEA prices (non-collapsibility). That is not a reason to drop the covariate; it is the
+reason the standardisation step exists. Adjust, then standardise
+(`population-average-summaries.md`; `causal-inference-gmethods` works the general case).
 
 Mean-centre it:
 
@@ -97,7 +109,10 @@ trial <- trial |> mutate(u0_c = qol_0 - mean(qol_0, na.rm = TRUE))
 Centring does not change the treatment coefficient, but it makes the intercept interpretable as the
 outcome at *average* baseline utility rather than at a utility of zero (which no one has), and it
 improves sampler geometry. In the effects model the linear predictor is then
-`alpha0 + alpha1 * treatment + alpha2 * u0_c`, and the arm-level means are read off at `u0_c = 0`.
+`alpha0 + alpha1 * treatment + alpha2 * u0_c`. Under an **identity** link the arm-level means can be
+read off at `u0_c = 0`, because there `E[g^-1(eta)] = g^-1(E[eta])`. Under any other link they
+cannot: centring buys interpretation and sampler geometry, not the estimand, and the arm means still
+have to be standardised over the covariate distribution (`population-average-summaries.md`).
 
 Two things not to do:
 

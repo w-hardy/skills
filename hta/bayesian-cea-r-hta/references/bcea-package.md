@@ -36,7 +36,13 @@ Requirements and gotchas:
 - Rows must be paired draws (same simulation). Columns must line up between `eff` and `cost`.
 - `ref` **defaults to 1** (the first column); the example sets `ref = 2` deliberately. `ref` is
   the *intervention* whose INB is reported (BCEA's sign convention: positive EIB favours the
-  reference). Getting `ref` backwards flips every plot's reading.
+  reference). Getting `ref` backwards flips every plot's reading. Concretely, in BCEA 2.4.83
+  `m$delta_e` and `m$delta_c` are `ref` **minus** comparator and `m$eib` is
+  `k * mean(delta_e) - mean(delta_c)`, so a dearer, more effective `ref` gives positive deltas and a
+  positive EIB above `k*`. `ICER` and the optimal strategy are invariant to `ref`; the deltas, EIB
+  and CEAC all flip. Two traps: the components are `delta_e`/`delta_c` with underscores (the book's
+  `delta.e`/`delta.c` are gone), and the `delta_e` column is named after the **comparator**, so
+  checking the sign by column name reads it backwards. (Executed against BCEA 2.4.83, 2026-09-09.)
 - Custom WTP grid: in the **`bcea()` call itself the argument is `k`** (a vector of thresholds),
   *not* `wtp` — `wtp` is deprecated at construction time. The **plotting** functions
   (`ceplane.plot`, `ceac.plot`, `eib.plot`, `evi.plot`) still take `wtp` to pick the λ they

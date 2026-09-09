@@ -117,7 +117,10 @@ they convert either way trivially.)
 
 **Hazards → probabilities.** Do not fit each exit's survival independently and put `1 -
 exp(-ΔH_k)` in each cell. That treats the competing events as independent, and the cells can sum
-past 1 (heemod will then error, or `C` will silently go negative). Split the *total* exit
+past 1. heemod catches that one loudly — `heemod:::check_matrix()` runs inside `run_model()` and on
+every `run_psa()` draw, and stops with `Some transition probabilities are outside the interval
+[0 - 1]` once `C` goes negative (heemod 1.1.0, executed) — but it stops the run rather than telling
+you which conversion was wrong. Split the *total* exit
 probability in proportion to the cause-specific cumulative-hazard increments `ΔH_j = H_j(t) −
 H_j(t−1)`:
 

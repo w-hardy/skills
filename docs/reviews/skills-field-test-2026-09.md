@@ -145,3 +145,34 @@ folded in rather than treated separately.
 
 The findings about the target repository itself are not recorded here: that repository is private
 and its analysis is unpublished.
+
+## Addendum, 2026-09-09 — review remediation of the pull request
+
+`BCEA` 2.4.83 and `heemod` 1.1.0 were installed so that claims previously resting on documentation
+could be executed. Adjudications against the backlog above:
+
+- **`trial-based-cea-hta` — `bcea()` `ref` semantics: rejected as a defect, now execution-verified.**
+  In BCEA 2.4.83 `delta_e`/`delta_c` are `ref` minus comparator and `eib = k*mean(delta_e) -
+  mean(delta_c)`, in both directions of `ref`; `ICER` and the optimal strategy are invariant. Both
+  files were already correct. The verified sign identity, the underscore component names and the
+  comparator-named column were added to `bayesian-cea-r-hta/references/bcea-package.md`.
+- **`trial-based-cea-hta` — MCF missing-data attribution: confirmed and rewritten** in two layers, a
+  missing response dropping the row from every submodel of any brms multivariate model (N = 15 of 20
+  with or without the right-hand-side term, `set_rescor` either way) and the MCF-specific missing
+  *predictor* (`qaly | mi()` alone still left N = 48 of 60).
+- **`trial-based-cea-hta` — the arm-dispersion percentage: confirmed as a hedging defect.** Restated
+  as a spread over 300 replicates rather than a bound.
+- **`decision-modelling-hta` — heemod's failure mode: the "silently negative `C`" branch is false.**
+  `heemod:::check_matrix()` runs inside `run_model()` and on every `run_psa()` draw and stops with
+  `Some transition probabilities are outside the interval [0 - 1]`. The claim was removed from the
+  reference file and from `SKILL.md`'s pitfall list, which carried its own version of it.
+- **`decision-modelling-hta` — the transition-material scope statement: confirmed and narrowed** to
+  discrete-time cohort transition matrices, with the boundary against an `IndivCtstm`'s
+  intensity-based transitions stated explicitly.
+
+Two defects found by the PR review itself, outside the backlog above, were also fixed: the
+marginal–conditional standardisation integrated the cost model over the wrong effect distribution,
+and the heemod posterior bridge named `define_distribution()` where `use_distribution()` is the
+function that takes draws. Both are detailed in the pull request.
+
+The remaining backlog items are untouched and stay open.

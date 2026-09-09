@@ -22,9 +22,17 @@ the structure is the same either way.
 
 Almost all of it is **engine-independent**. A Dirichlet posterior over a transition matrix, a
 relative risk applied without producing an impossible probability, and a trace propagated per draw
-are facts about the parameters, not about the package that consumes them — so they apply equally to
-a `hesim` or hand-rolled cohort model (`multistate-models-hta`, `hesim-ctstm-hta`). Only the final
-section is heemod-specific.
+are facts about the parameters, not about the package that consumes them — so they apply to any
+discrete-time **cohort** transition matrix, hand-rolled or packaged. The relative-risk identity
+applies to any bounded probability parameter, and per-draw propagation to any engine. Only the
+final section is heemod-specific.
+
+Mind the boundary with continuous-time models. A row-simplex Dirichlet describes a matrix of
+one-cycle transition *probabilities*; an individual-level continuous-time model
+(`hesim-ctstm-hta`, `multistate-models-hta`) is parameterised by transition *intensities* fitted as
+survival models, where there is no row simplex to be conjugate to. The Dirichlet material can still
+inform an upstream parameter such as a starting-state distribution, but it does not transfer to an
+`IndivCtstm`'s transition mechanism.
 
 ## Transition probabilities from counts: Multinomial-Dirichlet
 
@@ -100,31 +108,56 @@ apply_rr <- function(lambda1, rr) {
 }
 ```
 
-Apply it only to the **off-diagonal** cells (the transitions the treatment acts on), then restore the
-row-sum constraint and the absorbing state:
+Apply it to the transitions the relative risk actually describes — **named explicitly, cell by
+cell** — then rebuild the diagonal as that row's complement:
 
 ```r
-lambda2 <- apply_rr(lambda1, rr)
-diag(lambda2) <- diag(lambda2) + (1 - rowSums(lambda2))   # diagonal absorbs the remainder
+treated <- rbind(c(1, 2), c(2, 3))                        # the cells the pooled RR describes
+lambda2 <- lambda1
+lambda2[treated] <- apply_rr(lambda1[treated], rr)
+stopifnot(!any(is.nan(lambda2[treated])))                 # rr * lambda1 >= 1 surfaces here
+diag(lambda2) <- 0
+diag(lambda2) <- 1 - rowSums(lambda2)                     # diagonal is the residual
 lambda2[S, ]  <- 0; lambda2[S, S] <- 1                    # death stays absorbing
-stopifnot(all(lambda2 >= 0), all(abs(rowSums(lambda2) - 1) < 1e-8))
+stopifnot(isTRUE(all(lambda2 >= 0)), isTRUE(all(abs(rowSums(lambda2) - 1) < 1e-8)))
 ```
 
+Three things this gets right that `apply_rr(lambda1, rr)` on the whole matrix does not — all checked
+by execution on the Chancellor matrix. **One RR does not describe every transition:** row `A` exits
+to `B`, `C` and `D`, and a pooled progression RR describes `A → B`, not other-cause death `A → D`;
+rescaling every off-diagonal cell applies the treatment effect to transitions no study measured.
+**The identity is undefined off those cells:** on the absorbing row the whole-matrix call evaluates
+`log(1 - rr * 1)` and returns `NaN` — with a warning when `rr > 1`, and with **no warning at all**
+for the commoner protective `rr < 1`, where it arrives as `logit(1) - log(0)` = `Inf - Inf`. It
+survives solely because the next line
+overwrites row `S` by hand — after which a bare `stopifnot(all(...))` *passes* on a matrix that held
+`NaN`. **The `RR ≤ 1/p1` bound belongs to the treated cells:** read off the diagonal instead it
+becomes `RR ≤ 1/0.7211 = 1.39` rather than `1/0.3564 = 2.81`, so any `rr` in between turns an
+admissible effect into a `NaN` diagonal and a false transportability alarm.
+
 Putting the correction on the diagonal is the right default because the diagonal is "stay where you
-are", which has no independent evidence behind it — it is a residual. Check for negative entries
-afterwards regardless: a large `RR` on several transitions out of one state can drive the diagonal
+are", which has no independent evidence behind it — it is a residual. (Where the baseline rows sum
+to 1 and nothing goes `NaN`, `diag + (1 - rowSums)` after a whole-matrix rescale returns the same
+numbers as the complement above; the difference is where it fails, not what it computes.) Check for
+negative entries regardless: a large `RR` on several transitions out of one state can drive the diagonal
 below zero, which means the RR is inconsistent with the baseline matrix and needs addressing, not
 clipping. The source reads this failure substantively rather than numerically: `RR ≤ 1/p1` is forced
 by the algebra (Eq 9.9), so a violation says the pooled RR's source populations are **not
 exchangeable** with the population your baseline matrix describes — a transportability problem, not
 a rounding one. It recommends keeping `which(lambda2 < 0, arr.ind = TRUE)` in the workflow as a
-standing check on the whole draws × cycles × states array.
+standing check on the whole draws × cycles × states array. Wrap any `all()` that could meet a `NaN`
+in `isTRUE()`: `all(NA)` is `NA`, which an `if()` cannot branch on, so the guard fails closed
+instead of erroring on the wrong thing — the same idiom `heemod-markov-models.md` uses in its
+embeddability check. It does not improve `stopifnot()`'s message, which is uninformative either way;
+the `is.nan()` check above the block is what names the actual problem.
 
 > **A slip in the source, worth knowing before you copy it.** The book states this identity
 > correctly (Eq 9.10, derived via the odds ratio the RR implies), but the R code implementing it in
 > §9.2.3 computes the final term as `log(1 - lambda1 * (1 - rho.star))` — `1 − lambda1(1 − RR)` where
 > the equation says `1 − RR·lambda1`. The printed equation is the correct one: it is what reproduces
-> `lambda2 = RR * lambda1`. Derive it rather than copying either.
+> `lambda2 = RR * lambda1` to machine precision. The code form does not: on the Chancellor
+> off-diagonals it is out by up to 0.0012 at the book's own `RR ≈ 0.509`, and by 0.14 at `RR = 1.2`.
+> Derive it rather than copying either.
 
 ## Treatment effects from evidence synthesis
 
@@ -182,13 +215,51 @@ costs |> mutate(across(starts_with("c_"), ~ .x / (1 + d)^cycle))
 **The heemod bridge** (the one engine-specific part of this file). `heemod`'s normal PSA path
 resamples parameters from named distributions in `define_psa()`. When a parameter already has a
 posterior, that resampling is redundant and lossy — you would be fitting a parametric distribution
-to draws you already have. `define_distribution()`
-is heemod's hook for a user-supplied set of draws (see `SKILL.md`), and it is the route for an MCMC
-posterior; check its signature against the installed version, since heemod's PSA helpers have moved
-across releases. Where the posterior is a whole correlated transition matrix rather than a handful of
-scalars, running the trace directly as above is often simpler than expressing it through heemod's
-PSA machinery — and either way, the correlation between parameters from the same posterior must
-survive, which independent per-parameter resampling would destroy.
+to draws you already have. Two functions are involved and they are not interchangeable (heemod
+1.1.0, executed):
+
+- `use_distribution(draws, smooth = TRUE)` takes a **numeric vector of observations** — "usually the
+  output from an MCMC fit", in its own help page — and builds an empirical quantile function from
+  it. This is the route for a posterior.
+- `define_distribution(f)` takes a **user-supplied quantile function** `f(x)`, with `x` a vector of
+  quantiles in `(0, 1)`. Handed a vector of draws it returns quietly — it is literally
+  `function(x) list(x)` — and the failure surfaces one level up, at `define_psa()`:
+  `Distributions must be defined as functions.` `use_distribution()` is a thin wrapper around it.
+
+Neither preserves joint dependence, and the loss is silent. `use_distribution()` **sorts** its
+input, so the row-wise pairing between two parameters from one posterior is destroyed before
+`run_psa()` starts; `run_psa()` then draws one Gaussian copula per replicate
+(`pnorm(mvnfast::rmvn(sigma = psa$correlation))`) and applies each parameter's quantile function to
+its own column, with `psa$correlation` defaulting to the identity. Four cases, of which only two
+have an exact heemod route:
+
+1. **One scalar posterior** — `param ~ use_distribution(draws)`. The default `smooth = TRUE` adds
+   `N(0, bw)` kernel noise, inflating the variance by `bw^2` (1.9% on the SD of a 2,000-draw Normal
+   posterior); pass `smooth = FALSE` when that matters.
+2. **Several genuinely independent posteriors** — one `use_distribution()` per parameter, which is
+   exactly what heemod assumes by default.
+3. **Several correlated parameters from one posterior** — no heemod mechanism reproduces the
+   empirical joint. Measured: two parameters correlating at **0.90** in the posterior, supplied as
+   two `use_distribution()` calls, come back out of `run_psa()` correlating at **≈ 0** (measured
+   -0.01, with a Monte Carlo SD around 0.02 at `N = 4,000` — the target is exactly zero). Adding
+   `correlation = define_correlation(a, b, 0.9)` recovers **0.90** with `smooth = FALSE`, and about
+   0.87 with the default smoothing of case 1 — but either way that is a Gaussian copula fitted to
+   one number, not the posterior's dependence. Where the marginals plus one correlation is
+   not an adequate summary, run the trace per draw as above.
+4. **A whole transition-matrix row** — `p1 + p2 + p3 ~ multinomial(a1, a2, a3)` *is* exact. heemod
+   draws `qgamma(u, shape = a_k)` per component and divides by the row total, which is a Dirichlet
+   by construction, so with `a_k = prior + counts` it is the Multinomial-Dirichlet posterior of that
+   row itself — verified against the closed-form Dirichlet mean, SD and pairwise correlation to
+   Monte Carlo error at 200,000 draws. Put **every** destination of the row through the multinomial,
+   the diagonal included, and write all of them into the matrix. List only the off-diagonals and
+   leave `C` on the diagonal and the listed components already sum to 1, so `C` collapses to zero
+   and heemod stops with `Some transition probabilities are outside the interval [0 - 1]`. Writing
+   the diagonal as `C` while its component is still declared works but buys nothing; leaving that
+   component out of `define_parameters()` makes heemod drop it and abort with
+   `mu.n_elem != sigma.n_cols`.
+
+Beyond a single row — several rows plus a treatment effect and costs out of one fit — run the trace
+directly as above. It is shorter than the heemod detour and its dependence is the posterior's own.
 
 Once the model produces paired cost and effect draws per strategy, hand them to
 `bayesian-cea-r-hta` for the CE plane, CEAC and value of information.

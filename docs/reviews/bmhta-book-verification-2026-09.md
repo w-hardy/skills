@@ -25,7 +25,8 @@ have to repeat it.
 | Companion code — `giabaio/bmhta-examples` (MIT) | commit `d2a6298` (2026-08-07) | <https://github.com/giabaio/bmhta-examples> | cited where code was adapted; not re-inspected in this pass |
 | `brms` | 2.23.0 | installed locally | `set_rescor()` family restriction and `zoi`/`coi`/`hu` parameter names executed and confirmed, 2026-09-09 |
 | `flexsurv` 2.3.2, `loo` 2.10.1, `mice` 3.19.0 | installed locally | — | available for checking, 2026-09-09 |
-| `BCEA`, `voi`, `survHE`, `survextrap`, `multinma`, `heemod` | — | — | **not installed**; signatures remain as printed in the book and are flagged as such |
+| `BCEA` 2.4.83, `heemod` 1.1.0 | installed 2026-09-09 | CRAN | installed for the PR-review remediation and **execution-verified**; see the addendum in `skills-field-test-2026-09.md` |
+| `voi`, `survHE`, `survextrap`, `multinma` | — | — | **not installed**; signatures remain as printed in the book and are flagged as such |
 
 **Bibliographic correction.** The book is titled *Bayesian **Models** in Health Technology
 Assessment*, not *Bayesian Modelling in…*, and the readable edition is at `/books/online/bmhta/`.
@@ -99,11 +100,12 @@ Each survives the reading; what changed is that the justification is now citable
 
 ## Standing caveats
 
-- **Package signatures for the six uninstalled packages** (`BCEA`, `voi`, `survHE`, `survextrap`,
-  `multinma`, `heemod`) match the book's printed code and have not been checked against current
-  CRAN. The highest-risk of these are `survextrap::mspline_spec()`'s arguments, `voi`'s EVPPI method
-  strings, and `BCEA::createInputs()` — the last of which is not in Ch. 12 at all and is sourced to
-  BCEA's own documentation.
+- **Package signatures for the four still-uninstalled packages** (`voi`, `survHE`, `survextrap`,
+  `multinma`) match the book's printed code and have not been checked against current CRAN. The
+  highest-risk of these are `survextrap::mspline_spec()`'s arguments and `voi`'s EVPPI method
+  strings. (`BCEA` and `heemod` were installed for the September remediation and are now
+  execution-verified; `BCEA::createInputs()` exists in 2.4.83 with formals
+  `inputs, print_is_linear_comb`.)
 - **`voi`'s GAM implementation.** §12.4.2 states it is built on `earth` (a frequentist MARS fit).
   Check the installed package's method strings before restating them as API.
 - No book prose is reproduced in this repository beyond short attributed phrases; the extracted text
