@@ -13,6 +13,12 @@ estimated rather than assumed, and how their uncertainty gets into the results. 
 introduce a second way to build a Markov model, and there is no separate Bayesian-Markov skill —
 the structure is the same either way.
 
+Almost all of it is **engine-independent**. A Dirichlet posterior over a transition matrix, a
+relative risk applied without producing an impossible probability, and a trace propagated per draw
+are facts about the parameters, not about the package that consumes them — so they apply equally to
+a `hesim` or hand-rolled cohort model (`multistate-models-hta`, `hesim-ctstm-hta`). Only the final
+section is heemod-specific.
+
 ## Transition probabilities from counts: Multinomial-Dirichlet
 
 Given a state, the probabilities of moving to each destination form a **simplex**: they are
@@ -155,7 +161,7 @@ before computing costs, because both collapse the uncertainty you built the mode
 costs |> mutate(across(starts_with("c_"), ~ .x / (1 + d)^cycle))
 ```
 
-**The heemod bridge.** `heemod`'s normal PSA path resamples parameters from named distributions in
+**The heemod bridge** (the one engine-specific part of this file). `heemod`'s normal PSA path resamples parameters from named distributions in
 `define_psa()`. When a parameter already has a posterior, that resampling is redundant and lossy —
 you would be fitting a parametric distribution to draws you already have. `define_distribution()`
 is heemod's hook for a user-supplied set of draws (see `SKILL.md`), and it is the route for an MCMC
