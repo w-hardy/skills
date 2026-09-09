@@ -2,7 +2,7 @@
 name: missing-data-mice
 description: >-
   Write correct, well-structured R code for handling missing data with multiple imputation,
-  following Stef van Buuren''s "Flexible Imputation of Missing Data" (FIMD) and the mice package.
+  following Stef van Buuren's "Flexible Imputation of Missing Data" (FIMD) and the mice package.
   Use this whenever the person has missing values, NAs, item non-response, drop-out, or incomplete
   cases in a real dataset and wants to impute, analyze, or report on it in R, including requests
   phrased as "how do I deal with missing data", "impute these NAs", "run mice on my data", "is this
