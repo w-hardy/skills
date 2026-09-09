@@ -3,23 +3,23 @@ name: hesim-ctstm-hta
 description: "Build, debug, run, and validate an individual-level continuous-time CTSTM (hesim IndivCtstm) for a health economic evaluation — implementation depth, not concepts. Use when writing or fixing hesim engine code: assembling create_IndivCtstmTrans() from flexsurvreg_list()/params_surv_list(); mixing clock-reset and clock-forward transitions (clock=\"mix\" vs \"mixt\"); wiring age-varying background mortality as a pwexp death transition with state-specific SMRs; PSA via define_rng()/create_params(); running sim_disease()/sim_qalys()/sim_costs() and the native CEA (cea()/cea_pw() for CEAC/CEAF/EVPI/ICER); or diagnosing a run that errors, returns NA life-years, double-counts arms, or silently uses background mortality. Triggers: hesim, IndivCtstm, params_surv_list, pwexp mortality, clock mixt, stateval_tbl, define_rng, cea_pw, CTSTM CEA. Defer concepts to multistate-models-hta, transition fitting to survival-analysis-hta, reference case to nice-economic-evaluation, EVPPI/EVSI to bayesian-cea-r-hta."
 ---
 
-# hesim CTSTM implementation (EXPO extension)
+# hesim CTSTM implementation
 
-The implementation-depth companion for building the EXPO individual-level continuous-time state-transition model (IndivCtstm) in hesim. This skill is about *writing and trusting the engine code*: the two parameterisation routes and how to mix their clocks, mortality as an in-matrix pwexp transition with SMRs, probabilistic analysis, and the validation ladder that lets you believe a run.
+The implementation-depth companion for building an individual-level continuous-time state-transition model (IndivCtstm) in hesim. This skill is about *writing and trusting the engine code*: the two parameterisation routes and how to mix their clocks, mortality as an in-matrix pwexp transition with SMRs, probabilistic analysis, and the validation ladder that lets you believe a run.
 
 > **Sources & provenance.** hesim **0.5.8** (the installed EXPO version). API confirmed against **full-text reads** of five vignettes dated 2026-01-16 (`intro`, `mstate`, `markov-inhomogeneous-indiv`, `markov-inhomogeneous-cohort`, `cost-effectiveness-analysis`) plus the `params_surv`/`cea` reference pages on <https://hesim-dev.github.io/hesim/> (accessed 2026-07-09). Two provenance tiers are used throughout, and every code claim is tagged one way or the other:
 > - **[vignette]** — confirmed in the hesim 0.5.8 docs/vignettes. Stable across the API.
 > - **[EXPO 0.5.8]** — a wall hit and resolved *in the EXPO build* on this hesim version (from the migration record and the Stage-1 register). Re-verify on any hesim upgrade; these are the ones most likely to drift.
 >
-> **hesim is THE production engine.** heemod has been retired; do not treat a heemod result as a live parity target. Where the validation ladder mentions heemod it is a *migration-phase* check that retires with it. `decision-modelling-hta` is retained only for the discrete-time *conceptual* contrast, not as a runnable reference.
+> **Engine scope — EXPO history, not repository policy.** hesim is the production engine **for the EXPO build**, which migrated off heemod: within that migration a heemod result is not a live parity target, and where the validation ladder below mentions heemod it is a *migration-phase* check that retires with it. None of that generalises. heemod is current on CRAN (v1.1.0, 2025-06-16) and `decision-modelling-hta` is this repository's runnable owner of discrete-time cohort Markov models — the discrete-time *conceptual* contrast when you are building a continuous-time engine, and the skill to use outright when the model is a cohort transition matrix.
 >
-> This skill is the sibling of `multistate-models-hta`. That skill owns the **concepts and structure** (transition intensities, clock semantics, flexsurv-vs-msm estimation fork, multistate-vs-PSM-vs-cohort choice). This skill owns the **implementation** for one specific target: the EXPO IndivCtstm. When both are in context, read the concept in the sibling and the code here.
+> This skill is the sibling of `multistate-models-hta`. That skill owns the **concepts and structure** (transition intensities, clock semantics, flexsurv-vs-msm estimation fork, multistate-vs-PSM-vs-cohort choice). This skill owns the **implementation**: building one IndivCtstm correctly, documented against the EXPO build — see the provenance tags. When both are in context, read the concept in the sibling and the code here.
 
 ## Where this skill sits — read first
 
 Do not restate multistate theory here. Before touching engine code, the conceptual decisions (which structure; which clock *per transition* on disease logic; whether the data supports the transition at all) should already be settled — that is `multistate-models-hta` plus the Stage-1 register. This skill starts from *"the structure is decided; now build it correctly in hesim 0.5.8."*
 
-The EXPO engine is **one IndivCtstm, candidates as configurations** (c3 / c3b-recommended / awttc-anchor / c6). Build and validate the engine once; select the candidate by configuration. Do not fork an engine per candidate.
+Build **one IndivCtstm and express candidate variants as configurations** of it: validate the engine once, then select the candidate by configuration rather than forking an engine per candidate. (The EXPO build runs its four candidates — c3 / c3b-recommended / awttc-anchor / c6 — off one engine this way.)
 
 ## The pipeline spine
 
@@ -81,7 +81,7 @@ Correlated-block spec, CRN seeding, and INMB-convergence checking: `references/p
 - **`plot_ceplane()`, `plot_ceac()`, `plot_ceaf()`, `plot_evpi()`** — the standard four, straight off the `cea`/`cea_pw` output.
 - **`grp`** gives per-subgroup (individualised) CEA — EXPO's severity / episode-≥28d / opioid-vs-polysubstance subgroups drop in here, no bespoke code.
 
-The boundary with `bayesian-cea-r-hta`: hesim gives you **INMB, CEAC, CEAF, EVPI, ICER, CE-plane** natively. It does **not** compute **EVPPI or EVSI** — for the partial/sample value-of-information the register asks for (F8), reshape the `ce` draws and hand to **BCEA**. EXPO's `ctstm_inmb` / `ctstm_ce_incremental` helpers wrap this native layer with CRN and convergence rather than replacing it. Worked calls in `references/psa-cea-and-validation.md`.
+The boundary with `bayesian-cea-r-hta`: everything above is what hesim's own `cea()`/`cea_pw()` return, so an all-hesim report needs no second package to produce **INMB, CEAC, CEAF, EVPI, ICER or the CE plane**. hesim does **not** compute **EVPPI or EVSI** — for partial or sample value-of-information, reshape the `ce` draws and hand to **BCEA**. What those quantities mean, how to read them, and the value-of-information work are `bayesian-cea-r-hta`'s throughout; take the definitions there and the calls here, and stay in one system per report. In the EXPO build the `ctstm_inmb` / `ctstm_ce_incremental` helpers wrap this native layer with CRN and convergence rather than replacing it. Worked calls in `references/psa-cea-and-validation.md`.
 
 ## Validate before you trust a run
 
@@ -111,6 +111,6 @@ Catalogued with fixes in `references/api-gotchas.md`. The recurring ones **[EXPO
 - `multistate-models-hta` — **up**: concepts, clock semantics, estimation-route fork, structure choice, `check_multistate_setup.R`.
 - `survival-analysis-hta` — fitting each transition (parametric/spline/pwexp choice, extrapolation).
 - `nice-economic-evaluation` — reference case, discounting, PSA-as-base-case, severity.
-- `bayesian-cea-r-hta` — **only** for what hesim's native `cea()` doesn't do: EVPPI/EVSI partial-VOI and BCEA-specific presentation. INMB, CEAC/CEAF, EVPI, ICER and the CE plane stay here (see the decision layer).
+- `bayesian-cea-r-hta` — owns the decision quantities themselves: what INMB, the CEAC/CEAF, EVPI, the ICER and the CE plane mean, the pitfalls in reading them, BCEA presentation, and EVPPI/EVSI, which hesim's `cea()` does not compute. This skill documents what hesim's own `cea()`/`cea_pw()` return for a `ce` object, so a hesim-only report can produce those quantities without leaving the framework; prefer one system per report rather than mixing conventions.
 - `decision-modelling-hta` — **one file only**, `references/bayesian-transition-parameters.md`, and only the parts of it that survive without a transition-probability matrix: feed a pooled treatment effect's posterior draws into `params_surv_list()` rather than its point estimate, say whether you took the pooled effect or the wider predictive distribution, and propagate the posterior per draw — its draws become the sample rows of that transition's `coefs` matrix — instead of refitting a parametric PSA distribution to draws you already have. Its Multinomial-Dirichlet-per-row and shared-row-denominator material does **not** transfer — an `IndivCtstm` has no per-row simplex, its transitions being time-to-event objects.
 - `ispor-smdm-good-practices` — the validation ladder maps to its verification/technical-validation taxonomy.
