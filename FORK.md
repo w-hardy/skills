@@ -12,6 +12,7 @@ skills stay current, and is the source of truth for the personal ones.
 | `hta/` | Health economic evaluation and HTA in R (12 skills) |
 | `biostatistics/` | Applied biostatistics for clinical research in R (8 skills) |
 | `ml-clinical/` | Machine learning on tabular clinical data in R (4 skills) |
+| `research-methods/` | General research methodology and manuscript craft, not specific to a statistical or clinical domain (1 skill) |
 | `superpowers/` | Vendored from [obra/superpowers](https://github.com/obra/superpowers), MIT (14 skills) |
 | `tidymodels/` | Vendored from [tidymodels/skills](https://github.com/tidymodels/skills), MIT (1 skill) |
 | `.claude/settings.json` | Registers this fork's marketplace and enables every plugin for sessions opened in this repo |

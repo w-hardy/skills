@@ -113,6 +113,12 @@ Machine learning on tabular clinical data in R.
 - **[clustering-clinical](./ml-clinical/clustering-clinical/)** - Find and validate patient subgroups with k-means, hierarchical clustering, DBSCAN, and latent class analysis, with emphasis on establishing whether the clusters are real
 - **[dimensionality-reduction-clinical](./ml-clinical/dimensionality-reduction-clinical/)** - Reduce and visualise high-dimensional clinical or omics data with PCA, t-SNE, and UMAP, covering component choice, hyperparameters, and reading the output without over-reading it
 
+### Research Methods
+
+General research methodology and manuscript craft — not specific to a statistical or clinical domain.
+
+- **[scientific-writing](./research-methods/scientific-writing/)** - Structure, draft, and critique scientific manuscripts as arguments, covering thesis-first framing, IMRaD discipline, paragraph craft, converting bullet skeletons to prose, structured abstracts, and manuscript-wide cohesion checks
+
 ### Superpowers
 
 A development methodology for coding agents, vendored verbatim from [obra/superpowers](https://github.com/obra/superpowers) (MIT, Copyright (c) 2025 Jesse Vincent). See [superpowers/README.md](./superpowers/) for the pinned upstream version and what is deliberately left out.
@@ -186,6 +192,7 @@ Install specific skill categories directly:
 /plugin install hta@w-hardy-skills
 /plugin install biostatistics@w-hardy-skills
 /plugin install ml-clinical@w-hardy-skills
+/plugin install research-methods@w-hardy-skills
 /plugin install superpowers@w-hardy-skills
 /plugin install tidymodels@w-hardy-skills
 ```
@@ -255,6 +262,7 @@ This repository organizes skills into categories to make it easier to find and i
 | **hta**         | Health technology assessment and health economic evaluation in R |
 | **biostatistics** | Applied biostatistics for clinical research in R          |
 | **ml-clinical** | Machine learning on tabular clinical data in R              |
+| **research-methods** | General research methodology and manuscript craft, not specific to a statistical or clinical domain |
 | **superpowers** | Agent development methodology vendored from [obra/superpowers](https://github.com/obra/superpowers) (MIT) |
 | **tidymodels** | Supervised machine learning on tabular data with the tidymodels framework, vendored from [tidymodels/skills](https://github.com/tidymodels/skills) (MIT) |
 
