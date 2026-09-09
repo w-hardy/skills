@@ -114,6 +114,7 @@
         "./hta/hesim-ctstm-hta",
         "./hta/discrete-event-simulation-hta",
         "./hta/survival-analysis-hta",
+        "./hta/trial-based-cea-hta",
         "./hta/bayesian-cea-r-hta",
         "./hta/network-meta-analysis-hta",
         "./hta/population-adjusted-comparisons",

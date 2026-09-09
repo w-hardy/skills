@@ -259,32 +259,17 @@ a plausible amount and see whether conclusions change. See `references/sensitivi
 
 ## When a full Bayesian model is the better route
 
-Multiple imputation is not the only principled option, and this skill should not imply it is. MI is
-itself a posterior-predictive procedure — draw plausible values from a predictive distribution, run
-the analysis in each, pool — but it does it in **two stages**, and that seam has a cost: the
-imputation model and the analysis model can imply different joint distributions, so the pooled
-result answers a slightly different question from the one the analysis model asks. That mismatch is
-called uncongeniality, and building a congenial imputation model by hand gets hard as the analysis
-model gets more structured.
+MI is not the only principled option. It is itself a posterior-predictive procedure, but a
+**two-stage** one: the imputation and analysis models are fitted separately and can imply different
+joint distributions (uncongeniality). A fully Bayesian model treats each missing value as a
+parameter sampled in the same run, so there is no seam.
 
-In a **fully Bayesian model**, a missing value is simply a parameter with no likelihood
-contribution, sampled in the same MCMC run as everything else. Congeniality is automatic because
-there is only one model, and the output is a joint posterior rather than a set of pooled scalars.
-
-Routing rule:
-
-- **Many incomplete variables, especially covariates, with an arbitrary missingness pattern, or an
-  analysis model that is not Bayesian** → `mice`. Chained equations are built for exactly this, and
-  fitting a joint model per incomplete variable would be unwieldy.
-- **Missingness confined to the small set of outcomes an already-Bayesian model owns** → model it in
-  place. In brms this is `mi()` in the formula; see `brms-modelling`'s `references/special-terms.md`
-  for the mechanics and `references/coding-conventions.md` for the `mi()` vs `brm_multiple()`
-  choice.
-- **Both** is legitimate: impute components with `mice`, then fit the Bayesian model to each
-  completed dataset — provided you keep the imputations separate to the end (Step 4's rule).
-
-For trial-based economic evaluation specifically, where costs and QALYs are missing together and
-their correlation is the point of the analysis, `trial-based-cea-hta` owns the joint-model route.
+Route to `mice` when many **covariates** are incomplete, or the analysis model is not Bayesian.
+Model missingness in place when it is confined to the **outcomes** of an already-Bayesian model, or
+when the analysis model's structure is hard to mirror in an imputation model. Both together is
+legitimate — impute components, derive the outcome, fit per imputation, imputations separate to the
+end. See `references/bayesian-alternatives.md`; `brms-modelling` owns the implementation, and
+`trial-based-cea-hta` owns the trial-based cost/QALY case.
 
 ## Step 6 — Reporting
 
@@ -330,6 +315,10 @@ plausibility checks the person should look at themselves once they run it.
 - **`references/reporting-checklist.md`** — the 12-point reporting checklist and a fillable
   template paragraph for the methods section. Read this when the person needs to write up the
   missing-data handling for a paper, thesis, or report.
+- **`references/bayesian-alternatives.md`** — MI versus a fully Bayesian one-stage model,
+  uncongeniality, and the routing table for choosing between them. Read this when the analysis
+  model is already Bayesian, or is structured in a way that makes a congenial imputation model
+  hard to build.
 
 These are reference material, not required reading for every request — for a simple, well-behaved
 dataset the core workflow above (Steps 0–4) is often everything you need.

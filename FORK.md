@@ -9,7 +9,7 @@ skills stay current, and is the source of truth for the personal ones.
 
 | Path | Contents |
 | --- | --- |
-| `hta/` | Health economic evaluation and HTA in R (12 skills) |
+| `hta/` | Health economic evaluation and HTA in R (14 skills) |
 | `biostatistics/` | Applied biostatistics for clinical research in R (8 skills) |
 | `ml-clinical/` | Machine learning on tabular clinical data in R (4 skills) |
 | `research-methods/` | General research methodology and manuscript craft, not specific to a statistical or clinical domain (1 skill) |
