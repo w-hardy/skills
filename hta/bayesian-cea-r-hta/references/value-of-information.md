@@ -10,7 +10,11 @@
 > shortcut to Strong et al. (2015) and Heath et al. *Bayesian Value of Information* methods.
 > *Bayesian Cost-Effectiveness Analysis with BCEA* (Baio, Berardi & Heath 2017). Accessed
 > 2026-07-03; anchors are section-level.
-> Also *Bayesian Modelling in Health Technology Assessment* — Baio (Chapman & Hall/CRC, 2026) Ch. 12,
+> Also *Bayesian Models in Health Technology Assessment* — Baio (CRC Press, published 7 August
+> 2026), Ch. 12, read and verified against the online edition
+> <https://gianluca.statistica.it/books/online/bmhta/> on 2026-09-09 — §12.3 (EVPI and opportunity
+> loss, Eq 12.2, Table 12.1), §12.4 (EVPPI, Eq 12.3; GAM/GP/BART; the Info Rank plot), §12.5 with
+> Example 12.2 (EVSI, ENBS and the chemotherapy sample-size comparison). Earlier anchor:
 > which supplies the EVPPI method comparison (GAM/GP/BART), the Info Rank plot, and the ENBS-based
 > sample-size material below; anchored to the companion code at
 > <https://github.com/giabaio/bmhta-examples> (MIT) commit `d2a6298`, file `12-voi/voi.R`, accessed
@@ -70,7 +74,9 @@ costing study) attacks the uncertainty that matters.
 
 The PSA parameter matrix that the regression needs is extracted with `BCEA::createInputs()`, which
 returns the S × Q matrix of parameter draws alongside the model object — the step people miss when
-they have a `bcea` object but no parameter draws to regress on.
+they have a `bcea` object but no parameter draws to regress on. (That signature comes from BCEA's own
+documentation rather than Ch. 12, which says only that a `bcea` object is already in the right shape
+to hand to `voi::evppi()`.)
 
 ### Choosing the regression method
 
@@ -162,9 +168,11 @@ difference is the point:
 - ENBS asks: how many patients maximise the expected monetary value of the decision, net of what the
   trial costs? It is framed in the same currency as the decision itself.
 
-In the source's chemotherapy example the power-based design (~190 per arm for 80% power) is well
-short of the ENBS-maximising size (~450 per arm) — the extra patients are worth funding because the
-decision is valuable enough to justify them. The gap runs the other way just as often: where the
+In the source's chemotherapy example (§12.5.1, Ex 12.2) the power-based design — ~190 per arm for
+80% power — is well short of the ENBS-maximising size of ~450 per arm; at a £20,000 threshold the
+two are worth about 77.1m and 84.1m, so the conventional calculation gives away roughly 7m of
+expected value. The extra patients are worth funding because the decision is valuable enough to
+justify them. The gap runs the other way just as often: where the
 decision has low value, ENBS can be **negative at every sample size**, which is the defensible way to
 say a trial should not be run at all. A power calculation can never return that answer.
 

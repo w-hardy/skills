@@ -1,7 +1,8 @@
 # Structural values: zero costs and QALYs at the maximum
 
 > Source: BMHTA Ch. 10 (missing data and structural values in HTA), worked on the MenSS pilot trial
-> in `10-missing-data/` (bmhta-examples @ `d2a6298`), which compares a Normal-Normal MCF, a
+> §10.4.1, Example 10.2, verified against the online edition 2026-09-09 (companion code
+> `10-missing-data/`, bmhta-examples @ `d2a6298`), which compares a Normal-Normal MCF, a
 > Beta-Gamma MCF with the spike shifted away, and a Beta-Gamma hurdle model.
 
 ## What a structural value is
@@ -30,8 +31,9 @@ inflation is not the same in both arms if the spike is not the same size in both
 effect is biased by an artefact of the support.
 
 **Shift the spike away and use a bounded family.** Subtract a small `eps` (0.01, say) from every
-QALY so nothing sits exactly at 1, then fit a Beta. Now the support is right, but two problems
-remain. The shift biases every patient's outcome downward by `eps` — small, but systematic, and it
+QALY so nothing sits exactly at 1, then fit a Beta. Note this only works at all when the observed
+minimum is comfortably above `eps` — in the source's data the range was [0.61, 1], so nothing was
+pushed below 0. Now the support is right, but two problems remain. The shift biases every patient's outcome downward by `eps` — small, but systematic, and it
 does not cancel in the increment if the arms have different spike sizes. More importantly it
 **models the structural subgroup as though they were ordinary patients who happened to score
 high**, which is exactly the claim the spike contradicts. It is a workaround, not a model.
@@ -41,7 +43,9 @@ high**, which is exactly the claim the spike contradicts. It is a workaround, no
 Model the two processes separately and recombine. For structural ones in a bounded effect:
 
 - an indicator `d_i ~ Bernoulli(gamma_i)` for "in the structural group", with `gamma_i` given its own
-  logistic regression on treatment (and any covariates);
+  logistic regression. Predict it from real covariates, not just the arm — the source uses age,
+  ethnicity, employment status and treatment, because who is in perfect health is a substantive
+  question, not a treatment effect;
 - for `d_i = 0`, a `Beta` model on the remainder — no shifting needed, because the spike has been
   removed by the first component;
 - the population average for arm `t` is then the **mixture**:
@@ -51,7 +55,8 @@ mu_e[t] = (1 − gamma_bar[t]) * mu_e_lt1[t] + gamma_bar[t] * 1
 ```
 
 where `gamma_bar[t]` is the arm's structural probability and `mu_e_lt1[t]` the mean among the
-non-structural. This is the formula that must reach the draws — it is not enough to fit the mixture
+non-structural. (This is the source's own formula, §10.4.1; patients observed at exactly 1 are
+treated as fixed members of the structural group, and only the rest are modelled.) This is the formula that must reach the draws — it is not enough to fit the mixture
 and then report the Beta component's mean, which describes only part of the arm.
 
 Note that the treatment effect can now act through **two channels**: it can change the probability

@@ -1,9 +1,11 @@
 # Joint models for cost and effect
 
-> Source: BMHTA Ch. 5, worked in `05-ild/ild.R` (bmhta-examples @ `d2a6298`), which fits three
-> models to the 10TT trial: Normal/Normal independent, Normal/Normal MCF, and Gamma/Gamma MCF.
-> The book codes these in JAGS; the brms translations below are this repository's stack. Verify
-> argument names against the installed brms before running.
+> Source: BMHTA §5.2 (Examples 5.2-5.4) and §5.2.3, verified against the online edition 2026-09-09.
+> The book fits three models to the 10TT trial (n = 167 after complete-case exclusion):
+> Normal/Normal
+> independent (§5.2.1, Ex 5.2), Normal/Normal MCF (§5.2.2, Ex 5.3) and Gamma/Gamma MCF (Ex 5.4).
+> The book codes these in JAGS; the brms translations below are this repository's stack. The brms
+> claims here were checked against brms 2.23.0 on 2026-09-09.
 
 ## Why joint, and what "joint" means
 
@@ -25,7 +27,10 @@ fit <- brm(f_e + f_c + set_rescor(TRUE), data = trial,
 `set_rescor(TRUE)` estimates the residual correlation directly (`rescor__qaly__cost_k` in the
 draws). This is the most transparent specification when both outcomes are Gaussian — and it is the
 one to prefer in brms, because brms supports it natively. **It is only available for `gaussian()`
-and `student()` families.**
+and `student()` families** (verified in brms 2.23.0). The book makes the same point from the other
+direction: under joint Normality the MCF model *is* the seemingly-unrelated-regression model
+(Zellner 1962; Willan and Briggs 2006), because every marginal and conditional of a multivariate
+Normal stays Normal.
 
 **Marginal-conditional factorisation (MCF).** Factor the joint density as
 `p(e, c) = p(e) × p(c | e)`: model the effect marginally, then the cost *conditional on* the effect.
@@ -71,9 +76,15 @@ unavailable and the conditional route is the only way to link them inside a sing
 the usual case for real economic data, so MCF is the workhorse. Its cost is a subtlety about
 population averages — see below and `population-average-summaries.md`.
 
-> The companion script reconstructs `sigma_c`/`rho` post-hoc using `beta1` where the JAGS model uses
-> `beta2`. Use the coefficient on the *effect* in the cost equation (`beta2`), not the treatment
-> coefficient. Stated here because the slip is easy to inherit by copying.
+> **A slip in the source, worth knowing before you copy it.** In §5.2.2 the JAGS model computes
+> these
+> correctly from `beta2`, but the R code immediately after — offered as an equivalent way to do the
+> same algebra outside JAGS — extracts `beta1` and computes `sigma.c = sqrt(lambda.c^2 +
+> sigma.e^2*beta1^2)`, `rho = beta1*sigma.e/sigma.c`. The book states the two give identical
+> results;
+> its own printed output shows otherwise, with `rho` changing sign (JAGS: −0.186, −0.099; R: +0.157,
+> +0.083). Use the coefficient on the *effect* in the cost equation (`beta2`), not the treatment
+> coefficient — and treat a sign flip between two routes to the same quantity as a bug signal.
 
 ## Choosing distributions
 
@@ -88,12 +99,16 @@ Look at the histograms by arm before choosing. The shapes are predictable:
 | Either, as a first pass | — | `gaussian()` | Fine as a baseline comparator; not usually the final model |
 
 **Gamma rather than log-normal for costs.** At matched mean and SD the log-normal puts noticeably
-more mass in the extreme right tail. For a cost model whose whole purpose is to estimate a *mean*,
-that tail does real work, and the Gamma is the more conservative default. Fit both and compare if
+more mass in the extreme right tail (the source shows this at mu = 8, sigma = 5, and cites Thompson
+and Nixon 2005 for preferring the Gamma for costs). For a cost model whose whole purpose is to
+estimate a *mean*, that tail does real work, and the Gamma is the more conservative default. Fit both and compare if
 the tail is where the action is, but do not reach for log-normal by habit.
 
 **Flipping a left-skewed outcome.** The book models QALYs with a Gamma by transforming
-`e* = 3 − e`, which turns left skew into right skew, fits the Gamma to `e*`, and back-transforms.
+`e* = 3 − e` (a device it credits to Gabrio et al. 2025), which turns left skew into right skew,
+fits the Gamma to `e*`, and back-transforms. Its reason for the flip is not only the skew: a few
+patients had **negative** QALYs ("worse than death"), which a Gamma on the natural scale cannot
+represent at all.
 Because the transformation is **linear**, `E[e] = 3 − E[e*]` exactly, so arm means come back
 without approximation. Two conditions: the constant must exceed the maximum possible outcome (3 for
 a 2-year trial whose QALYs cannot exceed 2), and it must be **fixed a priori**, not read off the
@@ -149,9 +164,12 @@ lambda = −log(alpha) / U
 ```
 
 So `Pr(sigma_e > 0.8) = 0.01` gives `lambda = −log(0.01)/0.8 ≈ 5.75`, and `Pr(sigma_c > 2) = 0.5`
-on the £1,000 scale gives `lambda = −log(0.5)/2 ≈ 0.35`. Both appear in `05-ild/ild.R`. The virtue
-is that the prior is stated as a *sentence about the data scale* — "an SD above 0.8 QALYs is a 1-in-100
-surprise" — which a reviewer can argue with. In brms:
+on the £1,000 scale gives `lambda = −log(0.5)/2 ≈ 0.35`. Both are the source's own values (Ex 5.2).
+A shape or dispersion parameter needs one too, and is harder to reason about: for the Gamma/Gamma
+model the source sets `Pr(nu > 30) = 0.01`, i.e. `Exponential(0.15)`, on both shapes.
+
+The virtue is that the prior is stated as a *sentence about the data scale* — "an SD above 0.8 QALYs
+is a 1-in-100 surprise" — which a reviewer can argue with. In brms:
 
 ```r
 prior(exponential(5.75), class = "sigma", resp = "qaly")
@@ -159,7 +177,10 @@ prior(exponential(5.75), class = "sigma", resp = "qaly")
 
 Do **not** use `Gamma(0.001, 0.001)` on a precision. It is the old BUGS default, it is not
 uninformative, and on hierarchical scale parameters it concentrates mass near zero precision and so
-pushes the SD upward. The book demonstrates this directly (Ch. 6).
+pushes the SD upward. The book demonstrates this directly in Ch. 6 (§6.2.5 and Note 6.3): the
+implied prior on the SD has a very heavy right tail, and forward-sampling `rgamma(10000, 0.001,
+0.001)` puts only 1.4% of the mass above 0.001, so the model infers large heterogeneity whatever the
+data say. It discourages `Uniform(0, K)` for the same reason — the posterior piles up against `K`.
 
 Regression coefficients on a sensibly-scaled outcome take weakly-informative Normals. State them
 in the rescaled units (see `qaly-construction.md`) and run a prior predictive check — for a cost

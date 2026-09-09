@@ -2,9 +2,10 @@
 
 > Context: van Buuren (FIMD) presents MI as "Bayesianly proper" — it is a posterior-predictive
 > procedure — but the book's workflow is two-stage throughout. The one-stage alternative, and the
-> argument for choosing between them, is set out in Baio, *Bayesian Modelling in Health Technology
-> Assessment* (Chapman & Hall/CRC, 2026) Ch. 10, anchored to
-> <https://github.com/giabaio/bmhta-examples> commit `d2a6298`; accessed 2026-09-09.
+> argument for choosing between them, is set out in Baio, *Bayesian Models in Health Technology
+> Assessment* (CRC Press, published 7 August 2026), Ch. 10 §10.3.1-10.3.2 — verified against the
+> online edition <https://gianluca.statistica.it/books/online/bmhta/>, 2026-09-09. Companion code:
+> <https://github.com/giabaio/bmhta-examples> commit `d2a6298`.
 
 ## The argument
 
@@ -13,8 +14,12 @@ logic. MI draws plausible values from a predictive distribution, analyses each c
 and pools — which is Monte Carlo integration over the posterior of the missing data. The difference
 is that MI does it in **two stages**, with a seam between them.
 
-The seam has a name: **uncongeniality**. The imputation model and the analysis model are different
-objects, fitted separately, and they can imply different joint distributions for the data. When they
+The seam has a name: **uncongeniality** (Meng, 1994). The imputation model and the analysis model are
+different objects, fitted separately, and they can imply different joint distributions for the data.
+The source's framing is that the seam is an artefact of when MI was invented: Rubin's design was to
+"think like a Bayesian and do as a frequentist", settling for a handful of completed datasets because
+MCMC did not yet exist, and it observes that there is no longer any need to keep that compromise
+(§10.3.1). A single unified model has no two stages, so congeniality is not something it can fail. When they
 do, the pooled result is not the posterior the analysis model would have produced — Rubin's rules
 assume a compatibility that has not been checked. In practice this bites when the analysis model is
 more structured than the imputation model: interactions, non-linear terms, multilevel structure,

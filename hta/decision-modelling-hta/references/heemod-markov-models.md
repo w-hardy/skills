@@ -7,6 +7,11 @@
 > (incl. `compute_surv(x, time, cycle_length = 1, type = c("prob", "survival"))` and
 > `define_surv_dist()`). Accessed 2026-07-03. The book hand-rolls these models in base R;
 > the heemod implementation here is this skill's deliberate choice (see SKILL.md).
+>
+> The Bayesian transition-parameter material this file points to is from *Bayesian Models in Health
+> Technology Assessment* — Baio (CRC Press, 2026), online edition
+> <https://gianluca.statistica.it/books/online/bmhta/>, verified 2026-09-09 — §9.2; see
+> `bayesian-transition-parameters.md`.
 
 Worked patterns for time-homogeneous, time-inhomogeneous (survival-derived transitions), and probabilistic Markov models, following the heemod workflow: `define_parameters()` → `define_transition()` → `define_state()` → `define_strategy()` → `run_model()`.
 

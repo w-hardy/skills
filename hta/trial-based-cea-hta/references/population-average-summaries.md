@@ -1,7 +1,8 @@
 # From a fitted model to arm-level posterior means
 
 > Source: BMHTA Ch. 5 §"posterior predictive g-computation", worked in `05-ild/ild.R`
-> (bmhta-examples @ `d2a6298`).
+> §5.2.3 and Example 5.5, verified against the online edition 2026-09-09 (companion code
+> `05-ild/ild.R`, bmhta-examples @ `d2a6298`).
 
 The deliverable of this skill is two matrices of posterior draws — `S × T` for mean effect and
 `S × T` for mean cost, `S` draws by `T` arms. Getting from a fitted model to those matrices is a
@@ -59,9 +60,9 @@ difference is a like-for-like contrast.
 
 ## The predictive route, and when it is needed
 
-Where the model has no covariates other than treatment but the link is non-linear — the case in
-`05-ild/ild.R`, whose Gamma model conditions only on arm and centred baseline utility — the same
-correction can be done by simulating from the fitted outcome distribution per draw and averaging:
+Where the link is non-linear, the same correction can be done by simulating from the fitted outcome
+distribution per draw and averaging. The source does exactly this (Ex 5.5) for the Gamma model,
+whose effects equation carries arm **and** centred baseline utility:
 
 ```r
 d <- as_draws_df(fit)
@@ -80,9 +81,19 @@ transforming the average is the error being avoided.
 
 When the back-transformation is **linear** — as `3 − e*` is — this is exactly equal to the direct
 calculation `mu_e = 3 − mu_estar`, and the simulation is a demonstration rather than a necessity.
-The source uses it that way, on the effects equation. **The place it is actually needed in that same
-model is the cost equation**, whose log link makes `exp(beta0 + beta1·arm)` the conditional mean at
-the arm-average effect rather than the arm's mean cost. Standardise the cost side.
+The source uses it that way, on the effects equation, and its results duly match the model's own
+`mu.e` to three decimal places.
+
+**The place it is actually needed in that same model is the cost equation**, whose log link makes
+`mu.c[t] = exp(beta0 + beta1·arm)` the conditional mean cost at the arm-average effect rather than
+the arm's mean cost. Standardise the cost side.
+
+Note also what the predictive route as coded does *not* fix: it draws `e*` at `mustar.e`, the fitted
+mean at centred baseline utility zero, so it marginalises over the outcome distribution but not over
+the covariate distribution. Under a non-identity link you need both — draw over the observed
+covariate values as well, as in the standardisation recipe above. The source gives the discrete-
+covariate case explicitly (Eq 5.9): average `g^-1(.)` over the covariate's levels weighted by their
+population frequencies, since centring only marginalises *continuous* covariates automatically.
 
 ## Preserving the pairing
 

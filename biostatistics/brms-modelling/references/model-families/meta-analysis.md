@@ -2,6 +2,13 @@
 
 What changes relative to `core-workflow.md` when using brms to fit a random-effects meta-analysis or meta-regression (rather than `metafor`/`meta`-package alternatives) — relevant for systematic-review work where a Bayesian random-effects model, or a more flexible meta-regression than off-the-shelf packages allow, is wanted.
 
+> Heterogeneity-prior guidance and the pooled-vs-predictive distinction here follow *Bayesian Models
+> in Health Technology Assessment* — Baio (CRC Press, 2026), online edition
+> <https://gianluca.statistica.it/books/online/bmhta/>, verified 2026-09-09 — §6.2.3
+> and §6.2.5, which recommend PC or half-Cauchy priors for a between-study SD and discourage both
+> `Gamma(eps, eps)` on the precision and `Uniform(0, K)` on the SD; Gelman & Hill (2007) suggest at
+> least three groups before a hierarchical model earns its keep.
+
 ## Specification
 
 - The standard brms random-effects meta-analysis pattern treats each study's known standard error as fixed and known, via `y | se(known_se) ~ 1 + (1 | study)`:

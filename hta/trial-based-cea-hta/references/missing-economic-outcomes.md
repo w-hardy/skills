@@ -1,8 +1,11 @@
 # Missing costs and QALYs in a trial-based CEA
 
-> Source: BMHTA Ch. 10 (bmhta-examples @ `d2a6298`, `10-missing-data/`), which sets out the
-> MCAR/MAR/MNAR mechanisms, demonstrates the resulting bias by simulation, and analyses the MenSS
-> trial under MAR with three joint models.
+> Source: BMHTA §10.1-10.4, Examples 10.1-10.2, verified against the online edition 2026-09-09. The
+> chapter sets out the MCAR/MAR/MNAR mechanisms as Model-of-Analysis / Model-of-Missingness pairs,
+> demonstrates complete-case bias by simulation (Ex 10.1), and analyses the MenSS trial with three
+> joint models assuming **MAR for the effects and MNAR for the costs** (Ex 10.2). Being Part III of
+> the book, it gives the framing and one worked example and delegates the full missing-data workflow
+> to Gabrio et al. (2025) in *R for HTA*.
 >
 > **Read `missing-data-mice` first** for the general theory and the `mice` workflow. This file
 > covers only what is specific to economic outcomes and to the Bayesian joint model.
@@ -37,9 +40,10 @@ pooling rule, and — critically — **no need to make the imputation model and 
 agree**, because they are the same model. Under MAR, conditioning on the observed covariates and the
 observed component of the joint outcome is exactly what the model already does.
 
-Multiple imputation is, in the book's phrase, "Bayesian in spirit": it approximates this by drawing
-from a predictive distribution, but as a two-stage procedure it introduces an
-**uncongeniality** risk — the imputation model can imply a different joint distribution from the
+Multiple imputation approximates this by drawing from a predictive distribution. The source frames
+Rubin's design as "think like a Bayesian and do as a frequentist" (§10.3.1) — a deliberate
+compromise made when MCMC was out of reach, and one it says there is no longer any need to keep. As
+a two-stage procedure MI introduces an **uncongeniality** risk (Meng, 1994) — the imputation model can imply a different joint distribution from the
 analysis model, and the pooled result then answers a slightly different question. In a joint
 cost-effect model with a hurdle component and arm-specific dispersion, building a congenial
 imputation model in `mice` is real work. The one-stage route avoids it.
@@ -102,7 +106,17 @@ E[Y_missing] = E[Y_observed-model] + delta
 ```
 
 with `delta` spanning a range agreed as clinically plausible (and, for a two-outcome problem,
-plausibly of opposite sign for costs and effects — the pessimistic corner). Report the incremental
+plausibly of opposite sign for costs and effects — the pessimistic corner).
+
+The source takes the other of the two standard routes (§10.2 sets out both: pattern-mixture, Little
+1993, and selection, Diggle and Kenward 1994). It fits a **selection model** — a Bernoulli
+missingness indicator with `logit(pi_i) = delta0 + delta1*x_i + delta2*y_i`, where the MNAR term
+`delta2` is unidentified by the data and so **must** carry an informative prior; the worked choice
+is `Normal(0.28, sd ≈ 0.15)` on the logit scale, an odds ratio for missingness of about 1.34. For a
+CEA the same decomposition applies to each outcome separately: an intercept alone is MCAR, adding
+observed covariates makes it MAR, adding the partially-observed outcome itself makes it MNAR. Either
+route is defensible; a delta grid is usually easier to present to a committee, an explicit selection
+model easier to justify when you have a substantive belief about *why* people dropped out. Report the incremental
 result and the CEAC across the grid, and state the `delta` at which the decision would change: a
 **tipping-point** analysis is far more useful to a decision-maker than a single MNAR scenario.
 `missing-data-mice` covers the general MNAR machinery; what is specific here is that the sensitivity
@@ -123,8 +137,9 @@ most often omitted.
 
 ## The package the book names
 
-Chapter 10 points to **`missingHE`** as a higher-level interface for Bayesian missing-data models in
-health economics — it wraps the joint cost-effect models (including hurdle and selection/pattern-mixture
+Chapter 10 (§10.4.2) points to **`missingHE`** (Gabrio, 2024) as a higher-level interface for
+Bayesian missing-data models in health economics — it writes and runs the JAGS code in the
+background once you state the missingness assumption and the outcome distributions — it wraps the joint cost-effect models (including hurdle and selection/pattern-mixture
 forms) with missingness handled internally. It was not possible to verify its current API from the
 authoring environment, so no function signatures are given here. If a user is already using it,
 treat it as a packaged route to the same models described in this skill, and check its documentation

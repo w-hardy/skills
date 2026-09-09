@@ -1,12 +1,17 @@
 # Bayesian parametric survival and extrapolation
 
-> Sources: *Bayesian Modelling in Health Technology Assessment* — Baio (Chapman & Hall/CRC, 2026),
-> Ch. 8 (survival analysis in HTA). Method and API claims anchored to the companion repository
-> <https://github.com/giabaio/bmhta-examples> (MIT), commit `d2a6298` (2026-08-07), file
-> `08-survival/survival.R` and its chapter `README.md`; accessed 2026-09-09. The book's own text
-> and CRAN were not reachable from the authoring environment, so **function signatures below are
-> those observed in working code at that commit, not re-verified against current CRAN** — check
-> `?fit.models` / `?survextrap` against the installed version before relying on an argument name.
+> Sources: *Bayesian Models in Health Technology Assessment* — Baio (CRC Press, published 7 August
+> 2026), Ch. 8 (survival analysis in HTA), read and verified against the online edition
+> <https://gianluca.statistica.it/books/online/bmhta/> on 2026-09-09: §8.3.3 for the Generalised F
+> identifiability example, §8.4 for the `survHE` workflow (Examples 8.2-8.10), §8.5.1-8.5.2 for
+> `survextrap` M-splines and external data (Examples 8.11-8.12). The running example throughout is
+> **NICE TA174**. Companion code: <https://github.com/giabaio/bmhta-examples> (MIT), commit
+> `d2a6298` (2026-08-07), `08-survival/survival.R`.
+>
+> The signatures below match the book's printed code, which was current at publication. `survHE`,
+> `survextrap` and their dependencies were **not installed** in the environment where this file was
+> verified, so they have not been checked against current CRAN — run `?fit.models` / `?survextrap`
+> against your installed version before relying on an argument name.
 
 This file covers the Bayesian route through the workflow in `SKILL.md`. It does not replace it: the
 framing that model choice is governed by extrapolation plausibility rather than fit, the hazard-shape
@@ -65,8 +70,18 @@ rstan::stan_ac(m$models[[1]])                            # autocorrelation
 
 **Run `original = TRUE, print_priors = TRUE` on every model before reading any result.** It is the
 only place the priors actually used and the convergence diagnostics are shown together. `survHE`
-supplies default priors; defaults are a choice, and an unstated one is not reportable. The
-diagnostic thresholds are the ordinary ones — see `brms-modelling`'s `references/core-workflow.md`
+supplies default priors; defaults are a choice, and an unstated one is not reportable. In the source
+they are `beta ~ Normal(0, 5)` with `alpha ~ Gamma(0.1, 0.1)` for the Weibull AFT and Gompertz, and
+`beta ~ Normal(0, 100)` with `log(alpha) ~ Uniform(0, 5)` for the log-Normal.
+
+To change them without leaving `survHE`, pass `priors` with the parameters of those same families —
+e.g. `priors = list(wei = list(a_alpha = 1, b_alpha = 3, sigma_beta = rep(10, 2)))` gives the Weibull
+shape an `Exponential(3)` (equivalently `Gamma(1, 3)`) and doubles the coefficient SDs; `sigma_beta`
+needs one entry per regression coefficient. To change the *family* of a prior you have to leave the
+package: `save.stan = TRUE` on a dummy call writes the Stan file out for editing, after which the
+model must be run through `rstan` directly rather than `survHE`.
+
+The diagnostic thresholds are the ordinary ones — see `brms-modelling`'s `references/core-workflow.md`
 for Rhat/ESS/divergence handling; nothing about survival changes them.
 
 ## Posterior survival bands — the extrapolation uncertainty that matters
@@ -112,6 +127,7 @@ differ by arm and so relaxes proportional hazards entirely:
 m_ctl <- survHE::fit.models(Surv(time, status) ~ 1, data = filter(trial, arm == "control"), ...)
 m_trt <- survHE::fit.models(Surv(time, status) ~ 1, data = filter(trial, arm == "active"),  ...)
 survHE::model.fit.plot(control = m_ctl, active = m_trt, type = "DIC", stacked = TRUE)
+# the argument NAMES here are free-form labels for the bars, not fixed parameters
 ```
 
 The cost is that no treatment effect parameter exists — the comparison is between two independently
@@ -127,6 +143,12 @@ parametric family answers that question purely by extrapolating its own function
 It fits an **M-spline** on the hazard, so the shape over the observed period is flexible rather than
 imposed by a two-parameter family, and it lets **external aggregate evidence** contribute to the
 likelihood in the extrapolation region.
+
+Know what it assumes past the data. **Beyond the final boundary knot the hazard is held constant at
+its value there** — a deliberate, pragmatic choice rather than an estimated shape, and the one that
+governs everything in the extrapolation region when no external evidence is supplied. That makes the
+placement of `add_knots` a modelling decision, not a technicality: it is where "flexible" stops and
+"constant hazard" starts.
 
 ```r
 spec <- survextrap::mspline_spec(Surv(time, status) ~ 1, data = trial, df = 6, add_knots = 180)

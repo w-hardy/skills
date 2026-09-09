@@ -1,11 +1,18 @@
 # Bayesian estimation of the numbers that go into a Markov model
 
-> Sources: *Bayesian Modelling in Health Technology Assessment* — Baio (Chapman & Hall/CRC, 2026),
-> Ch. 9 (Markov models). Anchored to the companion repository
-> <https://github.com/giabaio/bmhta-examples> (MIT) commit `d2a6298` (2026-08-07), file
-> `09-markov-models/markov-models.R` — a four-state HIV model estimated from transition counts, a
-> relative risk pooled across four published studies, and a treatment-waning curve; accessed
-> 2026-09-09.
+> Sources: *Bayesian Models in Health Technology Assessment* — Baio (CRC Press, published 7 August
+> 2026), §9.2 (Examples 9.2-9.3), read and verified against the online edition
+> <https://gianluca.statistica.it/books/online/bmhta/> on 2026-09-09. §9.2.1 gives the
+> Multinomial-Dirichlet transitions (Eqs 9.4-9.6), the pooled relative risk and the waning curve;
+> §9.2.2 the rescaling algebra (Eqs 9.8-9.11); §9.2.3 the per-draw trace. The worked example is the
+> four-state HIV model of Chancellor et al. (1997): transition counts in the ZDV arm, a relative risk
+> pooled across four published studies, and a Weibull treatment-waning curve fitted to pseudo-counts.
+> Companion code: <https://github.com/giabaio/bmhta-examples> (MIT) commit `d2a6298` (2026-08-07),
+> `09-markov-models/markov-models.R`.
+>
+> §9.3 of the same chapter covers the three-state cancer model and partitioned survival analysis;
+> that material is owned by `survival-analysis-hta`, `multistate-models-hta` and the TSD 19 reference
+> in `nice-economic-evaluation`, and is deliberately not duplicated here.
 
 `SKILL.md` owns the model **structure**: states, the transition matrix, cycles, discounting, and the
 `heemod` workflow. This file is about where the **numbers in that matrix come from** when they are
@@ -31,7 +38,10 @@ lambda[r, ] | y ~ Dirichlet(alpha[r, ] + y[r, ])
 ```
 
 with `alpha[r, ]` the prior counts (`rep(1, S)` for a uniform prior over the simplex; smaller values
-such as 0.5 or the Jeffreys 1/2 are less committal). Sampling is one line and needs no MCMC:
+such as 0.5 or the Jeffreys 1/2 are less committal). The source uses a flat scale of **3** on every
+admissible cell, which it calls reasonably vague given cell counts in the hundreds, and recommends
+checking sensitivity to that choice — with row counts that large the prior scale barely matters, but
+say which you used and test it when any row is sparse. Sampling is one line and needs no MCMC:
 
 ```r
 # one posterior draw of the full transition matrix
@@ -104,18 +114,26 @@ Putting the correction on the diagonal is the right default because the diagonal
 are", which has no independent evidence behind it — it is a residual. Check for negative entries
 afterwards regardless: a large `RR` on several transitions out of one state can drive the diagonal
 below zero, which means the RR is inconsistent with the baseline matrix and needs addressing, not
-clipping.
+clipping. The source reads this failure substantively rather than numerically: `RR ≤ 1/p1` is forced
+by the algebra (Eq 9.9), so a violation says the pooled RR's source populations are **not
+exchangeable** with the population your baseline matrix describes — a transportability problem, not
+a rounding one. It recommends keeping `which(lambda2 < 0, arr.ind = TRUE)` in the workflow as a
+standing check on the whole draws × cycles × states array.
 
-> The companion script's implementation and its own stated formula differ in the final term (one
-> uses `RR`, the other `1 - RR`). The identity above is the one that reproduces `lambda2 = RR *
-> lambda1`; derive it rather than copying either.
+> **A slip in the source, worth knowing before you copy it.** The book states this identity
+> correctly (Eq 9.10, derived via the odds ratio the RR implies), but the R code implementing it in
+> §9.2.3 computes the final term as `log(1 - lambda1 * (1 - rho.star))` — `1 − lambda1(1 − RR)` where
+> the equation says `1 − RR·lambda1`. The printed equation is the correct one: it is what reproduces
+> `lambda2 = RR * lambda1`. Derive it rather than copying either.
 
 ## Treatment effects from evidence synthesis
 
 Where the relative risk comes from several published studies, pool it with a hierarchical model
 rather than taking a single study or a fixed-effect average, and carry the **posterior** into the
 transition matrix. In the source this is a random-effects Normal model on the log-RR across four
-studies, with the pooled `exp(mu)` feeding `apply_rr()` above. For fitting that model see
+studies, with the pooled `exp(mu)` feeding `apply_rr()` above. Where the studies report a relative
+risk and a 95% interval rather than a standard error, it recovers the likelihood's scale as
+`sd = (log(upper) - log(lower)) / (2 * 1.96)`. For fitting that model see
 `brms-modelling`'s `references/model-families/meta-analysis.md`; for a network of more than two
 treatments see `network-meta-analysis-hta`.
 

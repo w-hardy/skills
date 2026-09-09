@@ -2,7 +2,16 @@
 
 Multilevel network meta-regression: the general population-adjustment method. It defines an individual-level regression (as in IPD-NMR) and incorporates AgD studies by **integrating** that model over each AgD study's covariate distribution — correctly linking the two levels and avoiding the aggregation / non-collapsibility bias that "plug-in means" approaches incur. It synthesises networks of any size and any IPD/AgD mix, and — crucially — produces estimates in **any target population**. Implemented in `multinma` (Stan). Example: plaque psoriasis, PASI 75 binary outcome, 9 studies (4 IPD: UNCOVER-1/2/3, IXORA-S; 5 AgD), target = PROSPECT cohort.
 
-> Sources: R-HTA Ch. 13 (ML-NMR; plaque-psoriasis network); Phillippo et al. (ML-NMR methodology, per TSD 18 and subsequent papers); `multinma` pkgdown docs — `set_ipd()`, `set_agd_arm()`, `combine_network()`, `add_integration()`, `nma()`, `relative_effects()`, `marginal_effects()`, `predict()` confirmed current. Accessed 2026-07-03.
+> Sources: R-HTA Ch. 13 (ML-NMR; plaque-psoriasis network); Phillippo et al. (ML-NMR methodology,
+> per TSD 18 and subsequent papers); `multinma` pkgdown docs — `set_ipd()`, `set_agd_arm()`,
+> `combine_network()`, `add_integration()`, `nma()`, `relative_effects()`, `marginal_effects()`,
+> `predict()` confirmed current. Accessed 2026-07-03.
+>
+> The QMC integration explanation is from *Bayesian Models in Health Technology Assessment* — Baio
+> (CRC Press, 2026), online edition <https://gianluca.statistica.it/books/online/bmhta/>, verified
+> 2026-09-09 — §11.3.1, which sets out why a deterministic
+> low-discrepancy sequence converges closer to O(n^-1) than plain Monte Carlo's O(n^-1/2) for smooth
+> integrands, and why that advantage falls away in high dimensions or for non-smooth ones.
 
 ## Pipeline overview
 `set_ipd()` + `set_agd_arm()` → `combine_network()` → `add_integration()` → `nma()` → `relative_effects()` / `predict()` / `marginal_effects()` for the target population.

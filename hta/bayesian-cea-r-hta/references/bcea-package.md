@@ -61,9 +61,12 @@ benefit), CEAC value and EVPI at the chosen λ. Key components/functions:
 | `struct.psa()` | structural/model-averaging PSA across candidate models |
 
 **CEAF and CEEF are different objects and are routinely confused.** The *acceptability* frontier
-(`ceaf.plot`) is the upper envelope of the per-strategy acceptability curves over λ — it is about
-**decision uncertainty**, and it reads "the probability that whichever strategy is currently optimal
-really is". The *efficiency* frontier (`ceef.plot`) is the Pareto frontier in mean cost-effect
+(`ceaf.plot`) reads, at each λ, the acceptability of **the strategy with the highest expected net
+benefit** at that λ — it is about **decision uncertainty**, and it says "the probability that
+whichever strategy is currently optimal really is". Note it is *not* the upper envelope of the
+acceptability curves: the strategy with the highest expected NB need not be the one with the highest
+probability of being cost-effective, and where they differ the frontier follows the expectation. The
+points where the optimal strategy changes are its switch points. The *efficiency* frontier (`ceef.plot`) is the Pareto frontier in mean cost-effect
 space — it is about **expected values**, and it reads "which strategies are ever optimal at some λ,
 and which are dominated or extendedly dominated". A strategy can sit on the efficiency frontier with
 a low acceptability, and vice versa. Say which one a plot is whenever you present it.

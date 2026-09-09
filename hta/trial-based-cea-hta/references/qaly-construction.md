@@ -1,7 +1,9 @@
 # Constructing QALYs and adjusting for baseline
 
-> Source: BMHTA Ch. 5, worked in `05-ild/ild.R` (bmhta-examples @ `d2a6298`) on the 10TT trial,
-> which measures HRQL utility at 0, 3, 6, 12, 18 and 24 months. Discount rate and perspective are
+> Source: BMHTA §5.1, Example 5.1 (Eq 5.1 for the AUC, Eq 5.2 for discounting), verified against the
+> online edition 2026-09-09. The 10TT trial (Beeken et al. 2017) randomised 537 patients and measures
+> HRQL utility at 0, 3, 6, 12, 18 and 24 months; the chapter analyses the **167** complete cases.
+> Companion code: `05-ild/ild.R` (bmhta-examples @ `d2a6298`). Discount rate and perspective are
 > policy choices — take them from `nice-economic-evaluation`, not from here.
 
 ## A QALY is an area, not a measurement
@@ -77,7 +79,7 @@ using the same rate, and say which resource-use period each cost covers.
 
 ## Adjusting for baseline utility
 
-**Always include baseline utility as a covariate in the effects model.** This is not optional
+**Always include baseline utility as a covariate in the effects model.** (§5.2.1.) This is not optional
 tidying; it is the single most consequential covariate in a within-trial CEA.
 
 Randomisation balances baseline utility *in expectation*, not in any particular trial. Because

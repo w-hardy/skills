@@ -91,6 +91,6 @@ output — both read from the same underlying samples.
 - Decision-tree/Markov concepts: R-HTA chapters 8–9 (see the sourcing note above
   for the verified chapter mapping).
 - Bayesian estimation of transition parameters (`references/bayesian-transition-parameters.md`):
-  *Bayesian Modelling in Health Technology Assessment* — Baio (Chapman & Hall/CRC, 2026) Ch. 9,
+  *Bayesian Models in Health Technology Assessment* — Baio (CRC Press, 2026) Ch. 9,
   anchored to the companion code at <https://github.com/giabaio/bmhta-examples> commit `d2a6298`,
   accessed 2026-09-09.

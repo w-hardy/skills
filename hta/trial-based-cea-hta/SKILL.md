@@ -15,15 +15,21 @@ Everything upstream of the draws is here. Everything downstream of them — CE p
 benefit, EVPI — is `bayesian-cea-r-hta`. Do not do decision analysis here, and do not fit these
 models there.
 
-> Sources: *Bayesian Modelling in Health Technology Assessment* — Gianluca Baio (Chapman &
-> Hall/CRC, 2026); book page <https://gianluca.statistica.it/books/bmhta/>. Chapter 5
-> (cost-effectiveness analysis with individual-level data) and Chapter 10 (missing data and
-> structural values in HTA) are the methodological basis for this skill. Method claims are
-> anchored to the companion code repository <https://github.com/giabaio/bmhta-examples> (MIT),
-> inspected at commit `d2a6298` (2026-08-07) — specifically `05-ild/ild.R`, `10-missing-data/`
-> and their chapter `README.md` files; accessed 2026-09-09. The book's own text was not
-> reachable from the authoring environment, so claims here are grounded in the companion code
-> and its annotations rather than quoted prose.
+> Sources: *Bayesian Models in Health Technology Assessment* — Gianluca Baio (CRC Press, published
+> 7 August 2026), online edition <https://gianluca.statistica.it/books/online/bmhta/>, read and
+> verified section by section on 2026-09-09.
+>
+> **Chapter 5** (cost-effectiveness analysis with individual-level data) is the methodological
+> backbone: §5.1 for QALY construction and discounting, §5.2 for the three joint models, §5.2.3 for
+> non-linearity and posterior-predictive estimation, §5.3 for model comparison, §5.4 for the hand-off
+> to `BCEA`. **Chapter 10** contributes the framing for missing economic outcomes (§10.1-10.4) and
+> the structural-values treatment (§10.4.1). Note Chapter 10 sits in the book's Part III, which is
+> deliberately lighter on code and defers the full missing-data workflow to Gabrio et al. (2025) in
+> *R for HTA* — so this skill's Chapter 10 material is the concepts plus the MenSS example, not a
+> port of a worked chapter.
+>
+> Companion code: <https://github.com/giabaio/bmhta-examples> (MIT), commit `d2a6298` (2026-08-07),
+> `05-ild/ild.R` and `10-missing-data/`.
 >
 > **Deliberate deviation from the source.** The book implements every model in JAGS via `R2jags`.
 > This skill states the models in **brms** instead, because brms is this repository's Bayesian
@@ -31,8 +37,10 @@ models there.
 > hurdle and zero-one-inflated families that Chapter 10 hand-rolls. The *statistical* content is
 > the book's; the implementation is not. See `references/joint-cost-effect-models.md` for the
 > translation, and read the JAGS formulations only if you are maintaining a legacy BUGS/JAGS
-> model. Package APIs could not be re-verified against CRAN from the authoring environment —
-> check argument names against the installed version before running anything here.
+> model. The brms claims here (`set_rescor()`'s gaussian/student restriction, the `zoi`/`coi`/`hu`
+> distributional parameters) were verified against brms 2.23.0 on 2026-09-09; `BCEA` and `missingHE`
+> were not installed in that environment, so check their signatures against the installed version
+> before running anything that calls them.
 
 ## The one non-negotiable principle
 

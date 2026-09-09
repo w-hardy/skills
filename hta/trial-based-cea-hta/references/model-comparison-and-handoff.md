@@ -1,8 +1,10 @@
 # Comparing candidate models, and handing the draws downstream
 
-> Source: BMHTA Ch. 5 (bmhta-examples @ `d2a6298`, `05-ild/ild.R`), which compares the three
-> candidate models by DIC (both `pV` and `pD` penalties), adds WAIC and LOO-CV from monitored
-> log-likelihood contributions, and model-averages with `BCEA::struct.psa()`.
+> Source: BMHTA §5.3 (model selection) and §5.4 (cost-effectiveness modelling), Examples 5.6-5.8 —
+> verified against the online edition, 2026-09-09. The book compares the three candidate models by
+> DIC (both `pV` and `pD` penalties, Table 5.3), adds WAIC and LOO-CV from a monitored
+> log-likelihood node (§5.3.4, Ex 5.7), and model-averages with `BCEA::struct.psa()` (§5.4).
+> Companion code: `05-ild/ild.R` (bmhta-examples @ `d2a6298`).
 
 ## Which criterion
 
@@ -22,11 +24,20 @@ honest position is:
   diagnostic, and is not invariant to parameterisation.
 - **Do not silently switch criteria between models.** Compare a set on one scale.
 
-Two DIC penalties appear in the source and they are not the same number. `pV` is half the posterior
-variance of the deviance; `pD` is `Dbar − D(theta_hat)`, the BUGS definition, which `R2jags` obtains
-by passing `pD = TRUE` (calling `rjags::dic.samples()`). They can differ materially, so **say which
-one a reported DIC uses**. `pD` can even go negative for badly non-normal posteriors, which is a
-signal the criterion is straining, not a small number.
+Two DIC penalties appear in the source and they are not the same number (§5.3.1). `pV = Var[D]/2`
+(Gelman et al.) is JAGS' default: invariant to reparameterisation and non-negative. `pD = Dbar −
+D(theta_hat)` (Eq 5.14) is the original BUGS definition, and it can go negative for badly non-normal
+posteriors — a signal the criterion is straining, not a small number. `R2jags` computes a penalty it
+also calls `pD` when you pass `pD = TRUE`, but that one is **Plummer's (2008) variant**, obtained via
+`rjags::dic.samples()`; the book notes it is "a slightly different version than the original one
+defined by Spiegelhalter et al. (2002), although it usually provides near-identical results". They
+can differ materially from `pV`, so **say which penalty a reported DIC uses**.
+
+One trap when reading older output: **`R2jags` before v0.8-9 (October 2024) printed `pV` under the
+label `pD`**. A legacy table saying "pD" may be neither definition above.
+
+Only `pD` estimates the effective number of parameters under shrinkage in a hierarchical model;
+`pV` generally does not (§6.2.7).
 
 The rough reading of a DIC difference used in the source: `< 2` is effectively equivalent support,
 `3–7` is meaningfully less support, `> 10` is negligible support for the worse model. Treat these as
@@ -41,12 +52,20 @@ The trap specific to this setting: **the models must be fitted to the same obser
 outcome.** Three ways that fails here, all easy to miss:
 
 - One model drops incomplete cases and another imputes them (`missing-economic-outcomes.md`). The
-  likelihoods then cover different data and the comparison is meaningless. Check `nobs()`.
-- One model is fitted to a transformed outcome (`e* = 3 − e`) and another to the raw one. A *linear*
-  transformation changes the log-likelihood by a constant Jacobian term that is the same for every
-  model on that scale — so models on the flipped scale are comparable with each other, but not with
-  models on the raw scale unless you account for it. Simplest fix: keep the whole candidate set on
-  one scale.
+  likelihoods then cover different data and the comparison is meaningless. Check `nobs()`. More
+  generally, with missing data the source warns that likelihood-based information criteria "do not
+  fully apply", because the likelihood is conditional on the observed data and says nothing about
+  the unobserved (§10.1) — so a DIC or LOO gap between two models with different missingness
+  handling is not evidence about either.
+- One model is fitted to a *rescaled* outcome and another to the raw one. Which transformations are
+  safe is not obvious, and the source works it out (Note 5.2). A **reflection** like `e* = 3 − e` is
+  affine with |Jacobian| = 1, and under a symmetric sampling distribution it leaves the deviance
+  **unchanged** — `D(mu*, sigma) = D(mu, sigma)` exactly — so a Normal model on the flipped scale is
+  directly comparable with one on the raw scale. A **multiplicative** rescaling is not: dividing
+  costs by `kappa` shifts a Gamma model's deviance by `2n·log(kappa)`, which for the source's data is
+  `2 × 167 × log(1000) = 2307.19` — larger than any difference you would be interpreting. So the rule
+  is not "never transform", it is: **every candidate must use the same cost scale**, and check the
+  Jacobian before comparing across a transformation rather than assuming either way.
 - One model is Beta on a rescaled 0–1 QALY and another Gamma on the natural scale. Different
   outcome variables; not comparable. Compare them on the decision quantities instead (below).
 
@@ -85,7 +104,11 @@ uncertainty. Two defensible responses:
   equivalent and generally better behaved than raw information-criterion weights.
 
 **`BCEA::struct.psa()` implements the DIC-weighted average and returns a `bcea` object**, so the
-averaged result flows into every downstream plot. It belongs to `bayesian-cea-r-hta`, which owns
+averaged result flows into every downstream plot. In the source it is called positionally as
+`struct.psa(models, effects, costs, ref = , interventions = )`, where `models` is a list of the
+fitted JAGS objects and `effects`/`costs` are lists of the per-model draw matrices; the result
+carries the extra class `struct.psa` and exposes the weights as `m_avg$w`. In the worked example
+those weights are `1.6e-42`, `4.9e-40`, `1.00` — an "average" that is one model. It belongs to `bayesian-cea-r-hta`, which owns
 BCEA; this skill produces the per-model draws it consumes. Do not model-average as a way of avoiding
 a modelling decision — if one model is right and the others are misspecified, averaging in the
 misspecified ones makes the answer worse, not more honest.

@@ -1,13 +1,15 @@
 # From relative effects to the absolute numbers an economic model needs
 
-> Sources: *Bayesian Modelling in Health Technology Assessment* — Baio (Chapman & Hall/CRC, 2026),
-> Ch. 6 (aggregate-level data and evidence synthesis) and Ch. 7 (network meta-analysis), whose
-> influenza-prophylaxis example combines two independent evidence streams into one economic model.
-> Anchored to <https://github.com/giabaio/bmhta-examples> (MIT) commit `d2a6298`, files `06-ald/`
-> and `07-nma/`; accessed 2026-09-09. Methods framing follows NICE DSU TSD 5 (evidence synthesis in
-> the baseline model), TSD 6 (embedding synthesis in probabilistic CEA) and TSD 3 (baseline risk).
-> CRAN was unreachable from the authoring environment — check package signatures against the
-> installed version.
+> Sources: *Bayesian Models in Health Technology Assessment* — Baio (CRC Press, published 7 August
+> 2026), Ch. 6 §6.3 and Ch. 7 §7.3, read and verified against the online edition
+> <https://gianluca.statistica.it/books/online/bmhta/> on 2026-09-09. Ch. 6's influenza-prophylaxis
+> example (Ex 6.7, after Cooper et al. 2004) is the model case: **S = 6 head-to-head trials** give
+> the relative effect, **H = 9 separate placebo-arm studies** give the background incidence, and the
+> two streams are modelled as distinct processes before being combined. Companion code:
+> <https://github.com/giabaio/bmhta-examples> (MIT) commit `d2a6298`, `06-ald/` and `07-nma/`.
+> Methods framing follows NICE DSU TSD 5 (evidence synthesis in the baseline model), TSD 6
+> (embedding synthesis in probabilistic CEA) and TSD 3 (baseline risk). `multinma` was not installed
+> in the verifying environment — check package signatures against the installed version.
 
 `SKILL.md` says the relative effects are applied "to a baseline to get each treatment's absolute
 effect". This file is that sentence, worked out — because where the baseline comes from, and how it
@@ -143,6 +145,12 @@ naive regression of observed effect on observed baseline risk is biased toward f
 relationship. The correct treatment models the true baseline as a latent variable (a hierarchical or
 errors-in-variables specification) rather than regressing on the observed control-arm rate. NICE DSU
 TSD 3 covers this; do not fit the naive version.
+
+The source's own version of the adjustment (the model Cooper et al. 2004 actually fit) is
+`logit(pi_s2) = alpha_s + delta*_s + gamma*(alpha_s - alpha_bar)`, so the pooled effect `mu_delta` is
+read at the average baseline risk and `gamma` carries the dependence — citing Welton et al. (2012,
+pp. 107-109). Its verdict is worth carrying too: where the studies are reasonably consistent the
+adjustment often makes no material difference, so fit it to find out rather than to decorate.
 
 ## Present it as a scenario set
 

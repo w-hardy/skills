@@ -26,7 +26,7 @@ patient-level model so its draws mean what they claim, plus calibration — is s
 - *Bayesian Cost-Effectiveness Analysis with the R package BCEA* — Baio, Berardi & Heath
   (Springer, 2017). Package API cross-checked against the `BCEA` CRAN documentation; accessed
   2026-07-03.
-- *Bayesian Modelling in Health Technology Assessment* — Baio (Chapman & Hall/CRC, 2026), Ch. 12
+- *Bayesian Models in Health Technology Assessment* — Baio (CRC Press, 2026), Ch. 12
   (value of information), for the EVPPI method comparison, Info Rank, and ENBS-based study design in
   `references/value-of-information.md`; anchored to the companion code at
   <https://github.com/giabaio/bmhta-examples> commit `d2a6298`, accessed 2026-09-09.

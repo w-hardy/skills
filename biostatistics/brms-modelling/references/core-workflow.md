@@ -2,6 +2,12 @@
 
 This is the backbone referenced by SKILL.md. Read the relevant sections in full rather than skimming — the thresholds and remedies here are what make a review or a new model defensible.
 
+> The penalised-complexity prior recipe and the `Gamma(0.001, 0.001)` warning in this section come
+> from *Bayesian Models in Health Technology Assessment* — Baio (CRC Press, 2026), online edition
+> <https://gianluca.statistica.it/books/online/bmhta/>, verified 2026-09-09 — §2.2.3 and Example 2.5
+> for PC priors (Simpson et al. 2017), §6.2.5 and Note 6.3 for
+> the precision-prior problem (after Gelman 2006).
+
 ## 1. Priors
 
 brms will fit a model with no explicit priors at all, silently falling back to its own defaults (typically flat/improper for fixed effects, weakly informative for variance components). That's often a reasonable starting point, but it's *not* the same as having made a deliberate prior choice, and it should never be the unstated default in a finished script.

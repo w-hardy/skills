@@ -2,6 +2,13 @@
 
 What changes relative to `core-workflow.md` when the outcome needs more than a standard family, or when auxiliary parameters (not just the mean) are themselves modelled as a function of predictors.
 
+> The boundary-value guidance (why only a hurdle construction is coherent at a boundary of a
+> continuous outcome) follows *Bayesian Models in Health Technology Assessment* — Baio (CRC Press,
+> 2026), online edition <https://gianluca.statistica.it/books/online/bmhta/>, verified 2026-09-09 —
+> §10.4.1 on "structural values", where an excess of QALYs at
+> exactly 1 is modelled as a mixture rather than shifted away. `hta/trial-based-cea-hta` owns the
+> health-economic case.
+
 ## Specification
 
 - **Zero-inflated vs. hurdle** — these answer different questions and are not interchangeable:

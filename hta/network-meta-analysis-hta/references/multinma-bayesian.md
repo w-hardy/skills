@@ -2,7 +2,15 @@
 
 Full workflow for a Bayesian NMA in `multinma` (Stan-backed). Illustrative example: a binary outcome (events `r` out of `n` per arm) — surgical-site-infection prevention, reference treatment "nonantibacterial", arm-level (aggregate) data in long format (one row per study arm).
 
-> Sources: R-HTA Ch. 10 (surgical-site-infection example, Bayesian NMA via multinma); `multinma` pkgdown docs (`set_agd_arm()`, `set_agd_contrast()`, `set_ipd()`, `combine_network()`, `nma()`, `relative_effects()`, `predict()` confirmed). Accessed 2026-07-03.
+> Sources: R-HTA Ch. 10 (surgical-site-infection example, Bayesian NMA via multinma); `multinma`
+> pkgdown docs (`set_agd_arm()`, `set_agd_contrast()`, `set_ipd()`, `combine_network()`, `nma()`,
+> `relative_effects()`, `predict()` confirmed). Accessed 2026-07-03.
+>
+> The heterogeneity-prior ladder is from *Bayesian Models in Health Technology Assessment* — Baio
+> (CRC Press, 2026), online edition <https://gianluca.statistica.it/books/online/bmhta/>, verified
+> 2026-09-09 — §6.2.5, which recommends PC priors as a default
+> and half-Cauchy (Gelman 2006) as the main alternative, and discourages `Gamma(eps, eps)` on the
+> precision and `Uniform(0, K)` on the SD.
 
 ## Setup and network
 

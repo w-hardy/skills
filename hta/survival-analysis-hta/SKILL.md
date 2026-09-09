@@ -9,7 +9,7 @@ Parametric time-to-event modelling for economic evaluation, in R, following R-HT
 
 > Sources: *R for Health Technology Assessment* (Baio et al., online at <https://gianluca.statistica.it/books/online/r-hta/>) — chapter mapping verified against the live ToC (Ch. 7 = survival analysis), accessed 2026-07-03; the chapter's colon-cancer worked example, `flexsurvreg`/`flexsurvspline` workflow, `hr_flexsurvreg`, and the AIC-fit-vs-extrapolation-plausibility framing all confirmed. Package signatures and version-sensitive behaviour (`flexsurv` 2.3.2, `flexsurvcure` 1.1.0, `survHE` 2.0.51 incl. `digitise()`, `make.ipd()`, `fit.models()`, `make.transition.probs()`, `three_state_mm()`, `markov_trace()`) re-verified against source/CRAN documentation and empirical testing, accessed 2026-08-27. The
 > Bayesian material (`references/bayesian-survival.md`) is from *Bayesian Modelling in Health
-> Technology Assessment* — Baio (Chapman & Hall/CRC, 2026) Ch. 8, anchored to the companion code at
+> Technology Assessment* — Baio (CRC Press, 2026) Ch. 8, anchored to the companion code at
 > <https://github.com/giabaio/bmhta-examples> commit `d2a6298`, accessed 2026-09-09; `survHE`
 > Bayesian and `survextrap` signatures there are as observed in that working code, not re-verified
 > against CRAN.

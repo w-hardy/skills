@@ -105,7 +105,10 @@ over another study's covariate distribution, to transport a marginal effect
 between populations (G-computation STC). Same standardisation arithmetic; the
 obstacle there is a covariate-distribution mismatch between studies, not
 confounding, so identification is already free. If that is the question, use
-`population-adjusted-comparisons`.
+`population-adjusted-comparisons`. (Baio, *Bayesian Models in Health Technology
+Assessment*, CRC Press 2026, §11.3.2 uses "parametric g-computation" in exactly
+that sense, after Remiro Azócar et al. 2022, noting the "g" is Robins' 1986
+*generalised*.)
 
 **Doubly robust (AIPW, TMLE).** Combines both: consistent if *either* the
 treatment model or the outcome model is correct. This is the default to reach
