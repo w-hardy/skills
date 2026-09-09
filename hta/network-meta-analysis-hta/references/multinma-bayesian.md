@@ -44,6 +44,27 @@ fit_re <- nma(net, trt_effects = "random",
 
 **Set priors deliberately.** `multinma`'s defaults raise a warning by design — a prior that's vague for a log-OR (e.g. `normal(scale = 100)`) may be informative on another scale. For random effects, an informative heterogeneity prior from published meta-analyses (e.g. Rhodes et al.) is often better than a vague one given how few trials inform τ.
 
+**Choosing the heterogeneity prior's scale.** The example above uses `half_normal(scale = 2.5)`; the
+scale is the entire content of that prior and deserves a reason. Three defensible routes, in
+increasing order of how much you are claiming:
+
+- **Half-Cauchy** — heavier-tailed than half-normal, so it is more permissive of large τ when few
+  trials inform it. A common weakly-informative default.
+- **Half-normal** — lighter tails; a stronger statement that very large heterogeneity is implausible.
+- **Penalised-complexity / exponential on τ**, calibrated from a tail statement: `lambda =
+  -log(alpha)/U` encodes `Pr(tau > U) = alpha`, so `Pr(tau > 1) = 0.1` gives `Exponential(2.31)`.
+  This is the most defensible in a submission because the prior *is* a sentence a reviewer can
+  disagree with. See `brms-modelling`'s `references/core-workflow.md` §1 for the derivation. Check
+  which prior families the installed `multinma`'s `prior_het` accepts before assuming `exponential()`
+  is among them — a half-normal or half-Cauchy calibrated to the same tail statement is the fallback.
+
+Whichever you choose, **sanity-check it by forward simulation** rather than by eye: draw from the
+prior on τ, and look at the implied spread of study-level effects on the scale you care about (the
+OR or HR scale, not the log scale). A prior that looks innocuous on the log-OR scale can imply odds
+ratios of 20 between otherwise similar trials. Overlaying two candidate priors' implied spreads is a
+quick way to see that a half-Cauchy and a calibrated exponential are often close in the region that
+matters and differ mainly in the tail.
+
 ## Convergence — check before reading anything
 
 ```r

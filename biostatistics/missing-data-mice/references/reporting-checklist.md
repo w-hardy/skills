@@ -14,7 +14,9 @@ points 1, 2, 4, 5, 6, and 11 as the minimum for the main text; the rest can go i
 or appendix.
 
 1. **Amount of missing data** — number/percentage missing per variable of interest; number of
-   fully complete cases; if longitudinal, the number of participants per occasion.
+   fully complete cases; if longitudinal, the number of participants per occasion. In a trial or
+   any comparative study, report these **by arm**: the estimand is a contrast, so *differential*
+   missingness is what biases it, and a pooled percentage hides that entirely.
 2. **Reasons for missingness** — what's known about why data are missing; whether missingness
    was intentional (e.g. skip patterns by design) and whether it's plausibly related to the
    outcome or to other study variables.

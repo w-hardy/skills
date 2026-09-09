@@ -62,9 +62,11 @@ TSD 22, 23 as the current versions).
 - **TSD 2 — General linear modelling framework for pairwise and network meta-analysis.**
 - **TSD 3 — Heterogeneity: subgroups, meta-regression, bias and bias-adjustment.**
 - **TSD 4 — Inconsistency in networks of RCTs** (NMA validity checks).
-- **TSD 5 — Evidence synthesis in the baseline natural history model.**
+- **TSD 5 — Evidence synthesis in the baseline natural history model.** Method guidance in
+  `network-meta-analysis-hta`'s `references/baseline-and-absolute-effects.md`.
 - **TSD 6 — Embedding evidence synthesis in probabilistic CEA: software choices** (supports
-  PSA implementation, section 4.7).
+  PSA implementation, section 4.7). Same reference: synthesising every model parameter in one
+  posterior so the PSA carries the correlations the shared evidence induces.
 - **TSD 7 — Evidence synthesis of treatment efficacy: a reviewer's checklist.**
 - **TSD 17 — Observational data to inform treatment-effectiveness estimates** (comparative
   IPD; relevant to real-world evidence and non-RCT comparators).

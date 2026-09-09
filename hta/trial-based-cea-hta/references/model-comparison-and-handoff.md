@@ -11,7 +11,8 @@ The source's workflow is DIC-centred, because DIC is what BUGS/JAGS report by de
 package**, as set out in `brms-modelling`'s `references/core-workflow.md`. Both are in play, and the
 honest position is:
 
-- **Use LOO (`loo_compare()`) as the default.** It estimates out-of-sample predictive accuracy, it
+- **Use LOO (`loo_compare()`) as the default**, attaching it to each fit with
+  `add_criterion(fit, "loo")` first. It estimates out-of-sample predictive accuracy, it
   ships a diagnostic (Pareto-k) that tells you when the estimate is unreliable, and brms computes it
   from a fit with no extra instrumentation. Prefer it whenever you have the pointwise log-likelihood
   — which, in brms, you always do.

@@ -99,6 +99,13 @@ received, and fit an outcome model on the pseudo-population.
 covariates; predict every patient's outcome under treatment and under control;
 average the difference. Efficient when the outcome model is right, and it gives
 the marginal effect directly rather than a conditional one.
+Note the term is also used in health technology assessment for a different job:
+standardising an outcome model fitted in one *randomised* trial's individual data
+over another study's covariate distribution, to transport a marginal effect
+between populations (G-computation STC). Same standardisation arithmetic; the
+obstacle there is a covariate-distribution mismatch between studies, not
+confounding, so identification is already free. If that is the question, use
+`population-adjusted-comparisons`.
 
 **Doubly robust (AIPW, TMLE).** Combines both: consistent if *either* the
 treatment model or the outcome model is correct. This is the default to reach

@@ -53,11 +53,29 @@ benefit), CEAC value and EVPI at the chosen λ. Key components/functions:
 | `ceplane.plot(m, wtp = …)` | CE plane with λ line and cloud |
 | `ceac.plot(m)` | CEAC (pairwise vs `ref`) |
 | `mce <- multi.ce(m)` then `ceac.plot(mce)` / `ceaf.plot(mce)` | multi-comparator CEACs and the frontier |
+| `ceef.plot(m)` | cost-effectiveness *efficiency* frontier in mean cost-effect space |
 | `eib.plot(m)` | expected incremental benefit over λ, with break-even λ* |
 | `evi.plot(m)` | per-person EVPI over λ |
 | `evppi(m, param, input)` | regression-based EVPPI; `input` from `createInputs()`, needs parameter draws (calls the `voi` package internally) |
 | `CEriskav(m) <- r` | risk-aversion sensitivity — a **replacement** function (also spelled `CEriskAv`), assigns a vector of risk-aversion parameters `r` onto the object |
 | `struct.psa()` | structural/model-averaging PSA across candidate models |
+
+**CEAF and CEEF are different objects and are routinely confused.** The *acceptability* frontier
+(`ceaf.plot`) is the upper envelope of the per-strategy acceptability curves over λ — it is about
+**decision uncertainty**, and it reads "the probability that whichever strategy is currently optimal
+really is". The *efficiency* frontier (`ceef.plot`) is the Pareto frontier in mean cost-effect
+space — it is about **expected values**, and it reads "which strategies are ever optimal at some λ,
+and which are dominated or extendedly dominated". A strategy can sit on the efficiency frontier with
+a low acceptability, and vice versa. Say which one a plot is whenever you present it.
+
+**Weights for `struct.psa()`.** Its native weighting path derives DIC weights
+(`w_h ∝ exp(−ΔDIC_h / 2)`) from BUGS/JAGS model objects, which a brms-based workflow does not
+produce — so supply weights explicitly instead. `loo::loo_model_weights(list_of_loo, method =
+"stacking")` is the modern equivalent and is better behaved than information-criterion weights;
+pseudo-BMA with the Bayesian bootstrap is the alternative. Check the installed signature's weight
+argument, since BCEA argument names drift across releases. One sanity note either way: these weights
+decay fast, so when one model takes weight ≈ 1 the "model average" is that model, and should be
+reported as such rather than presented as if averaging had done work.
 
 `multi.ce()` matters whenever >2 strategies: it takes the `bcea` object and returns the
 multi-comparator decision quantities that `ceac.plot`/`ceaf.plot` then render; the default

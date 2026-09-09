@@ -1,19 +1,25 @@
 ---
 name: survival-analysis-hta
-description: "Fit, choose between, extrapolate, and report parametric survival (time-to-event) models for health economic evaluation in R, using flexsurv, flexsurvcure, and survHE. Use whenever survival analysis informs an economic evaluation or HTA submission: fitting parametric distributions to trial data, choosing a distribution for extrapolation, estimating mean or restricted mean survival, modelling a treatment effect as a hazard ratio or AFT, fitting spline/cure/relative-survival models, reconstructing IPD from a published Kaplan-Meier curve, or turning a fit into transition probabilities. Trigger on phrases like \"survival analysis\", \"time-to-event\", \"parametric survival\", \"extrapolate survival\", \"flexsurv\", \"proportional hazards vs AFT\", \"cure model\", \"spline survival model\", \"restricted mean survival\", \"digitise a KM curve\", or \"survival extrapolation for NICE\". For network meta-analysis of survival across trials, this skill covers single-study/IPD modelling and hands off to network-meta-analysis-hta."
+description: "Fit, choose between, extrapolate, and report parametric survival (time-to-event) models for health economic evaluation in R, using flexsurv, flexsurvcure, survHE and survextrap, by maximum likelihood or Bayesian estimation. Use whenever survival analysis informs an economic evaluation or HTA submission: fitting parametric distributions to trial data, choosing a distribution for extrapolation, estimating mean or restricted mean survival, a treatment effect as a hazard ratio or AFT, spline/cure/relative-survival models, Bayesian fitting with priors and posterior survival bands, anchoring extrapolation with external data, reconstructing IPD from a published Kaplan-Meier curve, or turning a fit into transition probabilities. Trigger on \"survival analysis\", \"time-to-event\", \"parametric survival\", \"extrapolate survival\", \"flexsurv\", \"survextrap\", \"cure model\", \"digitise a KM curve\", or \"survival extrapolation for NICE\". For network meta-analysis of survival across trials, hands off to network-meta-analysis-hta."
 ---
 
 # Survival analysis for HTA
 
 Parametric time-to-event modelling for economic evaluation, in R, following R-HTA chapter 7. The defining feature of survival analysis *for HTA* (as opposed to for a clinical paper) is that **the deliverable is usually mean survival over a lifetime horizon, which requires extrapolating beyond the trial follow-up** — so model choice is governed at least as much by the plausibility of the extrapolated hazard as by fit to the observed data. Keep that framing central; it's what separates this from generic survival analysis.
 
-> Sources: *R for Health Technology Assessment* (Baio et al., online at <https://gianluca.statistica.it/books/online/r-hta/>) — chapter mapping verified against the live ToC (Ch. 7 = survival analysis), accessed 2026-07-03; the chapter's colon-cancer worked example, `flexsurvreg`/`flexsurvspline` workflow, `hr_flexsurvreg`, and the AIC-fit-vs-extrapolation-plausibility framing all confirmed. Package signatures and version-sensitive behaviour (`flexsurv` 2.3.2, `flexsurvcure` 1.1.0, `survHE` 2.0.51 incl. `digitise()`, `make.ipd()`, `fit.models()`, `make.transition.probs()`, `three_state_mm()`, `markov_trace()`) re-verified against source/CRAN documentation and empirical testing, accessed 2026-08-27.
+> Sources: *R for Health Technology Assessment* (Baio et al., online at <https://gianluca.statistica.it/books/online/r-hta/>) — chapter mapping verified against the live ToC (Ch. 7 = survival analysis), accessed 2026-07-03; the chapter's colon-cancer worked example, `flexsurvreg`/`flexsurvspline` workflow, `hr_flexsurvreg`, and the AIC-fit-vs-extrapolation-plausibility framing all confirmed. Package signatures and version-sensitive behaviour (`flexsurv` 2.3.2, `flexsurvcure` 1.1.0, `survHE` 2.0.51 incl. `digitise()`, `make.ipd()`, `fit.models()`, `make.transition.probs()`, `three_state_mm()`, `markov_trace()`) re-verified against source/CRAN documentation and empirical testing, accessed 2026-08-27. The
+> Bayesian material (`references/bayesian-survival.md`) is from *Bayesian Modelling in Health
+> Technology Assessment* — Baio (Chapman & Hall/CRC, 2026) Ch. 8, anchored to the companion code at
+> <https://github.com/giabaio/bmhta-examples> commit `d2a6298`, accessed 2026-09-09; `survHE`
+> Bayesian and `survextrap` signatures there are as observed in that working code, not re-verified
+> against CRAN.
 
 ## Packages and what each is for
 
 - **`flexsurv`** — the workhorse. `flexsurvreg()` fits standard parametric distributions (exponential, Weibull, gamma, Gompertz, log-normal, log-logistic, generalised gamma) by maximum likelihood; `flexsurvspline()` fits Royston-Parmar spline models. Current version ~2.3.x. Covers covariates on any parameter, relative-survival (`bhazard`), time-varying hazard ratios (`hr_flexsurvreg()`), and marginal/standardised survival (`standsurv()`).
 - **`flexsurvcure`** — mixture and non-mixture cure models, for when a fraction of patients are plausibly "cured" and will never have the event. Wraps `flexsurvreg` internally.
 - **`survHE`** — Baio's HTA-oriented layer over flexsurv. `fit.models()` batch-fits several distributions at once; `digitise()` + `make.ipd()` reconstruct pseudo-IPD from a digitised KM curve (Guyot algorithm); `make.transition.probs()` computes per-cycle transition probabilities from a `fit.models` object. Running an actual cohort trace is a separate, narrower pair: `three_state_mm()` simulates a fixed three-state illness-death trace (it needs three separate fits, one per transition) and `markov_trace()` only *plots* that trace (it returns a `ggplot`). Bayesian back-ends (`method = "hmc"`/`"inla"`) now live in companion packages `survHEhmc`/`survHEinla`, installed separately from the maintainer's r-universe. Current release: survHE 2.0.51 (Jan 2026).
+- **`survextrap`** — Bayesian M-spline hazard models that let **external aggregate evidence** (registry data, a life table, elicited long-term survival) enter the likelihood and anchor the extrapolation, rather than leaving the tail entirely to a two-parameter family's functional form. The main Bayesian addition for the part of the curve that decides the ICER; see `references/bayesian-survival.md`.
 - **`survival`** — base KM (`survfit`), Cox (`coxph`) for checking the PH assumption. Cox and KM are *not* used for extrapolation (neither is parametric), so they're diagnostic here, not the main event.
 
 ## The workflow
@@ -42,6 +48,28 @@ For NICE submissions specifically, the systematic model-selection process (fit a
 - **Relative survival** (`flexsurv` `bhazard`): partitions all-cause hazard into background (from life tables) + excess (disease-specific, modelled parametrically). Valuable for long-term extrapolation because the two components trend differently. Pairs naturally with cure models for the "cured patients revert to population mortality" assumption.
 
 See `references/advanced-survival-models.md` for fitting patterns for each.
+
+## The Bayesian route
+
+Everything above can be done by maximum likelihood (`flexsurv`) or Bayesian estimation
+(`survHE` with `method = "hmc"`, or `survextrap`). The framing does not change — model choice is
+still governed by extrapolation plausibility, and a Bayesian fit with the best DIC can still
+extrapolate absurdly. What changes is worth having in three specific places:
+
+- **Weakly identified flexible distributions.** The Generalised F's ancillary parameters are
+  effectively non-identifiable by MLE on realistic trial data; mildly regularising priors make the
+  fit usable. Flexibility and identifiability trade off, and priors are how you buy both.
+- **Uncertainty propagation without a normal approximation.** The posterior carries the joint
+  parameter uncertainty directly, instead of a multivariate-normal approximation on the transformed
+  scale — which matters most where the likelihood is skewed, i.e. small samples and heavy censoring.
+  `plot(fit, nsim = 1000, t = ...)` gives a credible band on the extrapolated curve.
+- **External evidence as evidence.** `survextrap` lets long-term aggregate data contribute to the
+  likelihood, so the extrapolation is fitted to it rather than adjusted toward it afterwards.
+
+See `references/bayesian-survival.md` for the fitting workflow, priors and diagnostics, posterior
+survival bands, the `survextrap` M-spline and external-data mechanics, and how DIC and LOO sit
+together here. Do not create a parallel Bayesian survival analysis — it is the same workflow with a
+different estimator.
 
 ## Reconstructing IPD from a published KM curve
 

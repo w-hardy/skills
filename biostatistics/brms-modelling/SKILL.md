@@ -61,4 +61,10 @@ When writing or rewriting brms code, follow `references/coding-conventions.md` �
 - `references/review-checklist.md` — the structured review report template and inline-comment conventions
 - `references/coding-conventions.md` — R style conventions specific to brms scripts
 
+**Health-economic outcomes are a special case.** When the outcome is patient-level cost or QALYs
+from a trial and the goal is a cost-effectiveness analysis, the family choice, the joint
+specification, and how the coefficients must be turned into arm-level means are owned by
+`trial-based-cea-hta`. Use this skill for the machinery; go there for what the economic outcome
+requires of it.
+
 Read the model-family file(s) relevant to the task in addition to `core-workflow.md` — the workflow table above is family-agnostic; the family files cover what changes within each stage for that family. Also read `special-terms.md` whenever the formula's right-hand side involves repeated measures/time, an ordinal predictor, a clearly non-linear continuous effect, or a covariate measured with error — these cut across families and are easy to miss because they're about the predictors, not the outcome's family.

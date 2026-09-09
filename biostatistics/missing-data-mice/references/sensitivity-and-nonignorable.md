@@ -78,6 +78,19 @@ standard, honest framing for the person's report:
   conclusion of the Leiden 85+ analysis, FIMD §9.2.4). If it does change, that's important to
   report too, and argues for caution in how the result is interpreted, not for picking the δ
   that gives the preferred answer.
+- Report the **tipping point** — the δ at which the conclusion changes — rather than only whether
+  it changed over the grid you happened to run. It is far more useful to a reader, because it turns
+  the sensitivity analysis into a statement they can judge: "the conclusion reverses only if the
+  unobserved values are more than 15 mmHg below what MAR implies — is that plausible here?"
+
+**The Bayesian variant.** In a fully Bayesian analysis δ need not be fixed at a grid of values: it
+can be given a prior and integrated over, so uncertainty about *how far from MAR* the mechanism is
+becomes part of the posterior rather than a set of separate scenarios. That is the more complete
+treatment when the analysis model is already Bayesian. Keep the grid-of-scenarios approach as the
+recommendation for a frequentist analysis, and note that even in the Bayesian case a grid is often
+the better *presentation*: a reviewer can interrogate "what if δ = −10" far more readily than a
+prior on δ they did not choose. The prior on δ is not identified by the data — that is the entire
+point — so it must be justified substantively, not fitted.
 - Choose the *range* of δ based on substantive knowledge (a clinically plausible shift), not by
   searching for the value that flips the result.
 

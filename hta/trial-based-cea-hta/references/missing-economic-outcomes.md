@@ -71,6 +71,13 @@ The joint model is not always the better tool. Reach for `mice` when:
 - **The analysis must match a pre-specified statistical analysis plan** that commits to MI — a real
   constraint in regulatory and HTA submissions.
 
+Whichever route, one rule is specific to this setting and easy to break: **cost must appear in the
+effect's imputation model and effect in the cost's.** Imputing them separately, each from covariates
+only, produces imputed pairs that are conditionally independent given the covariates — which
+destroys exactly the cost-effect correlation the joint model exists to estimate, and does so
+invisibly. In `mice` that means not excluding either outcome from the other's predictor matrix; in
+the joint Bayesian model it is automatic, which is another reason to prefer it here.
+
 The two routes can be combined: impute visit-level utilities with `mice`, compute QALYs within each
 imputed dataset, then fit the joint Bayesian model to each. If you do this, the pairing rule
 (`population-average-summaries.md`) extends: draws must be paired **within** an imputation before

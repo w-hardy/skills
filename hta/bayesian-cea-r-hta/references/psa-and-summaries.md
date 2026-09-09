@@ -65,6 +65,12 @@ origin (slope λ). Reading:
   strategy can differ from the CEAC-maximal strategy (expectation vs probability); when they
   disagree, say so explicitly — the decision follows expected NB, the CEAC describes the
   uncertainty around it.
+- **CEEF (efficiency frontier)** is a *different object* from the CEAF despite the near-identical
+  name: the Pareto frontier in mean cost-effect space, showing which strategies are ever optimal at
+  some λ and which are dominated or extendedly dominated. It is about expected values and is
+  λ-independent; the CEAF is about decision uncertainty and is read off a λ grid. `BCEA::ceef.plot()`
+  draws it (see `bcea-package.md`), and it is the probabilistic counterpart of the fully incremental
+  analysis in the next section. Name which one a plot is whenever you show it.
 - A CEAC hovering near 0.5 across the relevant λ range is the classic "decision on a knife-edge"
   picture — that is where VOI analysis (see `value-of-information.md`) earns its keep.
 

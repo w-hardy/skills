@@ -36,6 +36,15 @@ f_c <- bf(cost_k ~ arm + qaly_c)          # qaly_c = effect, centred within arm
 fit <- brm(f_e + f_c + set_rescor(FALSE), data = trial, ...)
 ```
 
+One construction detail does not translate exactly. The source centres the effect on the
+**model-implied** arm mean (a parameter, updated at every iteration); brms has no way to reference
+another submodel's parameter inside a formula, so `qaly_c` above must be centred on the **observed**
+arm mean, computed once as a data step. The difference is that the centring constant is treated as
+known rather than estimated. For a trial of any reasonable size this is negligible, but it is an
+approximation, so say so — and note that it makes the centring cosmetic rather than load-bearing:
+what actually recovers the arm means is the standardisation in `population-average-summaries.md`,
+not the centring.
+
 Under joint Normality these two are **the same model**, reparameterised. The correlation and the
 marginal cost SD are recoverable from the conditional ones:
 
@@ -121,6 +130,13 @@ the coefficients directly. Under a log link they do not. Standardise instead —
 conditional mean over the observed distribution of effects within the arm — as set out in
 `population-average-summaries.md`. This is the step most likely to be skipped, and it biases the
 incremental cost.
+
+**The same applies to the effects equation, and it is easier to miss there.** With
+`log(phi_e_i) = alpha0 + alpha1 * arm_i + alpha2 * u0_c_i`, the quantity `exp(alpha0 + alpha1 * arm)`
+is the mean at `u0_c = 0` — a patient at average baseline utility — and the arm's mean effect is
+that multiplied by `E[exp(alpha2 * u0_c)]`, which is not 1. Mean-centring a covariate delivers the
+population average **only under an identity link**. Under any other link, centring buys
+interpretability and better sampler geometry, not the estimand. Standardise on both sides.
 
 ## Priors
 

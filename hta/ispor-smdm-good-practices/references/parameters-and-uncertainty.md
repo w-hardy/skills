@@ -71,7 +71,10 @@ Populate models per **evidence-based-medicine** principles: incorporate all
 relevant evidence rather than cherry-picking one source; use best-practice
 methods to avoid bias (e.g., estimating effectiveness from observational
 sources); employ formal evidence synthesis (meta-analysis, network meta-analysis
-→ `network-meta-analysis-hta`) as appropriate. Standard estimation already yields
+→ `network-meta-analysis-hta`) as appropriate — including for the model's *baseline*
+parameters, not only its relative effects; that skill's
+`references/baseline-and-absolute-effects.md` covers synthesising a baseline for the decision
+population and combining it with pooled relative effects. Standard estimation already yields
 a point estimate, a precision measure (SE / 95% CI), and possibly covariance —
 these feed **directly** into the uncertainty analysis. The steps to estimate a
 parameter and the steps to characterise its uncertainty are one process, not two.

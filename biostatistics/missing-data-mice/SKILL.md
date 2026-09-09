@@ -257,6 +257,35 @@ is a simple δ-adjustment: impute under MAR as usual, then shift the imputed val
 a plausible amount and see whether conclusions change. See `references/sensitivity-and-nonignorable.md` for the
 `post=` mechanism and how to interpret a range of scenarios.
 
+## When a full Bayesian model is the better route
+
+Multiple imputation is not the only principled option, and this skill should not imply it is. MI is
+itself a posterior-predictive procedure — draw plausible values from a predictive distribution, run
+the analysis in each, pool — but it does it in **two stages**, and that seam has a cost: the
+imputation model and the analysis model can imply different joint distributions, so the pooled
+result answers a slightly different question from the one the analysis model asks. That mismatch is
+called uncongeniality, and building a congenial imputation model by hand gets hard as the analysis
+model gets more structured.
+
+In a **fully Bayesian model**, a missing value is simply a parameter with no likelihood
+contribution, sampled in the same MCMC run as everything else. Congeniality is automatic because
+there is only one model, and the output is a joint posterior rather than a set of pooled scalars.
+
+Routing rule:
+
+- **Many incomplete variables, especially covariates, with an arbitrary missingness pattern, or an
+  analysis model that is not Bayesian** → `mice`. Chained equations are built for exactly this, and
+  fitting a joint model per incomplete variable would be unwieldy.
+- **Missingness confined to the small set of outcomes an already-Bayesian model owns** → model it in
+  place. In brms this is `mi()` in the formula; see `brms-modelling`'s `references/special-terms.md`
+  for the mechanics and `references/coding-conventions.md` for the `mi()` vs `brm_multiple()`
+  choice.
+- **Both** is legitimate: impute components with `mice`, then fit the Bayesian model to each
+  completed dataset — provided you keep the imputations separate to the end (Step 4's rule).
+
+For trial-based economic evaluation specifically, where costs and QALYs are missing together and
+their correlation is the point of the analysis, `trial-based-cea-hta` owns the joint-model route.
+
 ## Step 6 — Reporting
 
 If the person needs to write up the missing-data handling (methods section, supplementary

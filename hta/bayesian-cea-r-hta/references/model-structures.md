@@ -79,7 +79,9 @@ targets (prevalence, survival at t, registry counts):
 
 Parameter PSA conditions on the structure being right. Where structure is genuinely contested
 (state definitions, extrapolation family, waning assumptions), run the alternatives and present
-them as scenarios — or model-average with explicit weights (BCEA's `struct.psa()`). Do not bury
+them as scenarios — or model-average with explicit weights (BCEA's `struct.psa()`; where those
+weights come from, and why stacking is preferable to information-criterion weights in a
+non-BUGS workflow, is in `bcea-package.md`). Do not bury
 a structural choice inside a parameter distribution.
 
 ## In this repository

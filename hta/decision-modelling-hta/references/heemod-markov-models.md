@@ -139,7 +139,19 @@ plot(psa_res, type = "ce")        # cost-effectiveness plane
 ```
 
 Two important gotchas confirmed from the heemod docs:
-- `beta()` takes **`shape1, shape2`**, not `mean`/`sd`. If you only have a mean and sd for a probability, either convert to shapes via method of moments first, or just use `binomial(prob, size)` instead, which takes the point estimate directly.
+- `beta()` takes **`shape1, shape2`**, not `mean`/`sd`. If you only have a mean and sd for a probability, either convert to shapes via method of moments first, or just use `binomial(prob, size)` instead, which takes the point estimate directly. The method-of-moments conversion, for a mean `mu` and SD `sigma` with `sigma^2 < mu*(1-mu)`:
+
+  ```r
+  beta_shapes <- function(mu, sigma) {
+    k <- mu * (1 - mu) / sigma^2 - 1
+    if (k <= 0) stop("sigma is too large for a Beta with this mean")
+    c(shape1 = mu * k, shape2 = (1 - mu) * k)
+  }
+  ```
+
+  The guard matters: a Beta cannot have an SD at or above `sqrt(mu*(1-mu))`, and a mean/SD pair
+  lifted from a paper often violates it — which is a sign the reported SD is not describing a Beta,
+  not a reason to fudge the shapes.
 - The several outgoing probabilities from a single state are not independent (they must keep summing to ≤1). Where a state splits its outflow across multiple destinations, prefer a single `multinomial(...)` over several independent `binomial`/`beta` draws, so the simplex constraint is respected.
 
 If two or more parameters came from the same regression (e.g. correlated log-rate and log-rate-ratio from one survival fit), build a correlation structure with `define_correlation()` and pass it as the `correlation =` argument of `define_psa()` (it also accepts a raw correlation matrix). Independence is the default and understates joint uncertainty when parameters are actually correlated.

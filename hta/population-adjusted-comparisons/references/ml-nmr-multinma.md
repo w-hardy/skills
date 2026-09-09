@@ -42,6 +42,23 @@ pso_net <- add_integration(pso_net,
 
 ML-NMR results are typically **insensitive** to misspecifying these reconstruction assumptions (simulation evidence), though a highly non-linear model or targeting marginal effects can raise sensitivity. Integration uses Quasi-Monte Carlo; accuracy is now checked automatically by default.
 
+**What QMC is doing, and what to do when the accuracy check complains.** ML-NMR has to average the
+individual-level model over the AgD study's covariate distribution — an integral with no closed form,
+approximated by evaluating the model at a set of points. Plain Monte Carlo draws those points
+pseudo-randomly, which clusters some regions and leaves gaps in others; the error falls as
+`O(n^-1/2)`. Quasi-Monte Carlo instead uses a deterministic **low-discrepancy sequence** (Sobol,
+Halton) that fills the covariate space evenly by construction, and for smooth integrands converges
+closer to `O(n^-1)` — so far fewer integration points buy the same accuracy, which matters because
+every point costs a likelihood evaluation at every MCMC iteration.
+
+The practical consequence: the integration points are a **numerical** approximation, not data, and
+their number is a tuning parameter with a diagnostic attached. If the accuracy check flags a problem,
+the lever is to raise the number of integration points in `add_integration()` and refit, then confirm
+the estimates are stable between the two runs. Do not ignore it — an under-integrated ML-NMR fit can
+look perfectly converged by Rhat and still be biased, because the sampler has converged to the
+posterior of the *approximate* model. More covariates need more points, and a strongly non-linear
+link needs more than a near-linear one.
+
 ## 3. Fit the model
 
 The individual-level linear predictor has study-specific intercepts (preserving randomisation), prognostic main effects `β1`, effect-modifying treatment-covariate interactions `β2,k`, and treatment effects `γ_k`. Specify it through the `regression` formula with `*.trt` for interactions.
