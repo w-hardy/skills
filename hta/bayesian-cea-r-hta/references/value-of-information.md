@@ -12,14 +12,13 @@
 > 2026-07-03; anchors are section-level.
 > Also *Bayesian Models in Health Technology Assessment* — Baio (CRC Press, published 7 August
 > 2026), Ch. 12, read and verified against the online edition
-> <https://gianluca.statistica.it/books/online/bmhta/> on 2026-09-09 — §12.3 (EVPI and opportunity
-> loss, Eq 12.2, Table 12.1), §12.4 (EVPPI, Eq 12.3; GAM/GP/BART; the Info Rank plot), §12.5 with
-> Example 12.2 (EVSI, ENBS and the chemotherapy sample-size comparison). Earlier anchor:
-> which supplies the EVPPI method comparison (GAM/GP/BART), the Info Rank plot, and the ENBS-based
-> sample-size material below; anchored to the companion code at
-> <https://github.com/giabaio/bmhta-examples> (MIT) commit `d2a6298`, file `12-voi/voi.R`, accessed
-> 2026-09-09. CRAN was not reachable from the authoring environment, so `voi`/`BCEA` argument names
-> below are as observed in that working code — check against the installed version.
+> <https://gianluca.statistica.it/books/online/bmhta/> on 2026-09-09. It supplies the EVPPI method
+> comparison (GAM/GP/BART), the Info Rank plot and the ENBS-based sample-size material below:
+> §12.3 (EVPI and opportunity loss, Eq 12.2, Table 12.1), §12.4 (EVPPI, Eq 12.3), §12.5 with
+> Example 12.2 (EVSI, ENBS and the chemotherapy sample-size comparison). Companion code:
+> <https://github.com/giabaio/bmhta-examples> (MIT) commit `d2a6298`, file `12-voi/voi.R`.
+> `voi` and `BCEA` were not installed in the verifying environment, so their argument names below
+> are as printed in that working code — check against the installed version.
 
 VOI answers the question the CEAC raises but cannot answer: **is the decision uncertainty worth
 paying to reduce?** A CEAC of 0.6 does not say whether more research is valuable — a decision

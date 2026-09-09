@@ -26,9 +26,23 @@ arms, and it is a substantial fraction of the sample.
 
 **Fit an unconstrained Normal.** The model has support on the whole real line, so posterior
 predictions for a patient near the boundary spill past it — predicted QALYs above the maximum
-achievable. Those impossible values are not cosmetic: they inflate the estimated arm mean, and the
-inflation is not the same in both arms if the spike is not the same size in both. The incremental
-effect is biased by an artefact of the support.
+achievable. Be precise about where that does damage, because the answer is not "everywhere":
+
+- Under an **identity link on complete data**, the fitted arm mean is a linear projection and is
+  **not** biased by the support violation. The Normal likelihood is doing quasi-likelihood work; the
+  mean function is what you estimated, and it does not know or care that the assumed error
+  distribution has impossible tails. Reporting a support violation as bias in the arm mean of a
+  Gaussian base case is a false finding.
+- Where it does bite is wherever an out-of-range **prediction** becomes a number you use. The
+  source's own case is exactly this: the missing QALYs are imputed from the posterior predictive,
+  the Normal model's imputations run past 1, and the overall mean effectiveness is inflated as a
+  result — and not equally in both arms if the spike differs in size between them. The same applies
+  if you report a predictive summary as though it were the estimand.
+- It also bites under a **non-identity link**, where the mean is a function of the whole
+  distribution rather than a projection of it.
+
+So the test is not "does the model respect the bound" but "does any out-of-range value reach a
+reported quantity". With complete data and an identity link the answer can legitimately be no.
 
 **Shift the spike away and use a bounded family.** Subtract a small `eps` (0.01, say) from every
 QALY so nothing sits exactly at 1, then fit a Beta. Note this only works at all when the observed
