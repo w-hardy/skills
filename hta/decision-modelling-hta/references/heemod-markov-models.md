@@ -107,6 +107,78 @@ par_inhomog <- define_parameters(
 
 Either way, `model_time` is the only thing that needs to appear in the parameter expression for heemod to treat the resulting transition as time-varying — there's no separate "time-inhomogeneous mode" to switch on.
 
+## Competing exits convert only jointly, in both directions
+
+Both options above give the probability of **one** event out of a state with **one** exit. Both
+*transient* states in the matrix above have several — `Stable` leaves to `Progressed`,
+`Dead_disease` and `Dead_other` in the same cycle, and `Progressed` to two causes of death — and
+that changes the conversion in each direction. (`Dead_disease` and `Dead_other` are absorbing, so
+they convert either way trivially.)
+
+**Hazards → probabilities.** Do not fit each exit's survival independently and put `1 -
+exp(-ΔH_k)` in each cell. That treats the competing events as independent, and the cells can sum
+past 1 (heemod will then error, or `C` will silently go negative). Split the *total* exit
+probability in proportion to the cause-specific cumulative-hazard increments `ΔH_j = H_j(t) −
+H_j(t−1)`:
+
+```
+p_k = (ΔH_k / Σ_j ΔH_j) · (1 − exp(−Σ_j ΔH_j))
+```
+
+`survival-analysis-hta`'s `references/survival-to-economic-model.md` owns this formula — read it
+there for the derivation, the condition under which the split is exact (cause-specific hazards
+constant within the cycle, or more generally holding a fixed ratio to one another across it), the
+size and direction of the error when they do not, and the criteria for handing the problem to
+`multistate-models-hta` instead. Do not restate the derivation here; a second copy of the maths
+will drift from the first.
+
+**Probabilities → rates.** The book's `r = −log(1 − p)/t` (§9.3.2) inverts `p = 1 − exp(−r·t)`
+**only for a state with a single exit**. Where several exits compete, the per-cycle probability
+matrix `P` and the rate (transition-intensity) matrix `Q` — off-diagonals the cause-specific
+rates, rows summing to zero — are related jointly through the matrix exponential, `P =
+expm::expm(Q * t)`, and there is **no valid edge-by-edge inverse**. Converting each cell with
+`−log(1 − p_rs)/t` and summing (or renormalising) is not the inverse of that embedding, for two
+reasons that act in different directions and have no reason to cancel. First, ignoring competition
+understates a rate: the probability that the *first* exit in the interval is via cause k is the
+split above — exact here, because a constant `Q` holds the cause-specific hazards in fixed ratio —
+and it sits strictly below `1 − exp(−r_k·t)` whenever anything else can happen. Second, `p_rs` in
+`P` is not a count of direct r → s transitions at all — it is an *occupancy* probability, so it
+adds everyone who arrived via r → x → s and removes everyone who has left s again before the
+interval ends (the point `multistate-models-hta` makes about `Exp(uQ)`'s off-diagonals). Which
+effect wins is cell-specific, so the naive inverse has no reliable sign. Treating the numbers in
+the matrix above as annual rates and embedding them properly, the naive inverse returns `Stable →
+Dead_disease` **43% too high** (0.0285 against a true 0.020 — a third of that cell is arrival via
+`Progressed`, not direct disease death from `Stable`) and `Stable → Progressed` **12% too low**
+(0.1062 against 0.120, because `Progressed` is itself left within the year). This is a live bug,
+not a theoretical one, and it runs cleanly: the giveaway is that the recovered rates, put back
+through `expm(Q * t)`, do not reproduce the matrix you started from (max cell error 0.011 on that
+example) — a two-line check worth running whenever you invert a published matrix.
+
+The joint inverse is the matrix logarithm, `Q <- expm::logm(P) / t`. It can legitimately fail,
+because not every probability matrix is the `t`-step marginal of a time-homogeneous
+continuous-time chain — the embeddability problem. Failure does not arrive as an error, and the
+round-trip check above does not catch it. With `expm`'s default `Higham08` method (checked against
+expm 1.0.1), a `P` with a negative real eigenvalue returns a matrix of `NaN` with a warning, while
+a merely non-embeddable `P` returns a clean real `Q` whose rows sum to zero and which reproduces
+`P` through `expm()` to machine precision — but with **negative off-diagonal entries**. The sign
+check is what catches it:
+
+```r
+Q <- expm::logm(P) / t
+stopifnot(
+  # isTRUE(): a NaN comparison gives NA, and all(NA) is NA, not FALSE
+  isTRUE(all(Q[row(Q) != col(Q)] >= 0)),
+  isTRUE(all(abs(rowSums(Q)) < 1e-8))
+)
+```
+
+Read a failure substantively — the published matrix is not consistent with any constant-rate
+process at that interval — rather than clipping the negatives away. Where rates are what you
+actually have, keep them as rates and build in continuous time (`multistate-models-hta`,
+`hesim-ctstm-hta`) rather than round-tripping through a probability matrix. (For the forward
+direction from a fitted `msm` object, `pmatrix.msm()` is the packaged route — see
+`multistate-models-hta`.)
+
 ## Making it probabilistic
 
 Re-specify the relevant parameters with resampling distributions, then `run_psa()`.
@@ -144,7 +216,10 @@ plot(psa_res, type = "ce")        # cost-effectiveness plane
 ```
 
 Two important gotchas confirmed from the heemod docs:
-- `beta()` takes **`shape1, shape2`**, not `mean`/`sd`. If you only have a mean and sd for a probability, either convert to shapes via method of moments first, or just use `binomial(prob, size)` instead, which takes the point estimate directly. The method-of-moments conversion, for a mean `mu` and SD `sigma` with `sigma^2 < mu*(1-mu)`:
+- `beta()` takes **`shape1, shape2`**, not `mean`/`sd`. If you only have a mean and sd for a
+probability, either convert to shapes via method of moments first, or just use `binomial(prob,
+size)` instead, which takes the point estimate directly. The method-of-moments conversion, for a
+mean `mu` and SD `sigma` with `sigma^2 < mu*(1-mu)`:
 
   ```r
   beta_shapes <- function(mu, sigma) {
@@ -157,7 +232,10 @@ Two important gotchas confirmed from the heemod docs:
   The guard matters: a Beta cannot have an SD at or above `sqrt(mu*(1-mu))`, and a mean/SD pair
   lifted from a paper often violates it — which is a sign the reported SD is not describing a Beta,
   not a reason to fudge the shapes.
-- The several outgoing probabilities from a single state are not independent (they must keep summing to ≤1). Where a state splits its outflow across multiple destinations, prefer a single `multinomial(...)` over several independent `binomial`/`beta` draws, so the simplex constraint is respected.
+- The several outgoing probabilities from a single state are not independent (they must keep
+summing to ≤1). Where a state splits its outflow across multiple destinations, prefer a single
+`multinomial(...)` over several independent `binomial`/`beta` draws, so the simplex constraint is
+respected.
 
 If two or more parameters came from the same regression (e.g. correlated log-rate and log-rate-ratio from one survival fit), build a correlation structure with `define_correlation()` and pass it as the `correlation =` argument of `define_psa()` (it also accepts a raw correlation matrix). Independence is the default and understates joint uncertainty when parameters are actually correlated.
 

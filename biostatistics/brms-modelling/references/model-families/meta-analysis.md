@@ -25,7 +25,7 @@ What changes relative to `core-workflow.md` when using brms to fit a random-effe
 
 ## Diagnostics & PPC
 
-- Same Rhat/ESS/divergence thresholds as `core-workflow.md` — note that with few studies, divergences related to the funnel geometry of `(1 | study)` are common; the non-centred-parameterisation guidance in `multilevel.md` applies directly.
+- Same Rhat/ESS/divergence thresholds as `core-workflow.md` — note that with few studies, divergences and slow mixing around `(1 | study)` are common. The few-group guidance in `multilevel.md` applies directly, including its warning that brms already generates group-level effects in non-centred form, so "try non-centring" is not a lever here either. With a handful of studies the grand-intercept / study-effect ridge described there is the more likely diagnosis than the funnel — the levers are the prior on `sd(study)` (see Priors above) and the model itself.
 - PPC for meta-analysis is less about reproducing a marginal distribution and more about checking study-level shrinkage looks sensible: extreme/imprecise studies should be pulled toward the pooled estimate; very precise studies should barely move. Plot study-level posterior estimates against raw study estimates to sense-check this.
 
 ## Reporting

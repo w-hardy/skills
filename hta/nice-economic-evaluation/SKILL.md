@@ -60,8 +60,9 @@ from older NICE methods. Based on what the user brings, read the relevant file(s
 `references/` before assessing:
 
 - `reference-case.md` — Table 4.1 and the core elements: decision problem, comparators,
-  perspective, type of evaluation, time horizon, QALYs/EQ-5D, costs, **discounting**,
-  equity. Read this for almost any alignment review.
+  perspective, type of evaluation, time horizon, QALYs/EQ-5D, costs (including price year,
+  indexation and a cost-side reviewer checklist), **discounting**, equity. Read this for almost
+  any alignment review.
 - `modelling-and-uncertainty.md` — model structure, surrogates, **survival extrapolation**,
   treatment switching, and the three sources of uncertainty (structural, source, precision)
   with PSA / scenario / sensitivity expectations (4.6–4.7).
@@ -84,11 +85,36 @@ from older NICE methods. Based on what the user brings, read the relevant file(s
 If the work spans several areas (a full model or submission), read more than one. When in
 doubt, start with `reference-case.md`.
 
+**Read only what the change needs.** For a costing-only audit — a unit-cost rewrite, a price-year
+update, a new resource-use table — the applicable guidance is `reference-case.md` (perspective on
+costs, resource use and costs, price year and indexation, and the cost-side reviewer checklist),
+plus `modelling-and-uncertainty.md` for how the changed costs are carried into PSA and scenarios,
+plus `tsd-index.md` only if a method choice is in play. From `results-and-presentation.md` read
+only the cost-side clauses — 4.10.4 (costs disaggregated by health state and resource category,
+presented with and without discounting) and 4.10.6 (expected value of each cost component and
+expected total costs); a new resource-use table engages 4.10.4 directly. `decision-making.md` is
+inert here: thresholds and modifiers turn on QALYs and the ICER, and both severity shortfalls are
+computed from QALYs alone (6.2.13–6.2.15), so no cost input can move one. Read the rest of
+`results-and-presentation.md` — fully incremental analysis, net health benefit — and
+`decision-making.md` only when the audit is asked to re-state results, or when the recomputed ICER
+crosses £25,000 or £35,000 (or the severity-weighted comparison point).
+
 ### 2. Work out what the user has given you and what stage they're at
 Common inputs: a model or its description; a results table; an analysis plan / SAP; a draft
 submission or EAG report section; or a single methods question ("is a 5-year horizon OK?").
 Tailor the depth — a single-question ask gets a focused answer on that element (still cited),
 not a 12-point audit.
+
+**Full audit or targeted re-review?** A full audit assesses every in-scope element. A targeted
+re-review — "the reference case is already audited; check only this changed layer" — assesses
+only the named layer, and the settled elements stay settled: don't re-litigate a horizon or a
+utility source that a previous review cleared, and say in the output which layers you did not
+re-examine. The carve-out: the changed layer's **interaction** with an already-audited layer is
+in scope even though that layer is not. A cost change that flips which arm is dominated, a
+utility change that moves the severity shortfall across a Table 6.1 cut-off, a switching
+adjustment that changes what the extrapolation has to support — each is a finding *about the
+change*, not a re-audit, so report it naming both layers and what the interaction does to the
+result.
 
 ### 3. Assess each in-scope element and assign one of the four states
 For every relevant reference-case element and methods requirement, state: the **status**,
@@ -105,6 +131,33 @@ comparators match the full scope; cost-utility with QALYs; **fully incremental**
 lifetime (or justified) horizon; EQ-5D / patient-reported / UK-public-preference utilities;
 NHS&PSS perspective with productivity costs excluded; **3.5% discounting** (1.5% only if all
 five conditions hold); thorough **uncertainty** analysis; and the **severity modifier**.
+
+Two rules decide how a candidate finding is graded, and whether it is a defect at all. Read them
+against this skill's inputs: the *record* here is the submission's justification text and
+appendices, the analysis plan, a previous EAG/ERG report or committee papers, and any prior NICE
+guidance on the comparator; the *quantity moved* is the ICER, the incremental costs or QALYs, the
+severity weight, or the probability cost-effective. Neither rule licenses dropping a finding from
+the review: a deviation the record justifies still gets a row — **Aligned** or **Justified
+deviation**, with the clause and where the justification sits.
+
+**Check the record before reporting.** Where the work has one — a decision log, a plan, an
+issue tracker, a statistical analysis plan, prior review artefacts — search it for the finding
+before you write it up, and say what you searched. A deviation that is documented, ruled on and
+justified is a conforming outcome, not a defect, and reporting it as one costs the reader more
+than it saves. Where there is no such record, say so: "not addressed anywhere I could find" is
+itself part of the finding. This applies to substantive findings, not to every observation — do
+not spend a search on a typo. This retires a deviation from a plan, a convention or a prior
+recommendation; a wrong number, an invalid inference, or a defect in something reported stays a
+finding however well documented — cite the ruling and report it anyway, because a record that
+acknowledges a defect documents it, it does not fix it.
+
+**Size the finding before you grade it.** Say what the finding moves, and by how much, before
+assigning severity: the estimate, the decision, the reported number, the failure rate, the
+runtime. A defect in a path nothing consumes — dead code, an unreported exploratory branch, a
+value computed and discarded — is not the same as one in a result somebody acts on, and grading
+them alike makes the whole list harder to act on. Note the trap in the other direction:
+anything pre-specified and reported *is* a result somebody acts on, sensitivity and scenario
+analyses included, so "it's only a sensitivity analysis" is not a reason to downgrade.
 
 ### 4. Verify the quantitative claims with the scripts — don't eyeball
 There are two kinds of tooling in `scripts/`, and which you reach for depends on whether

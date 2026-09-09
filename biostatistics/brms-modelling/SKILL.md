@@ -43,7 +43,7 @@ Use this as the backbone for both writing and reviewing. Full detail for each st
 
 **When writing new code:** walk through every stage explicitly — don't jump straight to `brm()` with default priors and skip diagnostics. Produce code that runs the full chain, not just the fit.
 
-**When reviewing existing code:** use the table as an audit checklist. Read `references/review-checklist.md` for the structured output format — this skill's reviews always produce both **inline comments** in the code (flagging the specific line/argument) and a **short structured report** summarising what's solid, what's risky, and what's missing, organised by workflow stage. Don't just say "looks fine" — every review should explicitly confirm or flag each stage in the table, even if briefly.
+**When reviewing existing code:** use the table as an audit checklist. Read `references/review-checklist.md` before writing anything — it covers what to read first (including the project's own decision record, so that a documented choice isn't reported as a defect), how to size a finding before grading it, and what the review produces: always a **short structured report** organised by workflow stage, plus **inline `# REVIEW:` comments** when you have a working copy you've been asked to modify (on a read-only branch, a PR diff or a pasted snippet, the report with `file:line` anchors is the whole deliverable). Don't just say "looks fine" — every review should explicitly confirm or flag each stage the code has a surface for.
 
 ## Coding conventions
 
@@ -54,11 +54,11 @@ When writing or rewriting brms code, follow `references/coding-conventions.md` �
 - `references/core-workflow.md` — priors, fake-data simulation/recovery, fitting, diagnostics (with concrete thresholds and what to do when they're violated), posterior predictive checks, model comparison
 - `references/bayesian-workflow-sources.md` — how the stages hang together as the Gelman–Vehtari *Bayesian Workflow*, with the ROS and BDA3 ideas each stage leans on and citation shorthands for methods text
 - `references/special-terms.md` — predictor-side features that cut across families: repeated measures and residual autocorrelation (`ar()`/`unstr()` etc.), monotonic effects (`mo()`), smooth terms (`s()`), measurement error and in-model imputation (`me()`/`mi()`)
-- `references/model-families/multilevel.md` — group-level effects, partial pooling, non-centred parameterisation
+- `references/model-families/multilevel.md` — group-level effects, partial pooling, and the two few-group pathologies (funnel geometry and the grand-intercept/group-mean ridge)
 - `references/model-families/survival.md` — time-to-event models in brms (`brmsfamily("cox")`, Weibull/lognormal AFT, censoring syntax)
 - `references/model-families/distributional.md` — zero-inflated, hurdle, ordinal, and modelling auxiliary parameters (e.g. `sigma ~ ...`)
 - `references/model-families/meta-analysis.md` — random-effects meta-analysis and meta-regression via brms
-- `references/review-checklist.md` — the structured review report template and inline-comment conventions
+- `references/review-checklist.md` — reviewing an existing model: what to read first, the prior-art and materiality rules, the report template, read-only vs. inline-comment output modes, and the `stanvars`/custom `target +=` audit
 - `references/coding-conventions.md` — R style conventions specific to brms scripts
 
 **Health-economic outcomes are a special case.** When the outcome is patient-level cost or QALYs

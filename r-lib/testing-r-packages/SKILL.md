@@ -1,6 +1,6 @@
 ---
 name: testing-r-packages
-description: Best practices for writing R package tests using testthat version 3+. Use when writing, organizing, or improving tests for R packages. Covers test structure, expectations, fixtures, snapshots, mocking, and modern testthat 3 patterns including self-sufficient tests, proper cleanup with withr, and snapshot testing.
+description: "Best practices for writing and reviewing R tests with testthat version 3+. Use when writing, organizing, improving, or auditing a testthat suite, including suites in analysis repositories that have tests/testthat/ but no package structure. Covers test structure, expectations, fixtures, snapshots, mocking, mutation testing to find rules the suite does not pin, and modern testthat 3 patterns including self-sufficient tests and cleanup with withr."
 metadata:
   author: Garrick Aden-Buie (@gadenbuie)
   version: "1.1"
@@ -29,7 +29,8 @@ This creates `tests/testthat/` directory, adds testthat to `DESCRIPTION` Suggest
 
 **Special files:**
 - `helper-*.R` - Helper functions and custom expectations, sourced before tests
-- `setup-*.R` - Run during `R CMD check` only, not during `load_all()`
+- `setup-*.R` - Run before the tests by any test run (`test_dir()`, `devtools::test()`, `R CMD
+check`), but not by `load_all()`
 - `fixtures/` - Static test data files accessed via `test_path()`
 
 ## Test Structure
@@ -97,6 +98,19 @@ testthat::test_file("tests/testthat/test-foofy.R")
 devtools::test()    # Ctrl/Cmd + Shift + T
 devtools::check()   # Ctrl/Cmd + Shift + E
 ```
+
+**Non-package projects:** a repository with `tests/testthat/` but no `DESCRIPTION` runs under
+`testthat::test_dir("tests/testthat")`; `devtools::test()` and `load_all()` do not apply, so the
+code under test is sourced from a `helper-*.R` file. Two testthat defaults also change without a
+`DESCRIPTION`, and each needs an explicit opt-in before the rest of this skill applies unchanged:
+
+- No `Config/testthat/edition: 3`, so the suite runs the **2nd edition** and 3e-only features
+error (`expect_snapshot()` aborts with "requires the 3rd edition"). Opt in from a `setup-*.R` file
+with `testthat::local_edition(3, .env = testthat::teardown_env())`; a plain `local_edition(3)`
+there reverts the moment the setup file finishes.
+- No `NOT_CRAN` environment variable, which `devtools::test()` would set for you. Without it every
+snapshot test and every `skip_on_cran()` test skips silently, so run the suite as `NOT_CRAN=true
+Rscript -e 'testthat::test_dir("tests/testthat")'`.
 
 ## Core Expectations
 
@@ -386,11 +400,14 @@ data <- readRDS("fixtures/data.rds")
 
 For advanced testing scenarios, see:
 
-- **[references/bdd.md](references/bdd.md)** - BDD-style testing with describe/it, nested specifications, test-first workflows
+- **[references/bdd.md](references/bdd.md)** - BDD-style testing with describe/it, nested
+specifications, test-first workflows
 - **[references/snapshots.md](references/snapshots.md)** - Snapshot testing, transforms, variants
 - **[references/mocking.md](references/mocking.md)** - Mocking strategies, webfakes, httptest2
 - **[references/fixtures.md](references/fixtures.md)** - Fixture patterns, database fixtures, helper files
-- **[references/advanced.md](references/advanced.md)** - Skipping tests, secrets management, CRAN requirements, custom expectations, parallel testing
+- **[references/advanced.md](references/advanced.md)** - Reviewing an existing suite (checking the
+project's record, mutation testing, skip honesty, sizing a finding), skipping tests, secrets
+management, CRAN requirements, custom expectations, parallel testing
 
 ## testthat 3 Modernizations
 

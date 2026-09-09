@@ -48,6 +48,14 @@ increasingly expect multiple imputation even where authors had a defensible reas
 it (e.g. under 5% incomplete cases), so a stated justification for *whatever* was done is
 worth its space.
 
+One item the FIMD list does not name, and reviewers of applied work do ask about: **fill-ins made
+before the data reached the imputation step**. A stop date set to start + median duration, a dose
+frequency read off free text, a record forced to a default for legacy compatibility — each is a
+single imputation, each arrives at `mice` as an observed value, and none of them appear in a
+missingness table. Report them under points 1, 2 and 8: what the rule was, how many records it
+touched, and why it is defensible. In trial costing this is usually where most of the real
+missingness was handled, so a write-up describing only what `mice` imputed understates the problem.
+
 ## Template paragraph (adapt the bracketed parts with real numbers from the data)
 
 FIMD §12.2.2 offers a short model paragraph for the methods section; the version below covers

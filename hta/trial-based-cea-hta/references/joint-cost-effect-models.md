@@ -13,7 +13,10 @@ Cost and effect are correlated within a patient. Two separate regressions, with 
 afterwards, impose zero correlation on the CE plane. That is a modelling assumption, and almost
 always a false one — so make it a parameter instead of an accident.
 
-There are two ways to build the joint model, and they are algebraically related.
+There are three ways to build the joint model in brms. The first two are algebraically related
+under joint Normality. The third carries the dependence through a shared latent term instead, and
+is set out at the end of this section; it is the route that generalises to any pair of families
+without making one outcome a predictor of the other.
 
 **Bivariate (SUR).** Model `(e, c)` as jointly distributed with a residual correlation:
 
@@ -72,9 +75,18 @@ rho      <- beta2 * sigma_e / sigma_c
 ```
 
 MCF earns its place when the outcomes are **not** Gaussian, because then `set_rescor()` is
-unavailable and the conditional route is the only way to link them inside a single model. That is
-the usual case for real economic data, so MCF is the workhorse. Its cost is a subtlety about
-population averages — see below and `population-average-summaries.md`.
+unavailable and the conditional route links them inside a single model without one. That is the
+usual case for real economic data, so MCF is the workhorse. It carries two costs. One is a subtlety
+about population averages — see below and `population-average-summaries.md`. The other is missing
+data: putting the **observed** effect on the right-hand side of the cost equation leaves the cost
+model undefined for every patient whose effect is missing, and brms drops those rows from *both*
+submodels with only a warning ("Rows containing NAs were excluded from the model"), so the joint
+model silently becomes a complete-case analysis that throws away observed costs. Check `nobs(fit)`
+against the randomised sample. The fix is a pair: `qaly | mi()` on the effect submodel and
+`mi(qaly)` on the cost equation's right-hand side, so the cost model conditions on the modelled
+(partly imputed) effect. `mi(qaly)` without the addition term errors ("Response models of variables
+in 'mi' terms require specification of the addition argument 'mi'"); with both, every randomised row
+survives (verified on brms 2.23.0). See `missing-economic-outcomes.md`.
 
 > **A slip in the source, worth knowing before you copy it.** In §5.2.2 the JAGS model computes
 > these
@@ -85,6 +97,46 @@ population averages — see below and `population-average-summaries.md`.
 > its own printed output shows otherwise, with `rho` changing sign (JAGS: −0.186, −0.099; R: +0.157,
 > +0.083). Use the coefficient on the *effect* in the cost equation (`beta2`), not the treatment
 > coefficient — and treat a sign flip between two routes to the same quantity as a bug signal.
+
+**Shared or correlated random effect.** Neither route above links two *different* families
+symmetrically: `set_rescor()` is Gaussian-only, and MCF makes one outcome a predictor of the other.
+The third construction puts a latent term in both linear predictors and lets the two be correlated.
+
+```r
+f_e <- bf(qaly   ~ arm + u0_c + (1 | p | id), family = gaussian())
+f_c <- bf(cost_k ~ arm        + (1 | p | id), family = Gamma(link = "log"))
+fit <- brm(f_e + f_c + set_rescor(FALSE), data = trial, prior = priors, seed = 1234)
+```
+
+The `p` between the bars is an arbitrary label telling brms that these two group-level terms share
+one covariance matrix, so it estimates their correlation
+(`cor_id__qaly_Intercept__costk_Intercept`) instead of fitting them independently. That correlation
+is the cost-effect dependence, carried across a pair of families `set_rescor()` cannot span, and
+`set_rescor(FALSE)` here is a requirement of the construction, not a dropped correlation. It is the
+route available when the families differ and making one outcome a predictor of the other is
+unwanted. It is also a skill addition rather than a translation: §5.2 covers the bivariate and
+conditional constructions, not this one. Three things to get right:
+
+- **What is identified.** With one cost and one effect per patient, a patient-level latent term is
+  not separable from the Gaussian submodel's residual SD — only their sum is — so the split between
+  `sd_id__qaly_Intercept` and `sigma_qaly` is driven by the prior. What the data do inform, through
+  the cross-product of the two outcomes, is the implied **covariance** of cost and effect, and that
+  is all the CE plane needs. So report the implied correlation of arm-level cost and effect computed
+  from the draws on the natural scale, not the raw `cor_id__…` parameter, and give both latent SDs
+  informative priors on the data's scale with a prior predictive check.
+- **Which level the term sits at.** A latent term at the *patient* level carries the within-patient
+  correlation, which is the one the CE plane needs. A term at the *site* or *centre* level carries
+  only the between-cluster correlation and leaves the within-patient correlation at zero. In a
+  cluster-randomised trial you generally need both terms; a site-level term alone is not a
+  substitute, and reporting it as though it were is a real finding.
+- **The arm means still need standardising.** Under a non-identity link the latent term sits inside
+  the inverse link, so which random effects you condition on *is* the estimand — see
+  `population-average-summaries.md`.
+
+Under joint Normality this is a third parameterisation of the same model. With mixed families it is
+not equivalent to MCF, and the two answer slightly different questions: MCF conditions the cost on
+the realised effect, the shared term conditions both on a common latent frailty. Fit whichever the
+data and the write-up can support, and state which.
 
 ## Choosing distributions
 
@@ -101,8 +153,8 @@ Look at the histograms by arm before choosing. The shapes are predictable:
 **Gamma rather than log-normal for costs.** At matched mean and SD the log-normal puts noticeably
 more mass in the extreme right tail (the source shows this at mu = 8, sigma = 5, and cites Thompson
 and Nixon 2005 for preferring the Gamma for costs). For a cost model whose whole purpose is to
-estimate a *mean*, that tail does real work, and the Gamma is the more conservative default. Fit both and compare if
-the tail is where the action is, but do not reach for log-normal by habit.
+estimate a *mean*, that tail does real work, and the Gamma is the more conservative default. Fit
+both and compare if the tail is where the action is, but do not reach for log-normal by habit.
 
 **Flipping a left-skewed outcome.** The book models QALYs with a Gamma by transforming
 `e* = 3 − e` (a device it credits to Gabrio et al. 2025), which turns left skew into right skew,
@@ -116,9 +168,34 @@ data's maximum — a data-dependent constant is a hidden parameter. Prefer `Beta
 0–1 scale where the outcome genuinely lives there; the flip is a workaround for when you want
 Gamma's tail behaviour on a bounded outcome.
 
-**Arm-specific dispersion.** The source gives each arm its own SD/shape. Treatment can change the
-*spread* of costs, not just their level, and forcing a common dispersion pushes that into the mean.
-In brms this is a distributional formula:
+**Arm-specific dispersion.** The source gives each arm its own SD/shape, and so should you:
+treatment can change the *spread* of costs, not just their level. But be precise about what a
+**common** dispersion actually costs, because the obvious charge — a biased increment — is the
+wrong one, and it is the wrong one in **both** families.
+
+Dispersion enters the estimating equation for the mean coefficients as a precision weight, and the
+two families differ only in what the weight is made of: `sum_i alpha_i * x_i (y_i − mu_i) / mu_i`
+for `Gamma(link = "log")`, where `alpha_i` is the shape for patient `i`'s arm, and
+`sum_i x_i (y_i − mu_i) / sigma_i^2` for `gaussian()` with an identity link, where `sigma_i` is
+that arm's SD. A **common** dispersion is then a constant factor on the whole equation and drops
+straight out, in either family, so it does not bias the arm means. Against an arm-specific fit the
+means move only through the changed weighting, and only once the mean model carries a covariate
+beyond arm (baseline utility, say). Under a correctly specified mean model both fits are consistent
+and that shift is small — under a couple of percent of the standardised increment in a check at a
+16:1 precision ratio with n = 400, Gamma and Gaussian alike; under a misspecified mean model they
+converge to different answers, again in either family.
+
+What a common dispersion does get wrong, in either family, is the dispersion parameters and
+everything downstream of them: the posterior SD of the incremental cost, the width of the CE-plane
+cloud, and the CEAC. Report a shared dispersion as an **efficiency and interval-width** defect, not
+as a biased increment. Do not grade a homoscedastic cost or effect model — the brms default — as
+though the increment itself were suspect.
+
+One consequence is genuinely Gaussian-specific. The Normal's out-of-range spill scales with `sigma`,
+so a common `sigma` mis-sizes it arm by arm wherever a prediction is used as a number — imputation
+especially (`structural-values.md`).
+
+In brms, arm-specific dispersion is a distributional formula:
 
 ```r
 f_c <- bf(cost_k ~ arm + qaly_c, shape ~ 0 + arm, family = Gamma(link = "log"))

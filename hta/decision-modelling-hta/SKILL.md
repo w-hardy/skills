@@ -38,7 +38,7 @@ Four building blocks, always in this order:
 3. **`define_state()`** (one per state) — costs, utilities, and any other per-cycle values attached to that state, in the same units as one cycle.
 4. **`define_strategy()`** then **`run_model()`** — combine a transition matrix with its states into a strategy per treatment arm, then run all strategies together with shared `parameters`, `cycles`, `cost`, and `effect` arguments.
 
-See `references/bayesian-transition-parameters.md` when the transition probabilities, treatment effect or costs are themselves estimated with posterior uncertainty rather than supplied as point estimates with an assumed PSA distribution. See `references/heemod-markov-models.md` for a full worked Markov example (time-homogeneous → time-inhomogeneous with survival-derived transitions) and `references/heemod-decision-trees.md` for the decision-tree-as-1-cycle-model pattern. Read whichever matches the task before writing code — the worked examples show the exact argument shapes that are easy to get subtly wrong (e.g. row/column order, `C` placement, state value naming consistency across strategies).
+See `references/bayesian-transition-parameters.md` when the transition probabilities, treatment effect or costs are themselves estimated with posterior uncertainty rather than supplied as point estimates with an assumed PSA distribution. Most of that file is **engine-independent**, so read it even when the model in front of you is not heemod, but split it by what the engine actually has. The row-simplex material — the Multinomial-Dirichlet posterior over each row, the shared row denominator, and the logit-scale route for applying a literature relative risk — needs a discrete-time transition-probability matrix, so it carries to a `hesim` cohort DTSTM or a hand-rolled cohort trace but has no analogue in a continuous-time model, where the transitions are fitted time-to-event objects rather than a simplex per row. What carries to any engine is the hand-off discipline: feed a pooled treatment effect's posterior draws rather than its point estimate, say whether you used the pooled effect or the wider predictive distribution, and propagate the posterior per draw instead of refitting a parametric PSA distribution to draws you already have. Only the closing heemod-bridge section is package-specific. See `references/heemod-markov-models.md` for a full worked Markov example (time-homogeneous → time-inhomogeneous with survival-derived transitions) and `references/heemod-decision-trees.md` for the decision-tree-as-1-cycle-model pattern. Read whichever matches the task before writing code — the worked examples show the exact argument shapes that are easy to get subtly wrong (e.g. row/column order, `C` placement, state value naming consistency across strategies).
 
 ## Survival-derived transition probabilities
 
@@ -48,6 +48,10 @@ This is where survival analysis and Markov modelling meet, and the most error-pr
 - **`compute_surv()` from a fitted model**: heemod's `compute_surv(fit, time = model_time, type = "prob")` takes a fitted survival model (e.g. from `flexsurv::flexsurvreg()`) or a parametric form built with `define_surv_dist()`, and returns the conditional cycle-to-cycle transition probability — the packaged equivalent of the manual conversion above. Prefer this when the survival model is a standard parametric form, since it removes the hand-rolled hazard-to-probability step where off-by-one errors hide.
 
 Either way, transition probabilities that depend on `model_time` make the model time-inhomogeneous automatically in heemod — no separate "mode" to switch on, you just reference `model_time` inside `define_parameters()` or directly in the transition matrix cell.
+
+**Both routes give the probability of one event out of a state with one exit.** Where a state has competing exits — progression and death out of the same pre-progression state, which is the usual case — do not fit each exit's survival separately and drop `1 - exp(-ΔH_k)` into each cell: that imposes an unstated independence between the competing events and can push the row sum past 1. Split the *total* exit probability between causes in proportion to the cause-specific cumulative-hazard increments `ΔH_j = H_j(t) − H_j(t−1)`, i.e. `p_k = (ΔH_k / Σ_j ΔH_j) · (1 − exp(−Σ_j ΔH_j))`. Read `survival-analysis-hta`'s `references/survival-to-economic-model.md` before coding it: that file owns the derivation, the condition under which the split is exact (cause-specific hazards constant within the cycle, or more generally holding a fixed ratio to one another across it), and the criteria for handing the problem to `multistate-models-hta` instead.
+
+The **reverse** conversion — a published probability matrix back to rates, to re-cycle an annual matrix monthly or to feed a continuous-time model — is jointly determined too. With several competing exits there is no valid edge-by-edge inverse: `r = -log(1 - p)/t` applied cell by cell and then summed is *not* the inverse of the joint embedding `P = expm(Q·t)`, and it is a bug that runs cleanly and produces plausible-looking rates. `references/heemod-markov-models.md` has the reasoning and the check.
 
 For fitting the survival models themselves and propagating their parameter uncertainty into these transition probabilities, see the `survival-analysis-hta` skill.
 
@@ -88,6 +92,16 @@ output — both read from the same underlying samples.
   `run_bcea`) checked against the package man pages.
 - Rate→probability conversion `p = 1 - exp(-(H(t) - H(t-1)))`: standard
   cohort state-transition modelling (e.g. Alarid-Escudero et al. 2023 tutorial).
+  The competing-risks split `p_k = (ΔH_k / Σ_j ΔH_j)(1 − exp(−Σ_j ΔH_j))` and its
+  exactness condition are owned by `survival-analysis-hta`'s
+  `references/survival-to-economic-model.md` and cross-referenced, not re-derived,
+  here. The joint probability↔rate embedding `P = expm(Q·t)` and its
+  matrix-logarithm inverse (with the embeddability failure mode) are standard
+  continuous-time Markov chain results; `multistate-models-hta` states the
+  forward half of this for `pmatrix.msm()`. The `expm::logm()` failure
+  signatures quoted in `references/heemod-markov-models.md` — `NaN` on a
+  negative real eigenvalue, negative off-diagonals on a merely non-embeddable
+  matrix — were run against expm 1.0.1, as were the worked-example numbers.
 - Decision-tree/Markov concepts: R-HTA chapters 8–9 (see the sourcing note above
   for the verified chapter mapping).
 - Bayesian estimation of transition parameters (`references/bayesian-transition-parameters.md`):

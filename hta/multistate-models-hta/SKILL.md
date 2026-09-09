@@ -42,6 +42,8 @@ See `references/hesim-simulation.md` for the full worked pipeline including the 
 
 For discount rates, willingness-to-pay thresholds, and the probabilistic-analysis-as-base-case principle (these models are non-linear, so deterministic point estimates are biased — run probabilistic by default, and call it "probabilistic analysis" not "PSA"), defer to the **`nice-economic-evaluation`** skill.
 
+Where the numbers arrive as a **discrete-time transition-probability matrix estimated from cycle-by-cycle transition counts** rather than as a fitted time-to-event model, the estimation rules are engine-independent and live in `decision-modelling-hta`'s `references/bayesian-transition-parameters.md` — the Multinomial-Dirichlet posterior per row, the shared row denominator, applying a literature relative risk on the logit scale without producing an impossible probability, and propagating the posterior per draw; read it there rather than assuming it is heemod-only. That is the cohort-matrix case and it is the only one: **panel-observed state occupancies belong to `msm`**, whose likelihood estimates the intensities directly rather than putting a Dirichlet over the rows of a probability matrix, and a matrix estimated at one cycle length does not convert back to intensities edge by edge (`decision-modelling-hta`'s `references/heemod-markov-models.md` has that failure mode).
+
 ## Choosing the model structure: multistate vs partitioned survival vs cohort Markov
 
 A recurring decision in oncology especially:

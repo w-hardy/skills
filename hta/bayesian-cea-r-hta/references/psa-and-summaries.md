@@ -87,11 +87,3 @@ A complete draws-based results block: expected Δc and Δe with 95% credible int
 (with dominance annotations); expected INB and P(INB>0) at the stated thresholds; CE plane;
 CEAC (all strategies); CEAF if >2 strategies. All of it from one draws object, so every number
 is mutually consistent.
-
-## In this repository
-
-The within-trial pipeline's `cu_incremental_draws()` → `cu_summary()` objects (`.draw`,
-`inc_cost`, `inc_qaly`) are exactly the paired-draws format above — g-computation contrasts per
-posterior draw, paired within imputation. `incremental_results_table()` is the reporting set;
-the CE plane and CEAC figures in notebooks 01–03 follow these conventions. Anything new built
-on those draws should stay row-wise-then-average.

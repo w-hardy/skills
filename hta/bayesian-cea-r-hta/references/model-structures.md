@@ -6,8 +6,8 @@
 > are section-level. **Note on implementation:** R-HTA Chs. 8–9 build trees and Markov models
 > **by hand in base R** (forward/fold-back for trees; array-based transition matrices for
 > Markov), using `heemod` only for the state-transition *diagram* (`define_transition` +
-> `plot`). The `heemod`-native build is this repository's / the `decision-modelling-hta` skill's
-> choice, not the book's — the correctness principles below are shared, the API is heemod's.
+> `plot`). The `heemod`-native build is the `decision-modelling-hta` skill's choice, not the
+> book's — the correctness principles below are shared, the API is heemod's.
 > **Build mechanics live in the dedicated skills** — `decision-modelling-hta` (heemod trees and
 > cohort Markov, R-HTA Chs. 8–9), `multistate-models-hta` (continuous-time/individual-level,
 > Ch. 11), `discrete-event-simulation-hta` (simmer, Ch. 12), `survival-analysis-hta`
@@ -28,17 +28,22 @@ full state distribution, not a collapsed expectation.
 
 ## Markov (state-transition) cohort models
 
-The workhorse for chronic conditions (and this project's extrapolation layer, notebook 05, via
-`heemod`):
+The workhorse for chronic conditions, and often the carrier of the extrapolation period beyond
+trial follow-up — the partitioned survival model is the other common carrier, and the usual one
+in oncology, where state membership is read off independently-extrapolated curves rather than
+transition probabilities (see `survival-analysis-hta`):
 
 - **States and cycle length** — states must be exhaustive and mutually exclusive; cycle length
   short enough that multiple transitions per cycle are implausible. Time horizon = enough cycles
   that the decision quantities have converged (lifetime for mortality-bearing models).
 - **Transition matrices** — rows sum to 1 per cycle; convert *rates* to per-cycle
-  *probabilities* via p = 1 − exp(−r·t) (inverse r = −log(1 − p)/t), never by dividing an
-  annual probability by the number of cycles (R-HTA §9.3.2). Time-dependence comes in two flavours heemod distinguishes: `model_time` (time
-  since model start — e.g. age-dependent mortality) and `state_time` (time in state — e.g.
-  tunnel-state effects); using the wrong one biases long-run occupancy.
+  *probabilities* via p = 1 − exp(−r·t), never by dividing an annual probability by the number
+  of cycles (R-HTA §9.3.2). The inverse r = −log(1 − p)/t holds only where the state has a
+  single exit; with competing exits there is no valid edge-by-edge inverse, and the joint route
+  through the matrix logarithm belongs to `decision-modelling-hta`. Time-dependence comes in two
+  flavours heemod distinguishes: `model_time` (time since model start — e.g. age-dependent
+  mortality) and `state_time` (time in state — e.g. tunnel-state effects); using the wrong one
+  biases long-run occupancy.
 - **Half-cycle / within-cycle correction** — costs and QALYs accrue continuously but the cohort
   moves at cycle boundaries; apply a correction (heemod's `method = "life-table"` or
   equivalent) rather than start- or end-of-cycle counting.
@@ -50,7 +55,9 @@ The workhorse for chronic conditions (and this project's extrapolation layer, no
   model's coefficient scale, drawn on the log scale for correlated parameters). One parameter
   draw drives one full model run = one PSA row. R-HTA §9.6 argues the **probabilistic** result
   should be the base case (not a deterministic point estimate), because deterministic evaluation
-  is biased for non-linear models (Thom 2022; Wilson 2021).
+  is biased for non-linear models (Thom 2022; Wilson 2021). Pre-specify each input's distribution
+  and its source in the analysis plan (HEAP or protocol): a distribution chosen after seeing what
+  it does to the CEAC is not uncertainty analysis.
 
 ## Patient-level (microsimulation) models
 
@@ -83,10 +90,3 @@ them as scenarios — or model-average with explicit weights (BCEA's `struct.psa
 weights come from, and why stacking is preferable to information-criterion weights in a
 non-BUGS workflow, is in `bcea-package.md`). Do not bury
 a structural choice inside a parameter distribution.
-
-## In this repository
-
-Notebook 05's extrapolation engine (`extrapolation_funs.R`, `heemod`) is the Markov layer;
-its PSA input distributions are pre-specified in the HEAP (deliberately outside the regression
-prior catalogue). The within-trial notebooks are draws-native without BCEA; if BCEA is ever
-introduced for cross-checking, follow `bcea-package.md`.

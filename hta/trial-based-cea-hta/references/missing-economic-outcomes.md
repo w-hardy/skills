@@ -43,10 +43,11 @@ observed component of the joint outcome is exactly what the model already does.
 Multiple imputation approximates this by drawing from a predictive distribution. The source frames
 Rubin's design as "think like a Bayesian and do as a frequentist" (§10.3.1) — a deliberate
 compromise made when MCMC was out of reach, and one it says there is no longer any need to keep. As
-a two-stage procedure MI introduces an **uncongeniality** risk (Meng, 1994) — the imputation model can imply a different joint distribution from the
-analysis model, and the pooled result then answers a slightly different question. In a joint
-cost-effect model with a hurdle component and arm-specific dispersion, building a congenial
-imputation model in `mice` is real work. The one-stage route avoids it.
+a two-stage procedure MI introduces an **uncongeniality** risk (Meng, 1994) — the imputation model
+can imply a different joint distribution from the analysis model, and the pooled result then answers
+a slightly different question. In a joint cost-effect model with a hurdle component and arm-specific
+dispersion, building a congenial imputation model in `mice` is real work. The one-stage route avoids
+it.
 
 In brms this is the `mi()` mechanism:
 
@@ -116,11 +117,11 @@ is `Normal(0.28, sd ≈ 0.15)` on the logit scale, an odds ratio for missingness
 CEA the same decomposition applies to each outcome separately: an intercept alone is MCAR, adding
 observed covariates makes it MAR, adding the partially-observed outcome itself makes it MNAR. Either
 route is defensible; a delta grid is usually easier to present to a committee, an explicit selection
-model easier to justify when you have a substantive belief about *why* people dropped out. Report the incremental
-result and the CEAC across the grid, and state the `delta` at which the decision would change: a
-**tipping-point** analysis is far more useful to a decision-maker than a single MNAR scenario.
-`missing-data-mice` covers the general MNAR machinery; what is specific here is that the sensitivity
-must be applied to costs and effects **jointly and coherently**, not one at a time.
+model easier to justify when you have a substantive belief about *why* people dropped out. Report
+the incremental result and the CEAC across the grid, and state the `delta` at which the decision
+would change: a **tipping-point** analysis is far more useful to a decision-maker than a single MNAR
+scenario. `missing-data-mice` covers the general MNAR machinery; what is specific here is that the
+sensitivity must be applied to costs and effects **jointly and coherently**, not one at a time.
 
 ## Reporting
 
@@ -139,8 +140,9 @@ most often omitted.
 
 Chapter 10 (§10.4.2) points to **`missingHE`** (Gabrio, 2024) as a higher-level interface for
 Bayesian missing-data models in health economics — it writes and runs the JAGS code in the
-background once you state the missingness assumption and the outcome distributions — it wraps the joint cost-effect models (including hurdle and selection/pattern-mixture
-forms) with missingness handled internally. It was not possible to verify its current API from the
-authoring environment, so no function signatures are given here. If a user is already using it,
-treat it as a packaged route to the same models described in this skill, and check its documentation
-against the installed version.
+background once you state the missingness assumption and the outcome distributions — it wraps the
+joint cost-effect models (including hurdle and selection/pattern-mixture forms) with missingness
+handled internally. It was not possible to verify its current API from the authoring environment, so
+no function signatures are given here. If a user is already using it, treat it as a packaged route
+to the same models described in this skill, and check its documentation against the installed
+version.

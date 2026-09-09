@@ -48,8 +48,8 @@ check Pareto-k before believing either number.
 
 ## Comparing like with like
 
-The trap specific to this setting: **the models must be fitted to the same observations and the same
-outcome.** Three ways that fails here, all easy to miss:
+The trap specific to this setting: **the models must be fitted to the same observations, the same
+outcome, and against the same dominating measure.** Four ways that fails here, all easy to miss:
 
 - One model drops incomplete cases and another imputes them (`missing-economic-outcomes.md`). The
   likelihoods then cover different data and the comparison is meaningless. Check `nobs()`. More
@@ -68,6 +68,21 @@ outcome.** Three ways that fails here, all easy to miss:
   Jacobian before comparing across a transformation rather than assuming either way.
 - One model is Beta on a rescaled 0–1 QALY and another Gamma on the natural scale. Different
   outcome variables; not comparable. Compare them on the decision quantities instead (below).
+- One model puts a probability **mass** where the other puts a **density**. A hurdle,
+  zero-one-inflated or censored candidate assigns a point mass at the boundary — `hu`, `zoi`, or the
+  probability of the censoring event — while a continuous candidate assigns a density there. Their
+  pointwise log-likelihoods are taken with respect to different dominating measures (counting
+  measure at the spike plus Lebesgue elsewhere, versus Lebesgue throughout), so they are not on one
+  scale and `elpd_diff` between them is not a difference in predictive accuracy. The give-away is
+  that the gap moves when you change the *units* of the continuous outcome, which a genuine
+  predictive comparison would not. This is the direct consequence of following
+  `structural-values.md`: the moment a `hurdle_gamma()` cost model sits in the ladder beside a
+  `gaussian()` one, or a censored candidate beside an uncensored one, `loo_compare()` has stopped
+  answering the question. Two hurdle models differing only in their `hu` formula are fine — same
+  measure, same scale. For the mass-versus-density pair, compare on the decision quantities (below)
+  and on a targeted posterior predictive check of the spike itself,
+  `pp_check(fit, resp = "costk", type = "stat", stat = function(y) mean(y == 0))`, which is the
+  check the spike was introduced for.
 
 ## What actually matters: does the choice change the decision?
 
@@ -108,10 +123,10 @@ averaged result flows into every downstream plot. In the source it is called pos
 `struct.psa(models, effects, costs, ref = , interventions = )`, where `models` is a list of the
 fitted JAGS objects and `effects`/`costs` are lists of the per-model draw matrices; the result
 carries the extra class `struct.psa` and exposes the weights as `m_avg$w`. In the worked example
-those weights are `1.6e-42`, `4.9e-40`, `1.00` — an "average" that is one model. It belongs to `bayesian-cea-r-hta`, which owns
-BCEA; this skill produces the per-model draws it consumes. Do not model-average as a way of avoiding
-a modelling decision — if one model is right and the others are misspecified, averaging in the
-misspecified ones makes the answer worse, not more honest.
+those weights are `1.6e-42`, `4.9e-40`, `1.00` — an "average" that is one model. It belongs to
+`bayesian-cea-r-hta`, which owns BCEA; this skill produces the per-model draws it consumes. Do not
+model-average as a way of avoiding a modelling decision — if one model is right and the others are
+misspecified, averaging in the misspecified ones makes the answer worse, not more honest.
 
 ## The hand-off contract
 
@@ -147,9 +162,39 @@ stopifnot(
 )
 ```
 
-`ref` selects which column is treated as the comparator, and getting it wrong flips the sign of
-every incremental quantity while producing a perfectly plausible-looking plot. State it explicitly
-rather than relying on the default.
+`ref` names the **intervention of interest** — the column whose incremental quantities and INB are
+reported — not the comparator. BCEA's sign convention is that a positive EIB favours `ref`; see
+`bayesian-cea-r-hta`'s `references/bcea-package.md`, which owns the package. It defaults to column
+1, so the call above sets `ref = 2` deliberately. Getting it backwards flips the sign of every
+incremental quantity while producing a perfectly plausible-looking plot. State it explicitly rather
+than relying on the default, and check the sign of the reported increment against the crude
+difference in arm means before believing any plot.
+
+**The contrast form, and how it reconciles.** Most two-arm within-trial CEAs never build two `S × T`
+matrices: they carry the contrast directly, as a tidy frame of `(.draw, inc_cost, inc_qaly)`, one
+row per posterior draw. That is not a breach of the contract — it is the same object with the
+baseline arm differenced out — provided the contrast was formed **per draw** from arm means
+computed in the same fit (`inc_cost = mu_cost[, 2] - mu_cost[, 1]`, row by row). A contrast built
+from separately summarised arm means, or from two fits, has already lost the pairing; the `.draw`
+column is what lets you prove it did not, and it must index the same posterior draw in both columns.
+
+To hand a contrast frame to `bcea()`, expand it to `S × 2` with a **zero column** for the arm the
+contrast was taken against: `cbind(0, inc_qaly)` and `cbind(0, inc_cost)`. That puts the baseline in
+column 1 and the increment in column 2, so `ref = 2` here, matching the call above — and name both
+arms in `interventions` rather than accepting the default.
+
+`bayesian-cea-r-hta`'s rule that `bcea()` takes **absolute** per-arm values, never increments, still
+holds in general; this is the two-arm exception, and it is worth knowing why it is one. For two arms
+everything BCEA computes — CE plane, CEAC, INB, EVPI, EVPPI — is a functional of the per-draw
+increments, and subtracting the same per-draw constant from every arm's net benefit shifts
+`E[max_t NB_t]` and `max_t E[NB_t]` by the same amount, so those results are unchanged. What the
+zero column does not give you is **absolute** arm-level cost, effect and net benefit — `summary()`
+will report zero for the baseline column. Most HTA write-ups quote those, so carry the baseline
+arm's absolute means as an `S × 1` vector as well and rebuild the real `S × T` matrices from it.
+With **more than two arms** the exception lapses and the sibling's rule applies unqualified: keep
+the matrices, because the efficiency frontier and the fully incremental analysis are stated over
+arms, and reconstructing them from contrasts against a single baseline is exactly the arithmetic
+that silently swaps a comparator.
 
 Once the draws are handed over, the work belongs to `bayesian-cea-r-hta`: CE plane, CEAC/CEAF,
 incremental net benefit, and value of information.

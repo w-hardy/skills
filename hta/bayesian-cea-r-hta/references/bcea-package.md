@@ -9,9 +9,9 @@
 BCEA is the reference implementation of the summaries in `psa-and-summaries.md`: it takes
 simulation matrices and produces the standard decision outputs with consistent conventions.
 Use it when the deliverable is the standard battery (plane/CEAC/CEAF/EIB/EVPI) and you want the
-book's conventions for free; use draws-native code (as this repository does) when the outputs
-must integrate with an existing table/figure system — the two must agree numerically, which is
-itself a useful cross-check.
+book's conventions for free; use draws-native code when the outputs must integrate with an
+existing table/figure system — the two must agree numerically, which is itself a useful
+cross-check.
 
 ## The bcea() call
 
@@ -66,8 +66,9 @@ benefit** at that λ — it is about **decision uncertainty**, and it says "the 
 whichever strategy is currently optimal really is". Note it is *not* the upper envelope of the
 acceptability curves: the strategy with the highest expected NB need not be the one with the highest
 probability of being cost-effective, and where they differ the frontier follows the expectation. The
-points where the optimal strategy changes are its switch points. The *efficiency* frontier (`ceef.plot`) is the Pareto frontier in mean cost-effect
-space — it is about **expected values**, and it reads "which strategies are ever optimal at some λ,
+points where the optimal strategy changes are its switch points. The *efficiency* frontier
+(`ceef.plot`) is the Pareto frontier in mean cost-effect space — it is about **expected
+values**, and it reads "which strategies are ever optimal at some λ,
 and which are dominated or extendedly dominated". A strategy can sit on the efficiency frontier with
 a low acceptability, and vice versa. Say which one a plot is whenever you present it.
 
@@ -92,16 +93,24 @@ built by `createInputs()` rather than a bare index.
 - From a brms/posterior pipeline: build `eff`/`cost` matrices by binding the per-strategy
   posterior-predictive (or g-computation) draws — one column per strategy, one row per draw,
   imputation blocks stacked.
-- From `heemod`: `run_psa()` output converts via the strategy-wise cost/effect columns
-  (heemod also has its own summaries; prefer one system per report).
+- From a decision model, whichever engine built it: BCEA wants two wide matrices — one row per
+  parameter draw, one column per strategy — and the engines do not emit that shape, so the
+  reshape is always a step. `heemod::run_psa()` holds its draws long (a row per draw ×
+  strategy); a `hesim` `ce` object is longer still — separate cost and QALY tables keyed by
+  `sample`, `strategy_id`, `grp_id` and `dr`, with costs split again by category. So fix one
+  discount rate and one group, collapse costs to a single total per draw × strategy (check
+  whether the category column already carries a total row before summing over it), then reshape
+  wide on the draw index, which is what keeps the rows paired. Binding a cost column straight
+  into a matrix is how the unpaired rows warned about below arise. Engine-side detail lives in
+  `decision-modelling-hta` and `hesim-ctstm-hta`; both engines also ship their own CEA
+  summaries, so prefer one system per report rather than mixing conventions.
 - Cross-check: expected INB and P(INB>0) from BCEA at λ must match the hand-rolled versions to
   Monte Carlo error. If they differ, the usual suspects are `ref` orientation, incremental vs
   absolute inputs, or unpaired rows.
 
 ## When NOT to reach for BCEA
 
-- The report already has a consistent draws-native table/figure system (this repository's
-  `cu_summary()` / `incremental_results_table()`); adding BCEA duplicates conventions and
-  invites sign-convention drift. Use it there only as a numerical cross-check.
+- The report already has a consistent draws-native table/figure system; adding BCEA duplicates
+  conventions and invites sign-convention drift. Use it there only as a numerical cross-check.
 - Non-QALY effect scales are fine (BCEA is agnostic), but the plots' labels/λ interpretation
   assume a QALY-like "more is better" effect — flip signs first for disutility-style outcomes.

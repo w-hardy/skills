@@ -16,6 +16,34 @@ audit question and flags the failure modes reviewers actually probe.
 Cite the recommendation number in every finding so it can be quoted in a
 decision register or a response to reviewers.
 
+**Two rules gate the mark.** The first decides which mark a finding earns —
+TF-1's *Deviates (documented)* and *Gap* differ by whether the project has
+already ruled on the point *and* written down the rationale and the likely
+consequences for results and inference — and the second decides how loudly the
+finding is then reported.
+
+**Check the record before reporting.** Where the work has one — a decision log,
+a plan, an issue tracker, a statistical analysis plan, prior review artefacts —
+search it for the finding before you write it up, and say what you searched. A
+deviation that is documented, ruled on and justified is a conforming outcome,
+not a defect, and reporting it as one costs the reader more than it saves. Where
+there is no such record, say so: "not addressed anywhere I could find" is itself
+part of the finding. This applies to substantive findings, not to every
+observation — do not spend a search on a typo. This retires a deviation from a plan, a convention
+or a prior recommendation; a wrong number, an invalid inference, or a defect in something reported
+stays a finding however well documented — cite the ruling and report it anyway, because a record
+that acknowledges a defect documents it, it does not fix it.
+
+**Size the finding before you grade it.** Say what the finding moves, and by how
+much, before assigning severity: the estimate, the decision, the reported
+number, the failure rate, the runtime. A defect in a path nothing consumes —
+dead code, an unreported exploratory branch, a value computed and discarded — is
+not the same as one in a result somebody acts on, and grading them alike makes
+the whole list harder to act on. Note the trap in the other direction: anything
+pre-specified and reported *is* a result somebody acts on, sensitivity and
+scenario analyses included, so "it's only a sensitivity analysis" is not a
+reason to downgrade.
+
 Work top to bottom: conceptualisation issues cascade, so an unresolved II-2 / II-3a
 problem usually explains several downstream "structural" disagreements.
 
@@ -203,6 +231,48 @@ paper, VIH 2012;15:828–34.)*
 - Overall: is **sensitivity analysis being mis-sold as validation**? It
   complements but never substitutes for it.
 
+### Reproducibility and provenance infrastructure
+
+VII-2 asks for technical documentation detailed enough for a reader with the
+necessary expertise to evaluate and *potentially reproduce* the model. In a
+code-based project that promise rests on machinery, and the machinery is itself
+a review object. Asking "is this reproducible?" reliably returns nothing; ask it
+procedurally instead.
+
+**Enumerate every class of build input, then name, for each, the mechanism that
+invalidates the downstream artefacts when it changes.** Walk the list explicitly
+rather than in the abstract: source code; raw data extracts; derived and
+intermediate data; pinned or hard-coded tables (life tables, unit costs, value
+sets, mapping coefficients); package and toolchain versions (lockfile, container
+image, `renv` snapshot); dated data cuts and the policy for re-cutting them;
+caches, memoised results, and checkpointed fits; fitted objects, seeds, and
+priors; the model's own configuration files. For each, state what *detects* a
+change and what it then re-runs or refuses — a content hash, a build-target
+dependency graph, a lockfile check, a manifest or provenance-stamp comparison, or
+a documented human step. **An input class covered by no mechanism is a Gap**, and
+report it as that class: "the cached survival fits are not invalidated when the
+extract is re-cut", not "reproducibility could be improved". The recurring
+instance is a cache or a pinned derived table that outlives a change to its
+inputs — the re-run is silently partial, and the outputs then correspond to no
+single state of the inputs.
+
+**Decision registers are a build input too**, and one whose invalidation
+mechanism is the project's own discipline. What a register should be, and how to
+read one that is only appended to, are in Section E under *Register discipline*.
+
+**Vendored or forked guidance documents.** A methods manual, TSD, checklist,
+template, or guidance document copied into the project repository freezes at the
+moment of the copy: bumping the upstream version does not refresh it, its onward
+references (a superseded manual, a withdrawn TSD, a 2012 recommendation with a
+2022 successor) go stale silently, and two copies in different directories drift
+apart until each gives different instructions to whoever opens the nearer one.
+Check that every vendored document records its origin and the version or commit
+it was taken at, and that exactly one copy exists. Report duplicate copies as a
+Gap even when their contents currently agree — the defect is the missing single
+source, not today's diff. This is the enumeration above in another guise: a
+vendored document is a build input whose only invalidation mechanism is someone
+remembering.
+
 ## E. Companion-artefact consistency (cascade check)
 
 Staged, auditable modelling projects rarely live in one document. A typical suite
@@ -264,6 +334,19 @@ hunt-and-patch. Keep the split TF-7 draws: the reviewer-facing artefacts carry t
 clean, current statement; the register carries the full history of changes,
 conflicts, and decision rounds. A correct earlier decision should not be silently
 reversed by a local edit that never reaches the register.
+
+**Reading an append-only register.** The rule above says what a register
+should be; this is how to read the one in front of you. A register that is
+only appended to is a log, not a statement of the current position: later
+rounds supersede earlier ones. So carry the round and date with every
+quotation from it — an unqualified quote of a superseded entry is a stale
+finding — resolve each decision to its latest entry before treating it as the
+project's position, and check the register's own **closure claims** against
+the artefacts they name. "Closed — implemented in HEAP v3" is a claim about
+the HEAP and is verifiable there; an entry marked closed whose fix never
+reached the artefact is a Gap in the audit trail, and a worse one than the
+finding it claims to close, because the register is what a reviewer trusts in
+place of re-reading everything.
 
 ---
 

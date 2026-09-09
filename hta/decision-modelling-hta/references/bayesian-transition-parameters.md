@@ -179,9 +179,10 @@ before computing costs, because both collapse the uncertainty you built the mode
 costs |> mutate(across(starts_with("c_"), ~ .x / (1 + d)^cycle))
 ```
 
-**The heemod bridge** (the one engine-specific part of this file). `heemod`'s normal PSA path resamples parameters from named distributions in
-`define_psa()`. When a parameter already has a posterior, that resampling is redundant and lossy —
-you would be fitting a parametric distribution to draws you already have. `define_distribution()`
+**The heemod bridge** (the one engine-specific part of this file). `heemod`'s normal PSA path
+resamples parameters from named distributions in `define_psa()`. When a parameter already has a
+posterior, that resampling is redundant and lossy — you would be fitting a parametric distribution
+to draws you already have. `define_distribution()`
 is heemod's hook for a user-supplied set of draws (see `SKILL.md`), and it is the route for an MCMC
 posterior; check its signature against the installed version, since heemod's PSA helpers have moved
 across releases. Where the posterior is a whole correlated transition matrix rather than a handful of

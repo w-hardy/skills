@@ -34,6 +34,25 @@ Before finalizing findings:
 
 Do not make the user perform code archaeology that you can do yourself.
 
+**Check the record before reporting.** Where the work has one — a decision log, a design doc or
+ADR, an issue tracker, prior review threads, prior review artifacts — search it for the finding
+before you write it up, and say what you searched. A deviation that is documented, ruled on and
+justified is a conforming outcome, not a defect, and reporting it as one costs the reader more
+than it saves. Where there is no such record, say so: "not addressed anywhere I could find" is
+itself part of the finding. This applies to substantive findings, not to every observation — do
+not spend a search on a typo. This retires a deviation from a convention, a plan, or a prior
+recommendation; a correctness, data-integrity, security, or accessibility defect stays a finding
+however well documented — cite the prior decision and report it anyway, because a record that
+acknowledges a defect documents it, it does not fix it.
+
+**Size the finding before you grade it.** Say what the finding moves, and by how much, before
+assigning severity: the returned value, the user-visible behavior, the failure rate, the runtime,
+the decision it feeds. A defect in a path nothing consumes — dead code, a debug-only branch, a
+value computed and discarded — is not the same as one in a result somebody acts on, and grading
+them alike makes the whole list harder to act on. Note the trap in the other direction: anything
+that ships and runs *is* a path somebody hits, error handling, retries, and migration rollbacks
+included, so "it's only the failure path" is not a reason to downgrade.
+
 ## Detection Patterns
 
 ### 4. The Slop Detector
@@ -87,11 +106,26 @@ Prioritize:
 - Data access patterns, resource use, and demonstrated performance problems
 - Framework-specific correctness, accessibility, and lifecycle requirements
 
+Concrete, checkable failure modes for Python, R, JavaScript/TypeScript, SQL, and front-end markup
+are in `references/language-checklists.md`; read it when the change is in one of those languages,
+and treat each entry as a prompt to investigate rather than a finding. For any other language,
+work from the priorities above and the repository's own conventions instead of asserting language
+rules you cannot verify.
+
 Do not spend review attention repeating issues that automated tooling reliably enforces unless the tooling is absent, misconfigured, or the violation reveals a behavioral problem.
 
 ### 8. Accessibility as Design Completeness
 
-Treat accessibility as a cross-cutting quality requirement, not optional polish or a front-end-only concern. Accessibility gaps often reveal that the feature was designed around one happy path without considering the full range of users, content formats, input methods, or assistive technologies.
+Scope this dimension to changes with a user interface or another human-facing surface: UI code and
+templates, generated HTML or documents, CLI and terminal output, prose and documentation, charts
+and other rendered artifacts. A change that touches none of those — a numeric routine that adds no
+messages and no documentation, an internal data transform, a build configuration — has no
+accessibility surface; say so in one line and move on.
+
+Where the change does have such a surface, treat accessibility as a quality requirement, not
+optional polish or a front-end-only concern. Accessibility gaps often reveal that the feature was
+designed around one happy path without considering the full range of users, content formats, input
+methods, or assistive technologies.
 
 Review every user-facing artifact affected by the change:
 - Prose and documentation: meaningful structure, descriptive links, understandable language, and useful alternatives for images, diagrams, charts, audio, and video
@@ -105,6 +139,14 @@ Do not reduce accessibility review to the presence of attributes such as `alt` o
 Call out concrete barriers and identify the affected users and tasks. Treat barriers that prevent users from completing a core task as Blocking. Raise other verified accessibility gaps at a severity proportional to their impact. When several gaps share a cause, identify the broader design omission rather than reporting only isolated symptoms.
 
 ## Operating Constraints
+
+Not every dimension above has a surface in every change: a change that adds no messages, no output
+and no documentation has no accessibility surface, a pure function has no concurrency surface,
+code that issues no queries has no injection surface. Key that judgement to the change, not to the
+artifact type — a headless library still has CLI output, condition messages and prose. State in
+one line in the Summary which dimensions the change does not touch and move on — an empty
+dimension is a result, not a gap to fill. Do not open a heading or a finding for a dimension with
+no surface, and never manufacture a finding to give one content.
 
 When reviewing partial code:
 - If reviewing partial code, state what you can't verify (e.g., "Can't assess whether this duplicates existing utilities without seeing the full codebase")
@@ -125,6 +167,9 @@ When reviewing partial code:
 2. **Required Changes**: Slop, lazy patterns, unhandled edge cases, poor naming, type safety violations, and other verified accessibility gaps
 3. **Strong Suggestions**: Suboptimal approaches, missing tests, unclear intent, performance concerns
 4. **Noted**: Minor style issues (mention once, then move on)
+
+Assign a tier from what the finding moves in this change, not from the category it falls into; see
+"Establish Context Before Judging."
 
 **Tone Calibration:**
 - Direct, not theatrical
@@ -169,55 +214,24 @@ For each finding, help the user choose and record one disposition:
 
 Use only accepted findings when preparing or posting review comments.
 
-## Preparing Implementer Feedback
+## Preparing and Publishing Feedback
 
-Do not submit the internal review report verbatim. Convert accepted findings into professional, self-contained feedback for the implementer.
+Do not submit the internal review report verbatim. Convert accepted findings into professional,
+self-contained feedback for the implementer: the file and diff line, the observable problem, the
+failure mode or practical impact, and a concrete requested change or focused question. Keep
+unverified concerns phrased as questions, put cross-cutting concerns in the summary rather than
+forcing them onto an arbitrary line, and only attach an inline comment to a line that is part of
+the PR diff.
 
-For each proposed inline comment, include:
-- The file and diff line
-- The observable problem
-- The failure mode or practical impact
-- A concrete requested change or a focused question
+Never write to GitHub without the user's explicit confirmation, and keep the three actions
+distinct: prepare feedback only, create a pending review, or submit a review as Approve, Comment,
+or Request Changes.
 
-Keep unverified concerns phrased as questions. Separate inline comments from the overall review summary, and do not repeat every inline comment in the summary. Put broad or cross-cutting concerns in the summary rather than forcing them onto an arbitrary line.
-
-Only attach an inline comment to a line that is part of the PR diff. Verify the path, line, diff side, and current head revision before posting. Use the old side for deleted lines and the new side for added or unchanged lines.
-
-When preparing feedback without posting, provide:
-1. A proposed review summary
-2. Proposed inline comments with `path:line` locations
-3. A recommended GitHub disposition: Approve, Comment, or Request Changes
-
-## Publishing a Pull Request Review
-
-Never write to GitHub without the user's explicit confirmation. Distinguish these actions:
-
-1. **Prepare only**: Draft the summary and inline comments without changing GitHub
-2. **Create pending review**: Create one pending review and add the approved inline comments, but do not submit it
-3. **Submit review**: Submit as `APPROVE`, `COMMENT`, or `REQUEST_CHANGES`
-
-Before creating or submitting a review, confirm the repository, PR number, selected comments, and intended action. Before submission, ask the user to choose the exact event:
-- **Approve** maps to `APPROVE`
-- **Comment** maps to `COMMENT`
-- **Request Changes** maps to `REQUEST_CHANGES`
-
-A pending review can contain inline comments, but its overall summary cannot be pre-submitted. Keep the prepared summary in the conversation while the review is pending. When the user later chooses to submit, show or confirm that summary and use it as the submission body. Do not post it early as a separate PR comment.
-
-When available, the `gh-pr-review` extension and its associated skill are convenient for line-level reviews:
-
-```sh
-gh pr-review review --start -R owner/repo <pr-number>
-gh pr-review review --add-comment -R owner/repo <pr-number> \
-  --review-id <PRR_...> --path <file> --line <line> --side <LEFT|RIGHT> \
-  --body "<comment>"
-gh pr-review review --submit -R owner/repo <pr-number> \
-  --review-id <PRR_...> --event <APPROVE|COMMENT|REQUEST_CHANGES> \
-  --body "<review-summary>"
-```
-
-The extension is optional. Equivalent GitHub API or available PR-review tools are acceptable; do not require installing the extension solely to complete a review. Check for an existing pending review before creating one, and avoid duplicate comments if an operation is retried.
-
-When disclosure is appropriate, use a brief, neutral statement such as "Review prepared with assistance from generative AI."
+Read `references/github-review-publishing.md` before drafting implementer-facing comments or
+touching GitHub. It carries the mechanics: what each inline comment must contain, the path, line,
+diff-side, and head-revision checks, what a prepared-but-unposted review must include, how a
+pending review and its summary are handled, the event mapping, the `gh pr-review` commands and
+their API equivalents, and the AI-disclosure statement.
 
 ## Before Finalizing
 

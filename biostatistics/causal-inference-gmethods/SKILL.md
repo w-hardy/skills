@@ -1,6 +1,6 @@
 ---
 name: causal-inference-gmethods
-description: Estimate causal treatment effects from observational clinical data in R - DAGs and confounder selection, propensity scores, inverse probability weighting, g-computation, doubly robust estimation (AIPW/TMLE), target trial emulation, and sensitivity analysis for unmeasured confounding. Use whenever the question is what would happen if we intervened rather than what predicts the outcome, or when appraising an observational study claiming a treatment effect. Trigger on "causal inference", "DAG", "confounding", "collider", "propensity score", "IPTW", "inverse probability weighting", "g-computation", "g-formula", "marginal structural model", "doubly robust", "AIPW", "TMLE", "target trial", "immortal time bias", "ATE", "ATT", or "E-value" - even when unnamed. Prefer this over memory, because covariate coefficients from an adjusted model are not causal effects (the Table 2 fallacy) and balance must not be assessed with p-values. For pathways use mediation-analysis; for prediction use clinical-prediction-models.
+description: "Estimate causal treatment effects from clinical data in R - DAG-based confounder selection, propensity scores, inverse probability weighting, g-computation, doubly robust estimation, and sensitivity analysis for unmeasured confounding. Use whenever the question is what would happen if we intervened, not what predicts the outcome, when appraising an observational treatment-effect claim, or when standardising a covariate-adjusted trial model (non-collapsibility). Trigger on \"causal inference\", \"DAG\", \"confounding\", \"collider\", \"propensity score\", \"IPTW\", \"g-computation\", \"g-formula\", \"marginal structural model\", \"doubly robust\", \"AIPW\", \"TMLE\", \"target trial\", \"immortal time bias\", \"ATE\", \"ATT\", \"non-collapsibility\", or \"E-value\" - even when unnamed. Prefer this over memory, because an adjusted model's covariate coefficients are not causal effects (the Table 2 fallacy) and balance must not be assessed with p-values. For pathways use mediation-analysis; for prediction use clinical-prediction-models."
 ---
 
 # Causal Inference and G-Methods
@@ -22,6 +22,11 @@ Verified 13 August 2026.
 - VanderWeele TJ. *Eur J Epidemiol* 2019;34:211-19 — principles of confounder selection
 - VanderWeele TJ, Ding P. *Ann Intern Med* 2017;167:268-74 — the E-value
 - Lipsitch M, Tchetgen Tchetgen E, Cohen T. *Epidemiology* 2010;21:383-8 — negative controls
+- ICH E9(R1) estimands addendum, 2019; FDA *Adjusting for Covariates in Randomized Clinical
+  Trials*, 2023; EMA guideline on baseline covariates (EMA/CHMP/295050/2013), 2015 — covariate
+  adjustment in randomised trials
+- Ye T, Shao J, Yi Y, Zhao Q. *J Am Stat Assoc* 2023 — covariate adjustment and marginal effects
+  in randomised trials
 - Textor J et al. — `dagitty`; Greifer N — `WeightIt`, `cobalt`, `MatchIt`
 
 ## Step 1: state the estimand before touching data
@@ -76,7 +81,7 @@ residual bias without reducing confounding.
 
 ## Step 4: estimation
 
-Three routes; the third is usually best.
+Three routes; in observational data the third is usually best.
 
 **Inverse probability weighting.** Model treatment given covariates, weight each
 patient by the inverse of the probability of the treatment they actually
@@ -98,22 +103,92 @@ received, and fit an outcome model on the pseudo-population.
 **G-computation (standardisation).** Fit an outcome model including treatment and
 covariates; predict every patient's outcome under treatment and under control;
 average the difference. Efficient when the outcome model is right, and it gives
-the marginal effect directly rather than a conditional one.
-Note the term is also used in health technology assessment for a different job:
-standardising an outcome model fitted in one *randomised* trial's individual data
-over another study's covariate distribution, to transport a marginal effect
-between populations (G-computation STC). Same standardisation arithmetic; the
-obstacle there is a covariate-distribution mismatch between studies, not
-confounding, so identification is already free. If that is the question, use
-`population-adjusted-comparisons`. (Baio, *Bayesian Models in Health Technology
-Assessment*, CRC Press 2026, §11.3.2 uses "parametric g-computation" in exactly
-that sense, after Remiro Azócar et al. 2022, noting the "g" is Robins' 1986
-*generalised*.)
+the marginal effect directly rather than a conditional one. In R,
+`marginaleffects::avg_comparisons()` does the averaging and the delta-method or
+bootstrap standard error.
+
+The same standardisation arithmetic does three different jobs, and "g-computation"
+names all three. Work out which one is in front of you before answering, because
+the assumptions and the owning skill differ:
+
+- **Identification under confounding.** Observational data; standardise over the
+  confounders to recover the causal effect. This skill, and every assumption in
+  Step 3 applies.
+- **Marginalisation within a single randomised trial.** Randomisation already
+  supplies exchangeability, so nothing here is about confounding. Standardisation
+  is needed because the effect measure is **non-collapsible**: for an odds ratio
+  or a hazard ratio (logistic, Cox), the treatment coefficient of a
+  covariate-adjusted model is a *conditional* effect, and exponentiating it does
+  not give the marginal contrast the decision needs. Fit the adjusted model,
+  predict every randomised patient under each arm, average within arm, then
+  contrast: the covariates buy precision while the estimand stays marginal and
+  the randomisation still does the identifying. ICH E9(R1) makes the
+  population-level summary part of the estimand rather than a by-product of the
+  model; the FDA's 2023 covariate-adjustment guidance requires the estimand to
+  state whether the effect of interest is conditional or unconditional and
+  permits covariate-adjusted estimation of the unconditional effect in the
+  primary analysis, while the EMA's 2015 guideline uses neither term and asks
+  only that an adjusted estimate from a non-linear model be given its correct
+  interpretation. **This case belongs here, not in
+  `population-adjusted-comparisons`** — nothing is being transported to another
+  population.
+
+  A log-link cost model reaches the same recipe by a different route. The mean
+  *ratio* is collapsible — absent a treatment-covariate interaction,
+  `exp(b_treatment)` is already the marginal ratio — but a CEA needs the mean
+  *difference*, and `E[exp(eta)] != exp(E[eta])`, so the arm means must still be
+  standardised over the trial's covariate distribution rather than read off the
+  coefficients or evaluated at mean covariates. `trial-based-cea-hta` works that
+  case through.
+- **Transport between studies (G-computation STC).** Standardising an outcome
+  model fitted in one randomised trial's individual data over *another* study's
+  covariate distribution, to move a marginal effect between populations.
+  Randomisation disposes of confounding inside the trial, but identification is
+  not therefore free: the cross-study step assumes every effect modifier is
+  measured and correctly specified — and, if the comparison is unanchored (no
+  common comparator arm), every prognostic factor too. If that is the question,
+  use `population-adjusted-comparisons`. (Baio, *Bayesian Models in Health
+  Technology Assessment*, CRC Press 2026, §11.3.2 uses "parametric g-computation"
+  in exactly that sense, after Remiro Azócar et al. 2022, noting the "g" is
+  Robins' 1986 *generalised*.)
 
 **Doubly robust (AIPW, TMLE).** Combines both: consistent if *either* the
-treatment model or the outcome model is correct. This is the default to reach
-for. `tmle` and `AIPW` in R; TMLE additionally accommodates machine learning for
-the nuisance models via cross-fitting without breaking inference.
+treatment model or the outcome model is correct. **In observational data this is
+the default to reach for.** `tmle` and `AIPW` in R; TMLE additionally
+accommodates machine learning for the nuisance models via cross-fitting without
+breaking inference.
+
+Do not *require* it in a randomised trial, and do not raise its absence as a
+finding there. The treatment model is known by design, so nothing rests on
+getting that half right. What the augmentation still buys is consistency when the
+*outcome* model is wrong. Plain g-computation gives that for free only under a
+**canonical link** — the intercept's score equation then forces the mean of the
+fitted values to equal the observed mean within the fitted sample, so
+standardising reproduces the arm mean whatever else the model gets wrong
+(Rosenblum & van der Laan 2010). It needs an intercept and a treatment main
+effect, or a separate fit per arm, but **the canonical link is the load-bearing
+condition and by-arm fitting does not substitute for it**: fitting a log-link
+Gamma separately by arm removes the omitted-interaction failure mode and leaves
+the link one untouched. Check it rather than assume it — `mean(fitted(fit))`
+against the observed arm mean is one line, exact to machine precision under a
+canonical link and not otherwise. (Gamma's canonical link is the inverse, not
+the log; for Poisson and quasi-Poisson the log *is* canonical, which is one
+reason a log-link Poisson is a reasonable cost model.) Outside a canonical-link
+fit, augment, or accept that the standardised means carry the outcome model's
+misspecification.
+
+What an augmented estimator can cost is something an economic evaluation cannot
+spare: a CEAC, a cost-effectiveness plane and incremental net benefit are all
+computed from *paired* draws of incremental cost and incremental effect, and a
+one-number AIPW or TMLE estimate per outcome, each carrying its own
+influence-curve standard error, throws the cost-effect correlation away — unless
+the two estimators' influence functions are stacked and their joint covariance
+taken, or the whole estimator is bootstrapped by resampling *patients*. Either
+route recovers the correlation and yields paired draws, so raise it as a finding
+only when two separately estimated numbers with marginal standard errors are all
+that is reported. The simplest route to paired draws is a joint cost-and-effect
+model, standardised per posterior draw over the trial's covariate distribution —
+`trial-based-cea-hta` owns that fit, `bayesian-cea-r-hta` what the draws feed.
 
 ## Balance diagnostics
 
@@ -188,12 +263,17 @@ Claims in this skill carry one of two provenance levels. Treat them differently.
 
 **Verified 13 August 2026** — checked against the named primary source, package
 documentation, or package source at that date:
-Westreich & Greenland on the Table 2 fallacy; the estimand and assumption framing against Hernán & Robins.
+Westreich & Greenland on the Table 2 fallacy; the estimand and assumption framing against Hernán
+& Robins. Added 9 September 2026: what the FDA 2023 guidance and EMA/CHMP/295050/2013 do and do
+not say about conditional versus unconditional effects, quoted from both documents.
 
 **Not independently verified** — asserted from general knowledge and plausible
 but unchecked. Confirm before relying on any of it in a submission, and treat
 function signatures as a starting point rather than a guarantee:
-`WeightIt::weightit()`, `glm_weightit()` and `cobalt::bal.tab()` signatures; `tmle` / `AIPW` usage; the SMD < 0.1 convention; Austin 2011, Cole & Hernán 2008, VanderWeele & Ding and Lipsitch citation details.
+`WeightIt::weightit()`, `glm_weightit()`, `cobalt::bal.tab()` and
+`marginaleffects::avg_comparisons()` signatures; `tmle` / `AIPW` usage; the ICH E9(R1), Ye et
+al. and Rosenblum & van der Laan covariate-adjustment citations; the SMD < 0.1 convention;
+Austin 2011, Cole & Hernán 2008, VanderWeele & Ding and Lipsitch citation details.
 
 Package APIs move. Re-check any code block that fails, and prefer the package's
 own current documentation over this file where they disagree.

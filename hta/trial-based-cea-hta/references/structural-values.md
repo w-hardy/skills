@@ -47,10 +47,11 @@ reported quantity". With complete data and an identity link the answer can legit
 **Shift the spike away and use a bounded family.** Subtract a small `eps` (0.01, say) from every
 QALY so nothing sits exactly at 1, then fit a Beta. Note this only works at all when the observed
 minimum is comfortably above `eps` — in the source's data the range was [0.61, 1], so nothing was
-pushed below 0. Now the support is right, but two problems remain. The shift biases every patient's outcome downward by `eps` — small, but systematic, and it
-does not cancel in the increment if the arms have different spike sizes. More importantly it
-**models the structural subgroup as though they were ordinary patients who happened to score
-high**, which is exactly the claim the spike contradicts. It is a workaround, not a model.
+pushed below 0. Now the support is right, but two problems remain. The shift biases every patient's
+outcome downward by `eps` — small, but systematic, and it does not cancel in the increment if the
+arms have different spike sizes. More importantly it **models the structural subgroup as though they
+were ordinary patients who happened to score high**, which is exactly the claim the spike
+contradicts. It is a workaround, not a model.
 
 ## The hurdle / mixture model
 
@@ -70,8 +71,9 @@ mu_e[t] = (1 − gamma_bar[t]) * mu_e_lt1[t] + gamma_bar[t] * 1
 
 where `gamma_bar[t]` is the arm's structural probability and `mu_e_lt1[t]` the mean among the
 non-structural. (This is the source's own formula, §10.4.1; patients observed at exactly 1 are
-treated as fixed members of the structural group, and only the rest are modelled.) This is the formula that must reach the draws — it is not enough to fit the mixture
-and then report the Beta component's mean, which describes only part of the arm.
+treated as fixed members of the structural group, and only the rest are modelled.) This is the
+formula that must reach the draws — it is not enough to fit the mixture and then report the Beta
+component's mean, which describes only part of the arm.
 
 Note that the treatment effect can now act through **two channels**: it can change the probability
 of being in full health (`gamma`), and it can change the outcome among those who are not. Reporting

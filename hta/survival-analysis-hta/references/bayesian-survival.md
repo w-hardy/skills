@@ -18,6 +18,15 @@ framing that model choice is governed by extrapolation plausibility rather than 
 inspection, the mean-not-median rule and the pitfalls all still apply. What changes is how
 uncertainty is represented and how external evidence enters.
 
+**Scope, because "Bayesian" plus "health economics" pulls readers here wrongly.** This file is
+Bayesian estimation of the *time-to-event* model — the survival curve, its extrapolation, and the
+draws that come out of it. It is not the skill for Bayesian models of **costs and QALYs**: that is
+`trial-based-cea-hta`, which owns patient-level trial cost and effect models (skewed costs, bounded
+QALYs, keeping the cost-effect correlation), with `brms-modelling` for the fitting mechanics and
+`bayesian-cea-r-hta` for the decision layer on the resulting paired draws (CE plane, CEAC, INMB,
+EVPI/EVPPI). If the question is about a cost or utility distribution rather than a survival
+distribution, you are in the wrong file.
+
 ## Why Bayesian here, specifically
 
 Not ideology — three concrete payoffs, all of which bite hardest in extrapolation.
