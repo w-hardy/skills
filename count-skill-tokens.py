@@ -1,7 +1,7 @@
 #!/usr/bin/env -S uv run --script
 # /// script
 # dependencies = [
-#   "frontmatter",
+#   "python-frontmatter",
 #   "tiktoken",
 # ]
 # ///
@@ -20,7 +20,7 @@ import sys
 from pathlib import Path
 
 import tiktoken
-from frontmatter import Frontmatter
+import frontmatter
 
 
 def count_tokens(text: str, encoding: tiktoken.Encoding) -> int:
@@ -42,8 +42,8 @@ def main() -> None:
     enc = tiktoken.get_encoding("cl100k_base")
 
     # Parse SKILL.md frontmatter
-    parsed = Frontmatter.read_file(str(skill_md))
-    attrs = parsed["attributes"]
+    parsed = frontmatter.load(str(skill_md))
+    attrs = parsed.metadata
     skill_name = attrs.get("name", skill_dir.name)
     skill_description = attrs.get("description", "")
 
