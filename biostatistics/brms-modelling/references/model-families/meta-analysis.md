@@ -2,6 +2,13 @@
 
 What changes relative to `core-workflow.md` when using brms to fit a random-effects meta-analysis or meta-regression (rather than `metafor`/`meta`-package alternatives) — relevant for systematic-review work where a Bayesian random-effects model, or a more flexible meta-regression than off-the-shelf packages allow, is wanted.
 
+> Heterogeneity-prior guidance and the pooled-vs-predictive distinction here follow *Bayesian Models
+> in Health Technology Assessment* — Baio (CRC Press, 2026), online edition
+> <https://gianluca.statistica.it/books/online/bmhta/>, verified 2026-09-09 — §6.2.3
+> and §6.2.5, which recommend PC or half-Cauchy priors for a between-study SD and discourage both
+> `Gamma(eps, eps)` on the precision and `Uniform(0, K)` on the SD; Gelman & Hill (2007) suggest at
+> least three groups before a hierarchical model earns its keep.
+
 ## Specification
 
 - The standard brms random-effects meta-analysis pattern treats each study's known standard error as fixed and known, via `y | se(known_se) ~ 1 + (1 | study)`:
@@ -13,15 +20,16 @@ What changes relative to `core-workflow.md` when using brms to fit a random-effe
 
 ## Priors
 
-- The between-study SD (`sd(study)`) is frequently the parameter the whole analysis is *about* — flag any meta-analysis where this prior hasn't been set deliberately. With a typical systematic review (often well under 20 studies), this parameter is weakly identified by the data, and the prior will visibly shape the heterogeneity estimate. There is a dedicated literature on this exact choice (e.g. Williams, Rast & Bürkner on weakly-informative priors for τ, which motivates a half-Cauchy or half-normal rather than a flat prior) — point to it rather than picking a scale arbitrarily, and sense-check the chosen scale against how much spread the raw study estimates actually show.
+- The between-study SD (`sd(study)`) is frequently the parameter the whole analysis is *about* — flag any meta-analysis where this prior hasn't been set deliberately. With a typical systematic review (often well under 20 studies), this parameter is weakly identified by the data, and the prior will visibly shape the heterogeneity estimate. There is a dedicated literature on this exact choice (e.g. Williams, Rast & Bürkner on weakly-informative priors for τ, which motivates a half-Cauchy or half-normal rather than a flat prior) — point to it rather than picking a scale arbitrarily, and sense-check the chosen scale against how much spread the raw study estimates actually show. For actually *choosing* the scale, the penalised-complexity recipe in `core-workflow.md` §1 is the most defensible route: an `Exponential(lambda)` prior on the between-study SD with `lambda = -log(alpha)/U` encodes `Pr(tau > U) = alpha`, so `Exponential(2.31)` says "heterogeneity above 1 on the log-effect scale has probability 0.1". That is a sentence a reviewer can argue with, unlike a bare scale. A vague `Gamma(0.001, 0.001)` on the precision, still common in ported BUGS models, is the one clearly bad option here — see `core-workflow.md`.
 - A prior predictive check here is particularly informative: simulate study-level effects from the prior and check they span a plausible range for the outcome's effect-size scale (e.g. log hazard ratios that exponentiate to absurdly large or small hazard ratios indicate a prior that's too diffuse).
 
 ## Diagnostics & PPC
 
-- Same Rhat/ESS/divergence thresholds as `core-workflow.md` — note that with few studies, divergences related to the funnel geometry of `(1 | study)` are common; the non-centred-parameterisation guidance in `multilevel.md` applies directly.
+- Same Rhat/ESS/divergence thresholds as `core-workflow.md` — note that with few studies, divergences and slow mixing around `(1 | study)` are common. The few-group guidance in `multilevel.md` applies directly, including its warning that brms already generates group-level effects in non-centred form, so "try non-centring" is not a lever here either. With a handful of studies the grand-intercept / study-effect ridge described there is the more likely diagnosis than the funnel — the levers are the prior on `sd(study)` (see Priors above) and the model itself.
 - PPC for meta-analysis is less about reproducing a marginal distribution and more about checking study-level shrinkage looks sensible: extreme/imprecise studies should be pulled toward the pooled estimate; very precise studies should barely move. Plot study-level posterior estimates against raw study estimates to sense-check this.
 
 ## Reporting
 
 - Report the between-study heterogeneity (posterior summary of `sd(study)`, ideally translated to an I²-like quantity for a frequentist-familiar audience) alongside the pooled effect — for a Bayesian random-effects model this is usually as important a result as the pooled estimate itself.
+- **Report a prediction interval alongside the pooled effect**, and be clear which one downstream work should use. The posterior for the pooled mean effect narrows as studies accumulate; the *predictive* distribution for the effect in a **new** exchangeable study cannot narrow below the between-study SD. If the result will be applied to a setting that is not one of the synthesised studies — which is the usual case when a meta-analysis feeds a decision model — the predictive distribution is the honest input, and it is materially wider whenever heterogeneity is non-trivial. Using the pooled mean instead understates decision uncertainty.
 - If this analysis feeds into a PRISMA-style review write-up, report it alongside (not as a replacement for) the standard forest plot conventions reviewers/readers expect, even though `tidybayes`/`ggplot2` output from brms won't look identical to `metafor`'s default forest plot.

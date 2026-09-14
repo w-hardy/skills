@@ -1,7 +1,7 @@
 #!/usr/bin/env Rscript
 # check_ctstm_build.R  (hesim 0.5.8)
 # -----------------------------------------------------------------------------
-# Structural PRE-FLIGHT for an EXPO IndivCtstm build. Catches the "runs but is
+# Structural PRE-FLIGHT for an IndivCtstm build. Catches the "runs but is
 # silently wrong" class BEFORE the expensive simulation: bad clock string, a
 # pwexp age axis that under-runs the horizon, misaligned coefficient names, an
 # out-of-order params_surv_list, an unresolved mortality_key, or a max_age that
@@ -11,7 +11,7 @@
 # (transition-matrix / Q consistency). Run that first; run this second.
 #
 # All checks are cheap and require no simulation. Use as a hard gate: any FAIL
-# should stop the build (fail-closed), consistent with EXPO governance.
+# should stop the build (fail-closed).
 # -----------------------------------------------------------------------------
 
 check_ctstm_build <- function(tmat,

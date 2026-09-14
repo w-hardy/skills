@@ -2,7 +2,16 @@
 
 Multilevel network meta-regression: the general population-adjustment method. It defines an individual-level regression (as in IPD-NMR) and incorporates AgD studies by **integrating** that model over each AgD study's covariate distribution — correctly linking the two levels and avoiding the aggregation / non-collapsibility bias that "plug-in means" approaches incur. It synthesises networks of any size and any IPD/AgD mix, and — crucially — produces estimates in **any target population**. Implemented in `multinma` (Stan). Example: plaque psoriasis, PASI 75 binary outcome, 9 studies (4 IPD: UNCOVER-1/2/3, IXORA-S; 5 AgD), target = PROSPECT cohort.
 
-> Sources: R-HTA Ch. 13 (ML-NMR; plaque-psoriasis network); Phillippo et al. (ML-NMR methodology, per TSD 18 and subsequent papers); `multinma` pkgdown docs — `set_ipd()`, `set_agd_arm()`, `combine_network()`, `add_integration()`, `nma()`, `relative_effects()`, `marginal_effects()`, `predict()` confirmed current. Accessed 2026-07-03.
+> Sources: R-HTA Ch. 13 (ML-NMR; plaque-psoriasis network); Phillippo et al. (ML-NMR methodology,
+> per TSD 18 and subsequent papers); `multinma` pkgdown docs — `set_ipd()`, `set_agd_arm()`,
+> `combine_network()`, `add_integration()`, `nma()`, `relative_effects()`, `marginal_effects()`,
+> `predict()` confirmed current. Accessed 2026-07-03.
+>
+> The QMC integration explanation is from *Bayesian Models in Health Technology Assessment* — Baio
+> (CRC Press, 2026), online edition <https://gianluca.statistica.it/books/online/bmhta/>, verified
+> 2026-09-09 — §11.3.1, which sets out why a deterministic
+> low-discrepancy sequence converges closer to O(n^-1) than plain Monte Carlo's O(n^-1/2) for smooth
+> integrands, and why that advantage falls away in high dimensions or for non-smooth ones.
 
 ## Pipeline overview
 `set_ipd()` + `set_agd_arm()` → `combine_network()` → `add_integration()` → `nma()` → `relative_effects()` / `predict()` / `marginal_effects()` for the target population.
@@ -41,6 +50,23 @@ pso_net <- add_integration(pso_net,
 ```
 
 ML-NMR results are typically **insensitive** to misspecifying these reconstruction assumptions (simulation evidence), though a highly non-linear model or targeting marginal effects can raise sensitivity. Integration uses Quasi-Monte Carlo; accuracy is now checked automatically by default.
+
+**What QMC is doing, and what to do when the accuracy check complains.** ML-NMR has to average the
+individual-level model over the AgD study's covariate distribution — an integral with no closed form,
+approximated by evaluating the model at a set of points. Plain Monte Carlo draws those points
+pseudo-randomly, which clusters some regions and leaves gaps in others; the error falls as
+`O(n^-1/2)`. Quasi-Monte Carlo instead uses a deterministic **low-discrepancy sequence** (Sobol,
+Halton) that fills the covariate space evenly by construction, and for smooth integrands converges
+closer to `O(n^-1)` — so far fewer integration points buy the same accuracy, which matters because
+every point costs a likelihood evaluation at every MCMC iteration.
+
+The practical consequence: the integration points are a **numerical** approximation, not data, and
+their number is a tuning parameter with a diagnostic attached. If the accuracy check flags a problem,
+the lever is to raise the number of integration points in `add_integration()` and refit, then confirm
+the estimates are stable between the two runs. Do not ignore it — an under-integrated ML-NMR fit can
+look perfectly converged by Rhat and still be biased, because the sampler has converged to the
+posterior of the *approximate* model. More covariates need more points, and a strongly non-linear
+link needs more than a near-linear one.
 
 ## 3. Fit the model
 

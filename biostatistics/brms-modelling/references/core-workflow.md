@@ -2,6 +2,12 @@
 
 This is the backbone referenced by SKILL.md. Read the relevant sections in full rather than skimming — the thresholds and remedies here are what make a review or a new model defensible.
 
+> The penalised-complexity prior recipe and the `Gamma(0.001, 0.001)` warning in this section come
+> from *Bayesian Models in Health Technology Assessment* — Baio (CRC Press, 2026), online edition
+> <https://gianluca.statistica.it/books/online/bmhta/>, verified 2026-09-09 — §2.2.3 and Example 2.5
+> for PC priors (Simpson et al. 2017), §6.2.5 and Note 6.3 for
+> the precision-prior problem (after Gelman 2006).
+
 ## 1. Priors
 
 brms will fit a model with no explicit priors at all, silently falling back to its own defaults (typically flat/improper for fixed effects, weakly informative for variance components). That's often a reasonable starting point, but it's *not* the same as having made a deliberate prior choice, and it should never be the unstated default in a finished script.
@@ -11,6 +17,14 @@ brms will fit a model with no explicit priors at all, silently falling back to i
 - Set explicit, weakly-informative priors for fixed effects unless there's a specific reason to use flat priors (e.g. replicating a frequentist benchmark). A normal prior centred at 0 with an SD chosen to be plausible on the link-function scale is a reasonable default starting point. `normal(0, 2.5)` is a common choice (it is `rstanarm`'s autoscaled default) but it is only meaningful for *standardised* predictors — on a raw predictor it can be wildly informative or wildly diffuse depending on that predictor's units. State the scale a prior assumes, and standardise predictors first if you want a scale-free default to be defensible (cf. Gelman, Hill & Vehtari, *Regression and Other Stories*, chs. 10 and 12 — ch. 12 opens "it is not always best to fit a regression using data in their raw form" and develops standardising and log/other transformations; on priors read jointly with the likelihood, Gelman, Simpson & Betancourt 2017, *Entropy* 19:555). Note that brms's *own* default here is a flat improper prior on population-level effects (and `student_t(3, 0, 2.5)` on the intercept and group-level SDs), not `normal(0, 2.5)` — so leaving `prior` unset is not the same as having set a weakly-informative normal.
 - Run a **prior predictive check** before fitting to data: `brm(..., sample_prior = "only")`, then inspect with `pp_check(fit, ndraws = 100)`. This catches priors that imply absurd outcomes (e.g. negative counts, probabilities that pile up at 0/1) before you've spent compute fitting to real data.
 - For variance/group-level SD parameters, weakly-informative half-normal or exponential priors (brms defaults are usually reasonable here) are preferable to flat priors, which can cause sampling problems in models with few groups.
+- **Calibrating an exponential prior on an SD — the penalised-complexity (PC) recipe.** The advice above says "exponential" without saying which rate, and the rate is the whole content of the prior. PC priors give a one-line way to choose it from a statement you can defend: an `Exponential(lambda)` prior on a standard deviation shrinks toward the simpler base model `sigma = 0` at a constant rate, and picking `lambda` from a single tail statement `Pr(sigma > U) = alpha` gives
+
+  ```
+  lambda = -log(alpha) / U
+  ```
+
+  So "an SD above 1 would be a 1-in-100 surprise" is `Pr(sigma > 1) = 0.01`, i.e. `lambda = -log(0.01)/1 ≈ 4.61`, written `prior(exponential(4.61), class = "sd")`. The virtue is that the prior is stated as a sentence about the outcome's own scale rather than a number, so a reader can disagree with the sentence — which is exactly what a reviewer needs to do. Pick `U` from what the outcome means, not from the fitted SD.
+- **Do not put a vague `Gamma(0.001, 0.001)` on a precision.** It is the old BUGS/WinBUGS default and still appears in ported models. It is not uninformative: on a hierarchical scale parameter it concentrates prior mass near zero precision, which pushes the implied SD upward and can dominate the posterior when there are few groups. If you are translating a legacy BUGS model, replace it with a half-normal or a calibrated exponential on the SD and forward-sample to see what the old prior actually implied.
 
 **When reviewing:**
 - Flag any model with no `prior = ` argument and no comment indicating that brms defaults were a deliberate choice.
@@ -53,7 +67,7 @@ Key `brm()` arguments and what they're for:
 - `iter` / `warmup` — defaults (2000 iter, half warmup) are a reasonable starting point; increase if ESS is low (see diagnostics below) rather than reflexively increasing on every fit.
 - `cores` — set to `chains` (or fewer if hardware-limited) for parallel chains; combine with `threads = threading(n)` for within-chain parallelisation on large datasets (cmdstanr backend only).
 - `seed` — always set this for reproducibility. Its absence is a small but easy review flag.
-- `control = list(adapt_delta = ..., max_treedepth = ...)` — raised in response to divergences or treedepth warnings. A high `adapt_delta` (0.95–0.99) is *expected and appropriate* in funnel-prone models — hierarchical models with few groups, small-study meta-analysis — so don't treat a high value as suspicious in itself; it's a normal part of fitting these models well. What matters is whether divergences were actually checked and resolved *after* raising it. The thing to flag is a high `adapt_delta` with no accompanying confirmation that divergences reached zero, or `adapt_delta` pushed toward 0.999 reflexively without ever inspecting *why* the geometry is hard — which usually points to a parameterisation fix (e.g. non-centring) rather than a higher acceptance target alone.
+- `control = list(adapt_delta = ..., max_treedepth = ...)` — raised in response to divergences or treedepth warnings. A high `adapt_delta` (0.95–0.99) is *expected and appropriate* in funnel-prone models — hierarchical models with few groups, small-study meta-analysis — so don't treat a high value as suspicious in itself; it's a normal part of fitting these models well. What matters is whether divergences were actually checked and resolved *after* raising it. The thing to flag is a high `adapt_delta` with no accompanying confirmation that divergences reached zero, or `adapt_delta` pushed toward 0.999 reflexively without ever inspecting *why* the geometry is hard — which usually points to a fix in the model — a tighter prior on a weakly identified scale parameter, a dropped correlation term, a reparameterised predictor — rather than a higher acceptance target alone. For group-level effects specifically, note that brms is already non-centred, so "non-centre it" is not one of the available fixes (see `model-families/multilevel.md`).
 
 **When reviewing:** check that chains/iter are sufficient to make the diagnostics below meaningful, and that any `control` overrides are explained rather than copy-pasted as a generic "fixes divergences" move.
 
@@ -64,11 +78,21 @@ Check `summary(fit)` or `rhat()`/`neff_ratio()` and the sampler's own warnings. 
 | Diagnostic | Threshold | What it means if violated | What to do |
 |---|---|---|---|
 | Rhat | < 1.01 | Chains haven't mixed — could be too few iterations, or genuine multimodality | Run longer; check trace plots (`plot(fit)`) for multimodality vs. slow mixing |
-| Bulk & tail ESS | ≥ 100 per chain (≈ 400 total at the usual 4 chains), checked separately for bulk and tail | Effective sample size too low for stable posterior summaries, especially in the tails (matters for tail-sensitive quantities like extreme quantiles or rare-event probabilities) | Run more iterations; consider non-centred parameterisation for multilevel models (see `model-families/multilevel.md`) |
+| Bulk & tail ESS | ≥ 100 per chain (≈ 400 total at the usual 4 chains), checked separately for bulk and tail | Effective sample size too low for stable posterior summaries, especially in the tails (matters for tail-sensitive quantities like extreme quantiles or rare-event probabilities) | Run more iterations; for multilevel models tighten the prior on the group-level SD or simplify the group-varying terms — brms's group-level effects are already non-centred, so that isn't a lever (see `model-families/multilevel.md`) |
 | Divergent transitions | 0 | The sampler is failing to explore part of the posterior — results may be **biased**, not just imprecise | First try increasing `adapt_delta` (e.g. to 0.95–0.99); if divergences persist, this usually signals a parameterisation problem (e.g. funnel geometry in hierarchical models) rather than something `adapt_delta` alone fixes |
-| Max treedepth hit | 0 exceedances | Sampler is being inefficient, possibly masking a deeper geometry problem | Increase `max_treedepth`; if it's still hit, look for non-centred parameterisation or strongly correlated predictors |
+| Max treedepth hit | 0 exceedances | Sampler is being inefficient, possibly masking a deeper geometry problem | Increase `max_treedepth`; if it's still hit, look for strongly correlated predictors, a weakly identified intercept/group-effect split (`model-families/multilevel.md`), or a scale mismatch between parameters |
 
 A model with divergences is the one case where "it ran without errors" is actively misleading — the posterior draws may not represent the true posterior at all. Treat any unresolved divergence as a blocker, not a caveat to mention in passing.
+
+**ESS is a precision, not just a pass mark.** Clearing the threshold is where the number starts being useful, not where it stops mattering. The Monte Carlo standard error of a posterior mean is
+
+```
+MCSE = posterior_sd / sqrt(ESS)
+```
+
+so ESS is the precision of every summary you subsequently quote: 400 effective draws — the pass mark in the table — leave an MCSE of about 5% of the posterior SD, which is fine for reporting a mean to two significant figures and not fine for deciding a close comparison. Before any claim that reads a threshold off a posterior summary — a posterior probability of benefit above 0.975, a ranking of two arms, an incremental mean inside an equivalence margin, an interval endpoint that just excludes zero — compare the margin being claimed against the MCSE of the quantity claiming it. With a posterior SD of 0.20 at ESS 400, MCSE is 0.01, so an estimated difference of 0.03 against an equivalence margin of 0.05 sits two Monte Carlo standard errors from the boundary: another seed could move the conclusion, so rerun with more draws rather than report the comparison. Which ESS matters depends on the summary — bulk ESS governs central summaries, tail ESS governs interval endpoints and tail probabilities, and thresholds usually live in the tail.
+
+Compute it rather than eyeball it: `posterior::summarise_draws(posterior::as_draws_df(fit), posterior::default_mcse_measures())` gives `mcse_mean`, `mcse_median`, `mcse_sd` and the MCSEs of the 5% and 95% quantiles for every parameter. Use those rather than dividing the SD by `ess_bulk` by hand — bulk ESS is computed on rank-normalised draws and is not exactly the effective sample size for the mean — but keep the relation in view, because it prices the fix: MCSE falls with the square root of the number of draws, so halving it costs four times the sampling. For a derived quantity — a contrast, a risk difference, an arm-level mean from `posterior_epred()`, an incremental cost or QALY — compute the MCSE on the draws of *that* quantity rather than inferring it from the ESS of the parameters it was built from, by passing the derived draws through `summarise_draws()` as well. In short, the table's threshold is a floor for trusting the diagnostics at all; the number of draws actually needed is set by the smallest margin you intend to claim on the far side of them.
 
 ## 5. Posterior predictive checks
 

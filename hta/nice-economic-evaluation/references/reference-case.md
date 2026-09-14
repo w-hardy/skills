@@ -107,6 +107,97 @@ prices, drug tariff, NHS Supply Chain) (section 4.4 — the 2026 amendments revi
 pricing clauses, so cite the section rather than a sub-clause number). Include
 infrastructure, maintenance and, where appropriate, staff training (section 4.4).
 
+#### Price year and indexation
+
+**Declare a price year, and put every component at it.** State the price year of the cost base
+once, in the model and in the submission, and bring every component to it — unit costs, drug and
+device prices, adverse-event costs, one-off set-up and training costs — by indexing or, for
+prices, by re-sourcing (below). Use the most recent price year for which the source series are
+complete. When an existing model is updated, re-year the *whole* cost base, not only the
+components that changed: a cost base sitting at three price years has no defensible total, and
+the distortion cancels out of the incremental cost only to the extent that the mis-yeared
+components fall equally on both arms.
+
+**Match the index to the class of cost.** One blanket inflator across the whole cost base is a
+finding in itself.
+
+| Cost class | Index |
+|---|---|
+| NHS hospital and community health services — staff, procedures, HRG- and National Cost Collection-based costs | NHS Cost Inflation Index (NHSCII), published in the PSSRU *Unit Costs of Health and Social Care*; the older HCHS pay & prices index for years before the NHSCII series starts |
+| Personal social services | PSS Pay & Prices index (PSSRU) |
+| Non-health costs shown in a societal or wider-perspective scenario (non-reference-case, presented separately) | HM Treasury GDP deflator |
+| Earnings used to value time — productivity losses, informal carer time valued by an opportunity-cost or earnings method | ONS Average Weekly Earnings (AWE), whole-economy or the matching sector series |
+
+Drug and device prices are **not** indexed. Take the current price from the current source
+(drug tariff, eMIT, MPSC, NHS Supply Chain, the PAS or commercial access agreement), because
+these move by contract and procurement round, not by a general index; inflating a 2018 list
+price forward will not reproduce today's price and cannot be defended as "what the NHS pays"
+(section 4.4).
+
+**Indexing an old source estimate forward is a proxy for re-sourcing, and must be flagged as
+such.** Inflating a 2014 unit cost to the current price year assumes the underlying resource
+mix, pathway and cost structure are unchanged — exactly the assumption a committee will not
+grant for a pathway that has since been redesigned. So before indexing, check whether the
+source itself has been republished (a later PSSRU volume, a later National Cost Collection, the
+current NHS payment scheme) and take the current value if it has. Where indexing really is the
+only route, record it in the parameter table — source, original price year, index used, target
+year — and treat the result as a source-uncertainty parameter with a scenario over the
+plausible current value (see `modelling-and-uncertainty.md`), not as an observed cost.
+
+**A technology with no NHS list price.** Base the analysis on the price the company proposes,
+label it as proposed rather than published, and state the arrangement it sits under: where a
+confidential PAS or commercial access agreement applies, the base case uses that price in the
+confidential appendix and the public version carries the analysis at the proposed list price. For
+a device, diagnostic or service with neither a list price nor a national tariff, use prices actually
+paid
+— supplier quotes (say how many, from whom, and by what procurement route), NHS Supply Chain
+catalogue or framework prices — and state VAT treatment and whether the price is per unit, per
+patient, or a capital purchase annuitised over a stated useful life at the reference-case
+discount rate. A price from another jurisdiction or from the private market is not an NHS
+price: currency/PPP conversion is a last resort, belongs in a scenario, and must be flagged.
+Where the technology's own price is a large share of the incremental cost — usually so for a
+drug or an implant, often not for a diagnostic or a low-cost device whose downstream treatment
+costs dominate — the ICER is more sensitive to that price than to anything else in the cost base.
+There, present the ICER across the plausible price range and name the price at which it crosses
+the relevant comparison point (£25,000 and £35,000 in this manual version, raised by any severity
+weight that applies — see `decision-making.md`); that is the number the committee acts on.
+
+#### Cost-side reviewer checklist
+
+Run this over any change that touches the cost base — a unit-cost rewrite, a price-year update,
+a new resource-use table:
+
+1. **Perspective partition.** Every component is assignable to NHS, PSS, or outside both;
+   anything outside is out of the base case and presented separately (4.2.9–4.2.10).
+2. **Price-year uniformity.** One declared price year, and every component actually at it —
+   check the values, not the comment claiming they were inflated.
+3. **Index by class.** Each component carried forward by the index for its class, with drug and
+   device prices re-sourced rather than indexed.
+4. **Source vintage.** Each source checked against the current published edition of that source,
+   and any estimate indexed forward instead flagged as a proxy for re-sourcing.
+5. **No bypass.** No component hard-coded at a raw historical figure that skips the model's
+   price-year machinery. Trace each literal in the cost inputs back to a sourced, year-tagged
+   parameter; a value that never passes through the inflation step will not move when the price
+   year is updated, and nothing else in the model will report that.
+6. **Whose cost does the error move?** Classify every cost finding into one of three cases
+   *before* grading it; only the first leaves the ICER untouched.
+   - *Cancels* — a mis-priced or mis-yeared resource consumed in the **same quantity** in both
+     arms enters both totals identically and drops out of the incremental cost entirely. In a
+     cost-utility analysis grade it as a presentational or total-cost finding. Equal quantity is
+     the condition, not merely being a resource both arms use: differential consumption of a
+     common resource is exactly where incremental cost comes from.
+   - *Scales* — an error applied across the whole cost base (the wrong price year everywhere,
+     one blanket inflator) multiplies every cost, and therefore the incremental cost, by the same
+     factor, so the ICER moves by that same percentage rather than cancelling. Grade it by whether
+     that percentage carries the ICER across the relevant comparison point (£25,000 or £35,000, as
+     raised by any severity weight): a cost base sitting 15% below the declared price year reports
+     a true £30,000 ICER as £26,100.
+   - *Arm-differential* — a wrong intervention drug price, a resource item counted in one arm
+     only, a component mis-yeared only where it appears — passes straight into the ICER. Material.
+
+   In a cost-comparison analysis or a budget-impact statement the total rather than the difference
+   is the decision quantity, so even a cancelling error is material there.
+
 ### Discounting (4.5.1–4.5.4)
 Reference case: **3.5%** for both costs and health effects; a 1.5% analysis may be
 presented alongside (4.5.1). A **1.5%** rate (both costs and effects) is considered by the
@@ -136,7 +227,9 @@ For each, record status (Aligned / Justified deviation / Unjustified deviation /
 6. Time horizon long enough — lifetime unless a short horizon is justified.
 7. Health effects synthesised from a systematic review.
 8. QALYs from EQ-5D (adults), patient-reported, UK public preference values.
-9. Costs from NHS/PSS prices reflecting actual prices paid, identified systematically.
+9. Costs from NHS/PSS prices reflecting actual prices paid, identified systematically, at one
+   declared price year — for anything touching the cost base, work the cost-side reviewer
+   checklist above.
 10. Discounting 3.5% for both (1.5% only if all five conditions met).
 11. Severity modifier considered (absolute & proportional QALY shortfall) — see decision-making.md.
 12. Uncertainty fully explored (PSA, scenario and sensitivity analyses) — see modelling-and-uncertainty.md.

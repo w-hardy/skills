@@ -62,7 +62,9 @@ Key ideas the skill imports, with their anchors:
 - **Computation as diagnostic.** Divergences, low ESS and funnels usually tell you about the
   *model* (weak identification, priors fighting the likelihood, geometry wanting a non-centred
   parameterisation), not just the sampler — this is the folk theorem (§5.1). Reach for
-  reparameterisation (§5.7) before pushing `adapt_delta` toward 1.
+  reparameterisation (§5.7) before pushing `adapt_delta` toward 1 — in brms that means
+  reparameterising the model, not the group-level effects, which are already non-centred (see
+  `model-families/multilevel.md`).
 - **Fake-data simulation and SBC.** Simulating from known parameters and checking recovery is
   the calibration backbone (§4.1). The paper is explicit that a *single* truth-point check can
   flag gross errors but guarantees nothing, because Bayesian inference is calibrated only on
@@ -141,7 +143,7 @@ contents (verified 3 July 2026):
 - **Hierarchical models** (BDA3 Ch. 5: §5.2 exchangeability and setting up hierarchical models,
   §5.7 weakly informative priors for hierarchical variance parameters): partial pooling,
   exchangeability, and why few-group hierarchies are weakly identified — the theoretical backing
-  for the multilevel file's non-centred parameterisation and regularising SD priors. (BDA3 §2.9
+  for the multilevel file's regularising SD priors and its two few-group pathologies. (BDA3 §2.9
   and §16.3 are the companion sections on weakly informative priors in general and for logistic
   regression specifically.)
 - **Missing data as modelling** (BDA3 Ch. 18, *Models for missing data*, in **Part IV:

@@ -16,8 +16,10 @@
 ## How to complete the checklist
 
 - Record the location of each item as **section heading plus paragraph number** (e.g. "Methods, para 3"). Avoid page or line numbers: they shift with repagination and typesetting.
+- **Source-controlled manuscripts are the exception.** Where the manuscript lives in a repository as Quarto or R Markdown source (`.qmd`, `.Rmd`, `.tex`) and has not been typeset, there are no pages to cite and section numbering is generated at render time. Record file path plus line instead — `manuscript/02-methods.qmd:142` — and add the section heading for orientation. That is the unit an author can act on and a reviewer can diff; a page reference to a PDF that does not exist yet is not. Switch to section plus paragraph once the manuscript is typeset for submission, and note in the checklist header which convention the locations use.
 - **"Not applicable" (NA)**: the item genuinely cannot apply to this study type (see applicability table below).
 - **"Not reported" (NR)**: the item applies but the information is absent from the manuscript and its supplementary material.
+- **"Inconsistent" (present and wrong)**: the item is reported, but what it reports contradicts the analysis actually run — the Methods state five reviewed price overrides where the analysis applies seven, or a 3.5% discount rate where the model runs 3%. Neither NA nor NR fits, and "Reported" is worse than either: a bare tick is precisely what carries this class of error through successive audits undetected. Record both values, cite where each was found (manuscript location, and the file, table or code line carrying the value the analysis uses), and state which one needs to change. This stays inside the reporting audit rather than moving to a separated methods note: the defect is that the report misdescribes the study, not that the study is wrong. Where the analysis code or input workbook is available alongside the manuscript, checking reported numbers against it is in scope for the audit; where only the manuscript is available, check reported values against each other (text against tables, abstract against body) and say that the underlying analysis was not inspected.
 - **Never use "Not conducted"**: CHEERS captures reporting, not conduct. If PPIE was not undertaken, a statement to that effect satisfies item 21; silence is NR.
 - **No scoring.** There is no validated scoring system. Do not produce counts, percentages, or summary scores of items met — the Task Force strongly discourages this because it misleads. Qualitative, item-level assessment only.
 - Supplementary appendices count as part of the report. Adequate reporting is expected to exceed journal space limits; check supplements before recording NR.
@@ -28,10 +30,13 @@
 |---|---|
 | Cost analysis (costs only, no consequences) | 11, 12, 13 |
 | Non-modelling study (e.g. within-trial analysis with no decision model) | 16, and 22 where there are no model inputs to tabulate (trial-based parameter tables may still satisfy 22) |
+| Hybrid study (within-trial analysis extrapolated by a decision model) | None by default — see the note below |
 | Single-country study with no currency conversion | Conversion element of 15 (currency and price year still required) |
 | Time horizon ≤ 1 year | Discounting may not be applied, but item 10 still requires the rate to be reported explicitly as 0% |
 
 Everything else applies to every economic evaluation. Items 4, 19, 21, and 25 apply universally — absence of a HEAP, of distributional analysis, or of PPIE is recorded as reported-absent (if stated) or NR (if silent), not NA.
+
+**Hybrid studies** (a within-trial analysis extrapolated by a decision model) have no NA items by default: item 16 applies to the model component even though the primary analysis is within-trial, so do not carry the non-modelling row across. Under item 9 state where observed follow-up ends and extrapolation begins, and under item 22 mark which parameters come from the trial and which from external sources. Do not downgrade item 23 for reporting only combined lifetime results — item 23 asks for mean costs and outcomes per comparator, not for a within-follow-up/extrapolated split. Item 9's note on showing within-follow-up results alongside extrapolated ones is where that observation belongs, and an absent observed-horizon result is an item 24 point (the effect of time-horizon choice).
 
 ---
 
@@ -102,6 +107,7 @@ Everything else applies to every economic evaluation. Items 4, 19, 21, and 25 ap
 ### Item 15 — Currency, price date, and conversion
 **Guidance:** Report the dates of the estimated resource quantities and unit costs, plus the currency and year of conversion.
 **Notes:** Report the price year, the currency (ISO 4217 codes help where names collide — USD, AUD, CAD), any inflation adjustment method (named index), and any currency conversion method (e.g. purchasing power parities), including the order of operations when both are applied. Frequently under-reported; check tables as well as text.
+**Unrebased components:** where some cost components are deliberately carried into the target price year without inflation adjustment — a negotiated price or contract rate held at its agreed value, a unit cost taken from a source in an earlier year and judged not to have moved — that is a legitimate choice, and this item requires it to be disclosed as one. Name the components, give the price year each is actually in, and state the reason. Detect them by reading each unit cost's own source year in the item 22 parameter table against the price year stated under this item: where they differ and the text claims uniform inflation, that is the mismatch. If the manuscript says costs were inflated to year X without qualification while some components were not, record Inconsistent rather than Reported; if unrebased components are simply mixed in with the rest and the text says nothing either way, record Partially reported and ask for the sentence. Rebased and unrebased components mixed silently in one total is the failure this sub-rule exists to catch.
 
 ### Item 16 — Rationale and description of model
 **Guidance:** If modelling is used, describe in detail and why used. Report if the model is publicly available and where it can be accessed.

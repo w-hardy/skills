@@ -1,6 +1,17 @@
 ---
 name: ispor-smdm-good-practices
-description: "Apply the ISPOR-SMDM Modeling Good Research Practices Task Force reports (Value in Health 2012; TF-1,2,3,4,6,7) when conceptualising, structuring, reviewing, validating, or reporting a decision-analytic model for health economic evaluation — model design and credibility rather than coding. Use for: defining the decision problem, scope, perspective, target population, comparators, or time horizon; choosing between decision tree, cohort Markov, microsimulation, or DES; stress-testing a model structure, HEAP, protocol, or briefing; state definition, cycle length, heterogeneity bias; the uncertainty taxonomy (stochastic/parameter/heterogeneity/structural), distributions, calibration; transparency documentation and validation (face, verification, cross, external, predictive). Trigger on 'ISPOR', 'SMDM', 'good practice', 'model conceptualisation', 'structure review', 'model validation', 'model audit', or 'is this defensible'. Jurisdiction rules → nice-economic-evaluation; R implementation → the method skills."
+description: "Apply the ISPOR-SMDM Modeling Good Research Practices Task Force reports (Value in
+Health 2012; TF-1,2,3,4,6,7) when conceptualising, structuring, reviewing, validating, or
+reporting a decision-analytic model for health economic evaluation — model design and credibility
+rather than coding. Use for: defining the decision problem, scope, perspective, target population,
+comparators, or time horizon; choosing between decision tree, cohort Markov, microsimulation, or
+DES; stress-testing a model structure, HEAP, protocol, or briefing; state definition, cycle
+length, heterogeneity bias; the uncertainty taxonomy, distributions, calibration; transparency
+documentation and validation (face, verification, cross, external, predictive). Trigger on
+'ISPOR', 'SMDM', 'good practice', 'model conceptualisation', 'structure review', 'model
+validation', 'model audit', or 'is this defensible'. Jurisdiction rules →
+nice-economic-evaluation; reporting quality → cheers-2022-reporting; R implementation → the method
+skills."
 ---
 
 # ISPOR-SMDM modelling good research practices
@@ -37,19 +48,26 @@ model type is chosen. Insist on the written problem statement early: most
 downstream structural disputes are unresolved ambiguities in the decision
 problem, not modelling disagreements.
 
-**2. Review / audit mode** — an existing model, HEAP, protocol, or briefing is
-being stress-tested (self-review, internal audit, or preparing/responding to
-external review). Go straight to `references/review-checklist.md`, which
-consolidates every numbered recommendation as an audit question and lists the
-known failure modes reviewers probe. Record each item as *conforms* /
+**2. Review / audit mode** — an existing model, HEAP, protocol, or briefing
+is being stress-tested (self-review, internal audit, or preparing/responding
+to external review). Go straight to `references/review-checklist.md`, which
+consolidates every numbered recommendation as an audit question and lists
+the known failure modes reviewers probe. Record each item as *conforms* /
 *deviates with documented rationale* / *gap* — the Task Force explicitly
 endorses documented, reasoned deviation over unthinking box-ticking, so a
-deviation register is a conforming output, not a confession. The checklist also
-includes a **companion-artefact cascade check** (Section E) for confirming that
-load-bearing decisions are stated consistently across a document suite
-(protocol, HEAP/decision register, briefing, analysis plan) rather than patched
-locally — essential for staged projects where corrections must fan out to every
-artefact at once.
+deviation register is a conforming output, not a confession. Two rules
+stated at the top of the checklist gate that mark: search the project's own
+record (decision log, plan, issue tracker, prior reviews) and say what you
+searched, since a deviation already ruled on *and* documented with its
+rationale and its consequences is conforming; and size what the finding
+moves, and by how much, before grading its severity. The checklist also
+includes a **companion-artefact cascade check** (Section E) for confirming
+that load-bearing decisions are stated consistently across a document suite
+(protocol, HEAP/decision register, briefing, analysis plan) rather than
+patched locally — essential for staged projects where corrections must fan
+out to every artefact at once, and a **reproducibility and provenance**
+subsection (Section D) for the build machinery that keeps those artefacts in
+step with the code and data.
 
 **3. Reporting & validation mode** — writing up, building the documentation
 suite, or planning validation. Use `references/transparency-and-validation.md`

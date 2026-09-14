@@ -1,6 +1,16 @@
 ---
 name: bayesian-cea-r-hta
-description: "Post-process and present Bayesian cost-effectiveness analyses in R — PSA draws, cost-effectiveness planes, CEAC/CEAF curves, incremental net benefit, the BCEA package, value-of-information analysis (EVPI/EVPPI/EVSI), and decision-model calibration — following Baio and colleagues' R for HTA and BCEA books. Use whenever the user works with paired cost/effect simulation output from a trial-based or decision-analytic model: summarising PSA draws, building or reading a CE plane or acceptability curve, computing net benefit at a threshold, running bcea(), or asking \"is more research worth it\" (VOI). Trigger on \"PSA\", \"CEAC\", \"CEAF\", \"EVPI\", \"EVPPI\", \"cost-effectiveness plane\", \"net benefit\", \"BCEA\", or \"willingness to pay\" even without the skill being named. For NICE reference-case compliance use nice-economic-evaluation; for fitting the regressions that generate the draws use brms-modelling; for building the model structure use decision-modelling-hta, multistate-models-hta, or discrete-event-simulation-hta."
+description: "Post-process and present Bayesian cost-effectiveness analyses in R — PSA draws,
+cost-effectiveness planes, CEAC/CEAF curves, incremental net benefit, the BCEA package,
+value-of-information analysis (EVPI/EVPPI/EVSI), and decision-model calibration. Use for paired
+cost/effect draws from a trial-based or decision-analytic model: net benefit at a threshold,
+bcea(), or \"is more research worth it\" (VOI). Trigger on \"PSA\", \"CEAC\", \"CEAF\", \"EVPI\",
+\"EVPPI\", \"cost-effectiveness plane\", \"net benefit\", \"BCEA\" or \"willingness to pay\" even
+when the skill is not named — and whenever an existing model's inputs change (survival
+extrapolation, utilities, unit costs, transition probabilities, population), so the ICER, net
+benefit and CEAC downstream need re-checking, even though none of those words appear. For NICE
+compliance use nice-economic-evaluation; for patient-level data use trial-based-cea-hta; for model
+structure use decision-modelling-hta, multistate-models-hta, or discrete-event-simulation-hta."
 ---
 
 # Bayesian cost-effectiveness analysis in R (R-HTA / BCEA)
@@ -26,6 +36,10 @@ patient-level model so its draws mean what they claim, plus calibration — is s
 - *Bayesian Cost-Effectiveness Analysis with the R package BCEA* — Baio, Berardi & Heath
   (Springer, 2017). Package API cross-checked against the `BCEA` CRAN documentation; accessed
   2026-07-03.
+- *Bayesian Models in Health Technology Assessment* — Baio (CRC Press, 2026), Ch. 12
+  (value of information), for the EVPPI method comparison, Info Rank, and ENBS-based study design in
+  `references/value-of-information.md`; anchored to the companion code at
+  <https://github.com/giabaio/bmhta-examples> commit `d2a6298`, accessed 2026-09-09.
 
 > Anchoring: method claims are pinned at the chapter/section level of the sources above (e.g.
 > "R-HTA §1.8"). Function signatures are matched to the current CRAN `BCEA` — check against the
@@ -56,8 +70,9 @@ Full detail:
 
 - `references/psa-and-summaries.md` — draws conventions, ICER pathologies, CE plane, CEAC/CEAF,
   net-benefit framework, multi-comparator rules.
-- `references/value-of-information.md` — EVPI from draws, regression-based EVPPI, EVSI in brief,
-  population scaling, and how to read VOI for a funding decision.
+- `references/value-of-information.md` — EVPI from draws (and the opportunity-loss route),
+  regression-based EVPPI with the GAM/GP/BART choice and Info Rank, EVSI across candidate study
+  sizes, population scaling, and ENBS-based sample-size selection versus a power calculation.
 - `references/bcea-package.md` — the `bcea()` object, its summary/plot functions, and when to
   use BCEA vs draws-native code.
 - `references/model-structures.md` — decision trees, Markov models (incl. `heemod`),
@@ -68,8 +83,12 @@ Full detail:
 - **nice-economic-evaluation** owns the *process*: reference case, perspective, discount rates,
   severity modifier, thresholds as policy. This skill owns the *estimation machinery* that any
   such process consumes. A question like "is my CEAC acceptable for NICE?" uses both.
-- **brms-modelling** owns fitting the regression models (families, priors, diagnostics). This
-  skill picks up at `as_draws`/posterior output.
+- **trial-based-cea-hta** owns everything upstream of the draws when the data are individual
+  patients: QALY construction, joint cost/effect models, structural values, missing economic
+  outcomes, and summarising to arm-level posterior means. It hands this skill an `S × T` matrix of
+  cost draws and one of effect draws, paired row-wise. **brms-modelling** owns the underlying
+  regression machinery (families, priors, diagnostics, `loo`). This skill picks up at
+  `as_draws`/posterior output and does no fitting.
 - **decision-modelling-hta / multistate-models-hta / discrete-event-simulation-hta** own
   building the model structures; **survival-analysis-hta** owns the parametric time-to-event
   inputs and their extrapolation; **network-meta-analysis-hta** /

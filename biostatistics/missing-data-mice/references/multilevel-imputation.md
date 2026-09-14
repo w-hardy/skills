@@ -84,6 +84,34 @@ effect — in that situation, joint modeling approaches that treat the cluster m
 variable (shrunk appropriately) are more principled, but `2l.pmm` with disaggregated means is
 still a reasonable, widely-used default.
 
+## Fixed cluster dummies in the imputation model
+
+A pairing that turns up constantly in review: the imputation model carries the cluster as **fixed**
+dummies (or a single-level method with the cluster factor as an ordinary predictor) while the
+analysis model fits a shrunk random intercept over the same clusters. This is not the same thing as
+ignoring the clustering — dummies keep the between-cluster mean differences, they just fail to
+shrink them — and judged by the containment rule of SKILL.md Step 2 it passes: the dummy set imposes
+no exchangeability assumption the analysis does not, so no term the analysis needs is missing, and
+Rubin's variance estimator tends to come out conservative rather than anticonservative. Say that,
+rather than reporting it as a flat violation of "imputation ⊇ analysis".
+
+Three things turn it back into a real finding:
+
+- **A variance component or the ICC is itself an estimand.** Unshrunk dummy coefficients absorb
+  within-cluster sampling noise into apparent between-cluster variation, so the imputations carry an
+  inflated between-cluster variance and the analysis reports an ICC that is too high (Andridge 2011
+  on cluster-randomised trials; Grund, Lüdtke & Robitzsch 2018). Single-level imputation errs the
+  other way, attenuating it.
+- **Clusters are small.** That bias is an incidental-parameters problem — one intercept estimated
+  per cluster from few rows — so it grows as rows-per-cluster falls and is worst at a handful of
+  rows each. Many clusters do not rescue it; large clusters do.
+- **The analysis has a random slope.** Fixed intercepts contain a random intercept; they do not
+  contain a random *slope* over the same grouping. A `(1 + x | sch)` analysis needs code `2` or `4`
+  in the imputation model (see "Random slopes" below), and dummies alone are a genuine omission.
+
+Where one of those applies, the fix is the `2l.*` route above, not a larger dummy set. Outside them,
+note the pairing, say why it is benign here, and spend the finding elsewhere.
+
 ## Worked pattern: random intercept model with one missing level-1 predictor (FIMD §7.10.2)
 
 ```r

@@ -289,6 +289,103 @@ test_dir("tests/testthat", shuffle = TRUE)
 
 If tests fail when shuffled, they have unintended dependencies on execution order.
 
+## Reviewing an Existing Suite
+
+Reviewing a suite asks a different question from writing one: not "is this test well written?"
+but "what would have to break before this suite went red?" Work from the code under test
+towards the tests, not the other way round.
+
+This applies to any `tests/testthat/` directory, package or not. A repository with tests but no
+`DESCRIPTION` runs under `testthat::test_dir("tests/testthat")`; `devtools::test()` and
+`load_all()` are unavailable there, so the code under test is normally sourced from a
+`helper-*.R` file. There is no `Config/testthat/edition: 3` either, so such a suite runs the 2nd
+edition unless a `setup-*.R` file opts in with
+`testthat::local_edition(3, .env = testthat::teardown_env())` — worth checking before you conclude
+that a suite avoids 3e features by choice. The review material below works the same either way.
+
+**Check the record before reporting.** Where the work has one — an issue tracker, NEWS.md, a design
+doc, prior review threads — search it for the finding before you write it up, and say what you
+searched. A deviation that is documented, ruled on and justified is a conforming outcome, not a
+defect, and reporting it as one costs the reader more than it saves. Where there is no such record,
+say so: "not addressed anywhere I could find" is itself part of the finding. This applies to
+substantive findings, not to every observation — do not spend a search on a typo. This retires a
+deviation from a plan, a convention or a prior recommendation; a test that cannot fail, a false
+green, or a defect in the code under test stays a finding however well documented — cite the ruling
+and report it anyway, because a record that acknowledges a defect documents it, it does not fix it.
+
+**Size the finding before you grade it.** Say what the finding moves, and by how much, before
+assigning severity: the behaviour under test, the failure it would catch, the runtime, the
+confidence a green run buys. A defect in a path nothing exercises — a test for deleted code, a
+helper nothing calls, an expectation on a value nothing returns — is not the same as one in a test
+somebody relies on, and grading them alike makes the whole list harder to act on. Note the trap in
+the other direction: a test that runs anywhere still gates something, tests behind `skip_on_cran()`
+or an environment guard included, so "it only runs on CI" is not a reason to downgrade a test that
+cannot fail.
+
+### Mutation Testing: What Does the Suite Actually Pin?
+
+A green suite proves the tests ran, not that they constrain anything. Establish what is pinned
+by breaking the code on purpose:
+
+1. Copy the project to a scratch location outside the working tree (`cp -r` into a temp
+   directory). Never mutate the tree under review. Run the suite there once unmutated and record
+   the baseline pass, fail and skip counts.
+2. Break exactly one rule in the copy: delete a validation branch, invert a comparison, drop a
+   filter, remove a rounding or unit conversion, return an argument unchanged.
+3. Re-run the whole suite against the copy, naming the copy in the call:
+   `devtools::test("<scratch>")` for a package, `testthat::test_dir("<scratch>/tests/testthat")`
+   otherwise. `devtools::test()` defaults to `pkg = "."` and a relative `test_dir()` path resolves
+   against the working directory, so a bare call issued from the tree under review tests the
+   unmutated original and reports every rule as unpinned. Set `NOT_CRAN=true` in the environment
+   as well: `devtools::test()` sets it for you, `Rscript -e 'testthat::test_dir(...)'` does not,
+   and without it every snapshot test and every `skip_on_cran()` test skips.
+4. Red means the rule is pinned — revert it and move to the next rule. Green means the rule is
+   **unpinned**: nothing in the suite depends on it — but only if the skip count still matches the
+   baseline, because a mutation that turns a test into a skip is evidence of nothing. Record the
+   file and line, and report the missing test, not the mutation.
+
+Mutate the rules that carry consequence first: validation branches, unit conversions, index and
+lookup routing, discounting, rounding, and anything deciding which row or column is used.
+Delete the scratch copy when finished, and size each unpinned rule with the rule above before
+grading it — an unpinned branch in a code path nothing calls is a note, not a defect.
+
+**Validator corollary.** A conforming input exercises none of a validator's rule branches, so
+those branches are reached only by fixtures that violate them. A validator that returns or aborts
+at the first violation therefore needs one violating fixture per branch; a validator that
+accumulates violations — collecting a character vector of problems and reporting them together —
+reaches every branch its input violates, so one fixture can pin several. Count the branches, then
+name the ones no fixture reaches: report those, not the arithmetic. Seen in review: eight branches
+of a cost-table validator, an entire index-routing policy among them, could each be deleted with
+the suite fully green, purely because every fixture row the tests constructed was valid.
+
+### Skip Honesty
+
+A test that always skips is a false green, and it reads as a pass in any summary that counts
+only failures. For each `skip_if*()` guard, establish that there is an environment somebody
+actually runs in which the guard does not fire and the test executes: a
+`skip_if_not_installed()` for a package absent from both `Suggests` and the CI image, or a
+`skip_if(Sys.getenv("API_KEY") == "")` for a variable set in no CI secret and no setup document,
+means that test has never executed anywhere. Check too that the skip count reaches a human —
+testthat reports skips in its summary, but a CI job surfacing only "0 failures" hides them.
+Report an always-skipped test as untested code, not as a passing test.
+
+Guards that stand down somewhere real are not findings: `skip_on_cran()` in a package whose CI
+runs the test, `skip_on_os()` for a platform the CI matrix covers, `skip_if_offline()` on a
+runner with network access.
+
+### Fixture Values Must Not Coincide with Production Constants
+
+If a fixture's numbers are the real tariff, the real unit cost, or the real discount rate, a
+test can pass because a stray literal in the code happens to equal the fixture value rather
+than because the logic is right — and the mutation that replaces a lookup with a hard-coded
+constant stays green. Choose fixture values that are deliberately not real and mutually
+distinct (unit costs of 1, 2, 4; identifiers and dates outside any real study range), so that a
+matching result can only mean the value travelled through the code path under test.
+
+The exception is a regression test that deliberately reproduces a published or externally
+supplied figure. There the real value is the point of the test; say so in the test description,
+and take the constant from the same source the code does rather than retyping the literal.
+
 ## Parallel Testing
 
 Enable parallel test execution in `DESCRIPTION`:

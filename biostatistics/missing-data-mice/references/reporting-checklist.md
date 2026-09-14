@@ -14,7 +14,9 @@ points 1, 2, 4, 5, 6, and 11 as the minimum for the main text; the rest can go i
 or appendix.
 
 1. **Amount of missing data** — number/percentage missing per variable of interest; number of
-   fully complete cases; if longitudinal, the number of participants per occasion.
+   fully complete cases; if longitudinal, the number of participants per occasion. In a trial or
+   any comparative study, report these **by arm**: the estimand is a contrast, so *differential*
+   missingness is what biases it, and a pooled percentage hides that entirely.
 2. **Reasons for missingness** — what's known about why data are missing; whether missingness
    was intentional (e.g. skip patterns by design) and whether it's plausibly related to the
    outcome or to other study variables.
@@ -45,6 +47,14 @@ study protocol. §12.2 also notes that editorial expectations have shifted: revi
 increasingly expect multiple imputation even where authors had a defensible reason not to use
 it (e.g. under 5% incomplete cases), so a stated justification for *whatever* was done is
 worth its space.
+
+One item the FIMD list does not name, and reviewers of applied work do ask about: **fill-ins made
+before the data reached the imputation step**. A stop date set to start + median duration, a dose
+frequency read off free text, a record forced to a default for legacy compatibility — each is a
+single imputation, each arrives at `mice` as an observed value, and none of them appear in a
+missingness table. Report them under points 1, 2 and 8: what the rule was, how many records it
+touched, and why it is defensible. In trial costing this is usually where most of the real
+missingness was handled, so a write-up describing only what `mice` imputed understates the problem.
 
 ## Template paragraph (adapt the bracketed parts with real numbers from the data)
 

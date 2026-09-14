@@ -65,6 +65,12 @@ origin (slope λ). Reading:
   strategy can differ from the CEAC-maximal strategy (expectation vs probability); when they
   disagree, say so explicitly — the decision follows expected NB, the CEAC describes the
   uncertainty around it.
+- **CEEF (efficiency frontier)** is a *different object* from the CEAF despite the near-identical
+  name: the Pareto frontier in mean cost-effect space, showing which strategies are ever optimal at
+  some λ and which are dominated or extendedly dominated. It is about expected values and is
+  λ-independent; the CEAF is about decision uncertainty and is read off a λ grid. `BCEA::ceef.plot()`
+  draws it (see `bcea-package.md`), and it is the probabilistic counterpart of the fully incremental
+  analysis in the next section. Name which one a plot is whenever you show it.
 - A CEAC hovering near 0.5 across the relevant λ range is the classic "decision on a knife-edge"
   picture — that is where VOI analysis (see `value-of-information.md`) earns its keep.
 
@@ -81,11 +87,3 @@ A complete draws-based results block: expected Δc and Δe with 95% credible int
 (with dominance annotations); expected INB and P(INB>0) at the stated thresholds; CE plane;
 CEAC (all strategies); CEAF if >2 strategies. All of it from one draws object, so every number
 is mutually consistent.
-
-## In this repository
-
-The within-trial pipeline's `cu_incremental_draws()` → `cu_summary()` objects (`.draw`,
-`inc_cost`, `inc_qaly`) are exactly the paired-draws format above — g-computation contrasts per
-posterior draw, paired within imputation. `incremental_results_table()` is the reporting set;
-the CE plane and CEAC figures in notebooks 01–03 follow these conventions. Anything new built
-on those draws should stay row-wise-then-average.
