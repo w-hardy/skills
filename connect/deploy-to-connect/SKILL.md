@@ -45,6 +45,9 @@ Infer the language and framework from the files in the project directory. Common
 | `*.Rmd` | R Markdown |
 | `*.ipynb` | Jupyter notebook / Voila |
 | `manifest.json` | Prebuilt bundle — deploy it directly, no framework guess needed |
+| A bare `.py` or `.R` — no framework import, no `ui.R`/`server.R`/`plumber.R`/`entrypoint.R` alongside | Script — a batch/ETL job that Quarto renders and Connect can schedule |
+
+### Confirm the guess
 
 The imports in `app.py` name the framework:
 
@@ -55,6 +58,8 @@ grep -Eo 'import (shiny|streamlit|dash|gradio|panel|bokeh)|from (shiny|streamlit
 A bare ASGI or WSGI object means `fastapi` or `flask`.
 
 Dependency files confirm the language: `requirements.txt` and `pyproject.toml` for Python, `DESCRIPTION` and `renv.lock` for R.
+
+Quarto renders a script only if it opens with a front-matter comment: `# %% [markdown]` around a `---` block in Python, `#' ---` in R. Most scripts lack one — add it before the deploy (Stage 5).
 
 If the content is ambiguous (both Python and R files, or an `app.py` with no recognizable import), use your discretion, and report the assumption you made.
 
@@ -126,6 +131,22 @@ rsconnect deploy quarto ./report
 ```
 
 R-flavored Quarto (a `.qmd` with R code chunks) needs R to render. If R is absent, treat the document as R content and use the manifest route, or surface the gap.
+
+### Script content
+
+Use the `quarto` framework. Add the front matter first (Stage 5).
+
+```console
+rsconnect deploy quarto script.py    # Python, rsconnect-python 1.23.0 or later
+```
+
+```r
+rsconnect::deployApp()               # R, rsconnect 1.2.2 or later, from the directory of the script
+```
+
+Both commands include every file in the directory. Push-button publishing does not cover R scripts, so `deployApp()` is the only R route.
+
+A script deploys like a Quarto document but is a different content type: a `.qmd` is a page to read, a script is a job that writes output.
 
 ---
 
@@ -210,6 +231,25 @@ rsconnect write-manifest <framework> ./my-app
 
 Then deploy the manifest with rsconnect-python if R cannot deploy directly.
 
+**Script front matter missing.** Add the minimal block at the top of the file. Connect takes the content title from `title`, so write a descriptive one.
+
+Python:
+
+```python
+# %% [markdown]
+# ---
+# title: "Data processing script"
+# ---
+```
+
+R:
+
+```r
+#' ---
+#' title: "Data processing script"
+#' ---
+```
+
 **No account for the target.** Register it now with a browser login: `rsconnect login` for Python, or `rsconnect::addServer()` and `rsconnect::connectUser()` for R. The [credentials reference](#credentials-reference) has the details and the pitfalls. Do not fall back to an API key from the environment. If the browser flow is not available, report that and stop.
 
 **Dependencies.** rsconnect and rsconnect-python scan the code and snapshot the required package versions for you, so hand-listing them is rarely necessary. Python content needs a `requirements.txt`. For R, the content's own packages must be installed locally for rsconnect to detect them — `plumber` for a Plumber API, `shiny` for a Shiny app. Install any that are missing from the same P3M repo shown above.
@@ -236,6 +276,8 @@ Non-obvious flags: `-t/--title`, `-N/--new` (force a new deployment instead of u
 
 For R, call the function Stage 3 selected. Pass `appTitle` so the content is not named after the directory.
 
+A script deploy sweeps the whole directory. If the directory holds files the script does not need, narrow the selection: name the files in Python (`rsconnect deploy quarto script.py helper.py data.csv`) or pass `appFiles` in R (`rsconnect::deployApp(appFiles = c("_quarto.yml", "script.R"))`). A directory with a `_quarto.yml` is a Quarto project — deploy it whole with `rsconnect deploy quarto .`.
+
 ### If `rsconnect` is not found at deploy time
 
 It can be installed but off `PATH` in this shell. IDE-spawned terminals and active virtualenvs both cause this. Fall back to `uv tool run` as described in Stage 5, with `--from rsconnect-python`.
@@ -257,6 +299,7 @@ Python:
 - `The requirements file 'requirements.txt' does not exist` — Python content needs one. Create it, point at another file with `--requirements-file`, or generate it with `--force-generate`. The last option runs a `pip freeze`, so it can over-pin.
 - Self-signed TLS — use `-i/--insecure` or `-c/--cacert <file>`. Set `CONNECT_INSECURE` or `CONNECT_CA_CERTIFICATE` to apply it everywhere.
 - Rejected flag or unknown framework — re-check `rsconnect version` and re-read `rsconnect deploy <framework> --help`. The installed version is usually older than the flag you used.
+- A deployed script renders empty or broken — the server lacks Quarto 1.4+, Jupyter (Python scripts), or `rmarkdown` (R scripts). The deploy itself succeeded, so do not retry it. Report the missing server dependency.
 
 R:
 
