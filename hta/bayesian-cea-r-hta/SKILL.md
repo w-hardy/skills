@@ -1,16 +1,20 @@
 ---
 name: bayesian-cea-r-hta
-description: "Post-process and present Bayesian cost-effectiveness analyses in R — PSA draws,
-cost-effectiveness planes, CEAC/CEAF curves, incremental net benefit, the BCEA package,
-value-of-information analysis (EVPI/EVPPI/EVSI), and decision-model calibration. Use for paired
-cost/effect draws from a trial-based or decision-analytic model: net benefit at a threshold,
-bcea(), or \"is more research worth it\" (VOI). Trigger on \"PSA\", \"CEAC\", \"CEAF\", \"EVPI\",
-\"EVPPI\", \"cost-effectiveness plane\", \"net benefit\", \"BCEA\" or \"willingness to pay\" even
-when the skill is not named — and whenever an existing model's inputs change (survival
-extrapolation, utilities, unit costs, transition probabilities, population), so the ICER, net
-benefit and CEAC downstream need re-checking, even though none of those words appear. For NICE
-compliance use nice-economic-evaluation; for patient-level data use trial-based-cea-hta; for model
-structure use decision-modelling-hta, multistate-models-hta, or discrete-event-simulation-hta."
+description: >-
+  Post-process and present Bayesian cost-effectiveness analyses in R — PSA
+  draws, cost-effectiveness planes, CEAC/CEAF curves, incremental net benefit,
+  the BCEA package, value-of-information analysis (EVPI/EVPPI/EVSI), and
+  decision-model calibration. Use for paired cost/effect draws from a
+  trial-based or decision-analytic model: net benefit at a threshold, bcea(), or
+  "is more research worth it" (VOI). Trigger on "PSA", "CEAC", "CEAF", "EVPI",
+  "EVPPI", "cost-effectiveness plane", "net benefit", "BCEA" or "willingness to
+  pay" even when the skill is not named — and whenever an existing model's
+  inputs change (survival extrapolation, utilities, unit costs, transition
+  probabilities, population), so the ICER, net benefit and CEAC downstream need
+  re-checking, even though none of those words appear. For NICE compliance use
+  nice-economic-evaluation; for patient-level data use trial-based-cea-hta; for
+  model structure use decision-modelling-hta, multistate-models-hta, or
+  discrete-event-simulation-hta.
 ---
 
 # Bayesian cost-effectiveness analysis in R (R-HTA / BCEA)
