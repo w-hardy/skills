@@ -1,17 +1,20 @@
 ---
 name: ispor-smdm-good-practices
-description: "Apply the ISPOR-SMDM Modeling Good Research Practices Task Force reports (Value in
-Health 2012; TF-1,2,3,4,6,7) when conceptualising, structuring, reviewing, validating, or
-reporting a decision-analytic model for health economic evaluation — model design and credibility
-rather than coding. Use for: defining the decision problem, scope, perspective, target population,
-comparators, or time horizon; choosing between decision tree, cohort Markov, microsimulation, or
-DES; stress-testing a model structure, HEAP, protocol, or briefing; state definition, cycle
-length, heterogeneity bias; the uncertainty taxonomy, distributions, calibration; transparency
-documentation and validation (face, verification, cross, external, predictive). Trigger on
-'ISPOR', 'SMDM', 'good practice', 'model conceptualisation', 'structure review', 'model
-validation', 'model audit', or 'is this defensible'. Jurisdiction rules →
-nice-economic-evaluation; reporting quality → cheers-2022-reporting; R implementation → the method
-skills."
+description: >-
+  Apply the ISPOR-SMDM Modeling Good Research Practices Task Force reports
+  (Value in Health 2012; TF-1,2,3,4,6,7) when conceptualising, structuring,
+  reviewing, validating, or reporting a decision-analytic model for health
+  economic evaluation — model design and credibility rather than coding. Use
+  for: defining the decision problem, scope, perspective, target population,
+  comparators, or time horizon; choosing between decision tree, cohort Markov,
+  microsimulation, or DES; stress-testing a model structure, HEAP, protocol, or
+  briefing; state definition, cycle length, heterogeneity bias; the uncertainty
+  taxonomy, distributions, calibration; transparency documentation and
+  validation (face, verification, cross, external, predictive). Trigger on
+  'ISPOR', 'SMDM', 'good practice', 'model conceptualisation', 'structure
+  review', 'model validation', 'model audit', or 'is this defensible'.
+  Jurisdiction rules → nice-economic-evaluation; reporting quality →
+  cheers-2022-reporting; R implementation → the method skills.
 ---
 
 # ISPOR-SMDM modelling good research practices
