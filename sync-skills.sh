@@ -87,10 +87,19 @@ exclude_args() {
   for d in "${REPO_ONLY_DIRS[@]}"; do printf -- '-x\n%s\n' "$d"; done
 }
 
+# claude.ai rewrites SKILL.md frontmatter on upload (a folded description comes
+# back single-quoted on one line), so SKILL.md is compared by parsed frontmatter
+# and body text rather than byte for byte. Other files must match exactly.
+CONTENT_HELPER="$REPO_ROOT/.github/scripts/skill-content.py"
+
+content_helper() {
+  uv run --quiet --script "$CONTENT_HELPER" "$@"
+}
+
 same_content() {
-  local args
-  mapfile -t args < <(exclude_args)
-  diff -rq "${args[@]}" "$1" "$2" >/dev/null 2>&1
+  local d args=()
+  for d in "${REPO_ONLY_DIRS[@]}"; do args+=(--exclude "$d"); done
+  content_helper same "${args[@]}" "$1" "$2"
 }
 
 # Succeeds when any file in the synced copy matches an older committed version
@@ -99,7 +108,11 @@ same_content() {
 is_stale() {
   local repo=$1 synced=$2 rel file blob commit head
   rel=${repo#"$REPO_ROOT"/}
+  if skill_md_is_stale "$rel" "$synced/SKILL.md"; then
+    return 0
+  fi
   while IFS= read -r file; do
+    [ "$file" = SKILL.md ] && continue
     blob=$(git -C "$REPO_ROOT" hash-object "$synced/$file")
     head=$(git -C "$REPO_ROOT" rev-parse "HEAD:$rel/$file" 2>/dev/null || true)
     [ "$blob" = "$head" ] && continue
@@ -110,6 +123,26 @@ is_stale() {
     done
   done < <(cd "$synced" && find . -type f | sed 's|^\./||')
   return 1
+}
+
+# SKILL.md's frontmatter is rewritten on upload, so match it against each
+# committed version by content (see same_content) rather than by blob hash.
+skill_md_is_stale() {
+  local rel=$1 synced_md=$2 commit tmp status=1
+  [ -f "$synced_md" ] || return 1
+  tmp=$(mktemp)
+  git -C "$REPO_ROOT" show "HEAD:$rel/SKILL.md" >"$tmp" 2>/dev/null || : >"$tmp"
+  if ! content_helper same-file "$synced_md" "$tmp"; then
+    for commit in $(git -C "$REPO_ROOT" rev-list HEAD~ -- "$rel/SKILL.md" 2>/dev/null); do
+      git -C "$REPO_ROOT" show "$commit:$rel/SKILL.md" >"$tmp" 2>/dev/null || continue
+      if content_helper same-file "$synced_md" "$tmp"; then
+        status=0
+        break
+      fi
+    done
+  fi
+  rm -f "$tmp"
+  return "$status"
 }
 
 cmd_check() {
@@ -173,6 +206,9 @@ cmd_diff() {
   repo=$(repo_path_for "$name") || { echo "Not in repo: $name" >&2; exit 1; }
   synced=$(synced_path_for "$name")
   [ -n "$synced" ] || { echo "Not synced locally: $name" >&2; exit 1; }
+  if same_content "$repo" "$synced"; then
+    echo "$name: same content (any differences below are frontmatter formatting only)"
+  fi
   mapfile -t args < <(exclude_args)
   diff -ru "${args[@]}" "$repo" "$synced" || true
 }

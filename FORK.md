@@ -18,6 +18,7 @@ skills stay current, and is the source of truth for the personal ones.
 | `.claude/settings.json` | Registers this fork's marketplace and enables every plugin for sessions opened in this repo |
 | `.claude/CLAUDE.md` | Claude Code guidance for the fork, loaded alongside upstream's root `CLAUDE.md` |
 | `sync-skills.sh` | Drift check between this repo and the local claude.ai sync, and zips for upload |
+| `.github/scripts/skill-content.py` | Content comparison `sync-skills.sh` uses, so frontmatter that claude.ai reformats on upload is not reported as drift |
 | `.github/scripts/check-skill-frontmatter.py`, `.github/workflows/check-skill-frontmatter.yml` | Frontmatter check for the fork's categories (description length and format) |
 | `docs/reviews/` | Review and field-test records for the fork's skills |
 | `.github/workflows/sync-upstream.yml` | Weekly upstream merge PR |
@@ -137,6 +138,11 @@ skill is edited in the claude.ai editor rather than here.
 older committed version of the skill — that copy is stale, not edited — unless
 you pass `--force`, and it never deletes files that exist only in the repo
 (such as `evals/`).
+
+claude.ai rewrites a skill's frontmatter when it stores it (a folded `>-`
+description comes back as one single-quoted line), so the check compares
+`SKILL.md` by parsed frontmatter and body text, not byte for byte. `diff` still
+shows the raw differences and says when they are formatting only.
 
 Going the other way — publishing a repo-edited skill back to claude.ai — is a
 manual upload through the claude.ai skill editor; there is no CLI for it.
