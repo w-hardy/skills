@@ -53,12 +53,15 @@ When available, the `gh-pr-review` extension and its associated skill are conven
 ```sh
 gh pr-review review --start -R owner/repo <pr-number>
 gh pr-review review --add-comment -R owner/repo <pr-number> \
-  --review-id <PRR_...> --path <file> --line <line> --side <LEFT|RIGHT> \
+  --review-id <PRR_...> --path <file> --line <line> \
   --body "<comment>"
 gh pr-review review --submit -R owner/repo <pr-number> \
   --review-id <PRR_...> --event <APPROVE|COMMENT|REQUEST_CHANGES> \
   --body "<review-summary>"
 ```
+
+The extension's README documents no `--side` flag for `--add-comment`; to comment on the old side
+of a diff, check `gh pr-review review --add-comment --help` before relying on one.
 
 The extension is optional. Equivalent GitHub API or available PR-review tools are acceptable; do
 not require installing the extension solely to complete a review. Check for an existing pending

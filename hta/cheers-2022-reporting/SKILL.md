@@ -27,7 +27,7 @@ Scope: any economic evaluation — cost analysis, cost-effectiveness/cost-utilit
 
 ## Core recording conventions (all modes)
 
-- Locate items by **section heading + paragraph number**, never page or line numbers — except for a manuscript still held as source (`.qmd`, `.Rmd`) with no typeset pages, where the actionable location is file path plus line number. See the location rules in the reference file.
+- Locate items by **section heading + paragraph number**, never page or line numbers — except for a manuscript still held as source (`.qmd`, `.Rmd`, `.tex`) with no typeset pages, where the actionable location is file path plus line number. See the location rules in the reference file.
 - **NA** = the item cannot apply to this study type (see the applicability table in the reference file — e.g. items 11–13 for cost analyses; item 16 for non-modelling studies). **NR** = the item applies but the information is absent. Never write "Not conducted".
 - **Inconsistent** = the item is reported, but what it reports contradicts the analysis actually run (e.g. Methods describing five reviewed price overrides where seven are applied). This is a reporting defect, not a methods criticism — the report misdescribes the study — so it belongs in the table, with both values and where each was found. Never let it pass as "Reported": a bare tick is what carries this class of error through successive audits.
 - An explicit statement of absence *is* adequate reporting: "no HEAP was developed" satisfies item 4; "distributional effects were not considered" satisfies item 19; "no patient or public involvement" satisfies item 21. Silence on these does not — record NR.

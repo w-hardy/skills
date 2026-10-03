@@ -83,7 +83,8 @@ update, a new resource-use table — the applicable guidance is `reference-case.
 costs, resource use and costs, price year and indexation, and the cost-side reviewer checklist),
 plus `modelling-and-uncertainty.md` for how the changed costs are carried into PSA and scenarios,
 plus `tsd-index.md` only if a method choice is in play. From `results-and-presentation.md` read
-only the cost-side clauses — 4.10.4 (costs disaggregated by health state and resource category,
+only the cost-side clauses — 4.10.1 (every parameter, cost parameters included, tabulated with
+central value, measure of precision and source, with a bias assessment per source), 4.10.4 (costs disaggregated by health state and resource category,
 presented with and without discounting) and 4.10.6 (expected value of each cost component and
 expected total costs); a new resource-use table engages 4.10.4 directly. `decision-making.md` is
 inert here: thresholds and modifiers turn on QALYs and the ICER, and both severity shortfalls are

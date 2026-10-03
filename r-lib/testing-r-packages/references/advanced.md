@@ -299,7 +299,7 @@ This applies to any `tests/testthat/` directory, package or not. A repository wi
 `DESCRIPTION` runs under `testthat::test_dir("tests/testthat")`; `devtools::test()` and
 `load_all()` are unavailable there, so the code under test is normally sourced from a
 `helper-*.R` file. There is no `Config/testthat/edition: 3` either, so such a suite runs the 2nd
-edition unless a `setup-*.R` file opts in with
+edition unless a `setup-*.R` or `helper-*.R` file opts in with
 `testthat::local_edition(3, .env = testthat::teardown_env())` — worth checking before you conclude
 that a suite avoids 3e features by choice. The review material below works the same either way.
 

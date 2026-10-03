@@ -109,8 +109,9 @@ received, and fit an outcome model on the pseudo-population.
 covariates; predict every patient's outcome under treatment and under control;
 average the difference. Efficient when the outcome model is right, and it gives
 the marginal effect directly rather than a conditional one. In R,
-`marginaleffects::avg_comparisons()` does the averaging and the delta-method or
-bootstrap standard error.
+`marginaleffects::avg_comparisons()` does the averaging and returns a delta-method
+standard error; for bootstrap or simulation intervals, pass its result to
+`marginaleffects::inferences()`.
 
 The same standardisation arithmetic does three different jobs, and "g-computation"
 names all three. Work out which one is in front of you before answering, because

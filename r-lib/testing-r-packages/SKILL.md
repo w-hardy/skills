@@ -108,8 +108,9 @@ code under test is sourced from a `helper-*.R` file. Two testthat defaults also 
 error (`expect_snapshot()` aborts with "requires the 3rd edition"). Opt in from a `setup-*.R` file
 with `testthat::local_edition(3, .env = testthat::teardown_env())`; a plain `local_edition(3)`
 there reverts the moment the setup file finishes.
-- No `NOT_CRAN` environment variable, which `devtools::test()` would set for you. Without it every
-snapshot test and every `skip_on_cran()` test skips silently, so run the suite as `NOT_CRAN=true
+- No `NOT_CRAN` environment variable, which `devtools::test()` would set for you. Without it, in a
+non-interactive run (`Rscript`, CI) every snapshot test and every `skip_on_cran()` test skips
+silently — an interactive session runs them — so run the suite as `NOT_CRAN=true
 Rscript -e 'testthat::test_dir("tests/testthat")'`.
 
 ## Core Expectations

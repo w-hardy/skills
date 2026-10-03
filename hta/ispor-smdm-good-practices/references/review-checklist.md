@@ -239,6 +239,10 @@ code-based project that promise rests on machinery, and the machinery is itself
 a review object. Asking "is this reproducible?" reliably returns nothing; ask it
 procedurally instead.
 
+This enumeration applies when the model is code-based; a spreadsheet model or a
+manuscript has no build system to grade, so judge its reproducibility by whether
+the documentation lets an expert rebuild it.
+
 **Enumerate every class of build input, then name, for each, the mechanism that
 invalidates the downstream artefacts when it changes.** Walk the list explicitly
 rather than in the abstract: source code; raw data extracts; derived and
@@ -263,8 +267,7 @@ read one that is only appended to, are in Section E under *Register discipline*.
 **Vendored or forked guidance documents.** A methods manual, TSD, checklist,
 template, or guidance document copied into the project repository freezes at the
 moment of the copy: bumping the upstream version does not refresh it, its onward
-references (a superseded manual, a withdrawn TSD, a 2012 recommendation with a
-2022 successor) go stale silently, and two copies in different directories drift
+references (a superseded methods manual, a withdrawn TSD) go stale silently, and two copies in different directories drift
 apart until each gives different instructions to whoever opens the nearer one.
 Check that every vendored document records its origin and the version or commit
 it was taken at, and that exactly one copy exists. Report duplicate copies as a

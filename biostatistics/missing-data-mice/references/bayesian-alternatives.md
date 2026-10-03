@@ -112,4 +112,7 @@ whenever a review meets `brm_multiple()`, or `mice` output handed to any Bayesia
   draws are conditional on that dataset's imputed covariates. Predict for each imputation against
   its own frame and stack the results. Running the whole combined draw matrix against one frame
   (usually imputation 1, or a complete-case frame) discards the imputation uncertainty in the
-  covariates and silently reinstates the single-imputation error the *m* fits existed to avoid.
+  covariates and reinstates the single-imputation error the *m* fits existed to avoid. brms warns
+  in the commonest form of this — any post-processing call with `newdata = NULL` on a
+  `brm_multiple()` fit prints "Using only the first imputed data set" — so that warning in a log
+  is itself the finding; with an explicit `newdata` frame there is no warning.
