@@ -1,6 +1,11 @@
 ---
 name: network-meta-analysis-hta
-description: "Build, estimate, check, and report network meta-analyses (NMA) and indirect treatment comparisons for health economic evaluation in R, using multinma (Bayesian, Stan) and netmeta (frequentist). Use whenever the person synthesises relative treatment effects across a network of trials for an HTA: indirect comparison of treatments not compared head-to-head, fixed vs random effects, heterogeneity, meta-regression for effect modifiers, ranking treatments (SUCRA), testing the consistency assumption (UME / node-splitting), or turning pooled relative effects into the absolute, population-relevant numbers an economic model needs from a synthesised baseline. Trigger on \"network meta-analysis\", \"NMA\", \"indirect treatment comparison\", \"Bucher\", \"consistency assumption\", \"node-splitting\", \"multinma\", \"netmeta\", \"SUCRA\", \"baseline natural history\", \"multiparameter evidence synthesis\", or \"where does the baseline for my model come from\". For MAIC / STC / ML-NMR hand off to population-adjusted-comparisons."
+description: >-
+  Build, check and report network meta-analyses and indirect treatment comparisons for HTA in R
+  with multinma and netmeta: fixed and random effects, heterogeneity, meta-regression, consistency
+  checks, rankings, and the absolute inputs an economic model needs from pooled relative effects.
+  Use when combining trials across a network of treatments. Adjusting for population differences
+  with patient-level data is population-adjusted-comparisons.
 ---
 
 # Network meta-analysis for HTA

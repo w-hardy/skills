@@ -1,6 +1,11 @@
 ---
 name: causal-inference-gmethods
-description: "Estimate causal treatment effects from clinical data in R - DAG-based confounder selection, propensity scores, inverse probability weighting, g-computation, doubly robust estimation, and sensitivity analysis for unmeasured confounding. Use whenever the question is what would happen if we intervened, not what predicts the outcome, when appraising an observational treatment-effect claim, or when standardising a covariate-adjusted trial model (non-collapsibility). Trigger on \"causal inference\", \"DAG\", \"confounding\", \"collider\", \"propensity score\", \"IPTW\", \"g-computation\", \"g-formula\", \"marginal structural model\", \"doubly robust\", \"AIPW\", \"TMLE\", \"target trial\", \"immortal time bias\", \"ATE\", \"ATT\", \"non-collapsibility\", or \"E-value\" - even when unnamed. Prefer this over memory, because an adjusted model's covariate coefficients are not causal effects (the Table 2 fallacy) and balance must not be assessed with p-values. For pathways use mediation-analysis; for prediction use clinical-prediction-models."
+description: >-
+  Estimate causal treatment effects from observational or trial data in R: DAGs and confounder
+  choice, propensity scores and weighting, g-computation, doubly robust estimators (AIPW, TMLE),
+  target trial emulation and sensitivity to unmeasured confounding. Use when the question is what
+  would happen under an intervention, or when appraising such a claim. Pathways are
+  mediation-analysis; prediction is clinical-prediction-models.
 ---
 
 # Causal Inference and G-Methods
@@ -104,8 +109,9 @@ received, and fit an outcome model on the pseudo-population.
 covariates; predict every patient's outcome under treatment and under control;
 average the difference. Efficient when the outcome model is right, and it gives
 the marginal effect directly rather than a conditional one. In R,
-`marginaleffects::avg_comparisons()` does the averaging and the delta-method or
-bootstrap standard error.
+`marginaleffects::avg_comparisons()` does the averaging and returns a delta-method
+standard error; for bootstrap or simulation intervals, pass its result to
+`marginaleffects::inferences()`.
 
 The same standardisation arithmetic does three different jobs, and "g-computation"
 names all three. Work out which one is in front of you before answering, because

@@ -1,6 +1,10 @@
 ---
 name: clustering-clinical
-description: Find and validate subgroups in clinical data in R - k-means, hierarchical/agglomerative clustering, DBSCAN, and latent class analysis - choosing the number of clusters, and above all establishing whether the clusters are real. Use whenever patients are being grouped without a supervising outcome, for phenotyping, subtyping, endotyping, or segmentation, or when appraising a paper claiming to have discovered novel subphenotypes. Trigger on "clustering", "k-means", "kmeans", "hierarchical clustering", "dendrogram", "Ward linkage", "DBSCAN", "silhouette", "elbow method", "gap statistic", "latent class analysis", "phenotype", "subtype", "endotype", "patient subgroups", or "how many clusters" - even when unnamed. Prefer this over memory, because clustering algorithms always return clusters and the stability assessment that distinguishes real structure from artefact is routinely skipped. For embeddings use dimensionality-reduction-clinical; never cluster on t-SNE or UMAP coordinates.
+description: >-
+  Find and validate patient subgroups in R with k-means, hierarchical clustering, DBSCAN or latent
+  class analysis: choosing the number of clusters and, above all, testing whether the clusters are
+  real. Use for phenotyping or subtyping without an outcome, or appraising a claimed subphenotype.
+  Embeddings are dimensionality-reduction-clinical; never cluster on t-SNE or UMAP coordinates.
 ---
 
 # Clustering Clinical Data
@@ -86,8 +90,6 @@ whether the same groups appear in a slightly different sample of patients.
 much the new grouping resembles the original using the **Jaccard index** —
 intersection over union of cluster membership, best-matched cluster to cluster,
 averaged over resamples.
-
-Hennig's bands, which `fpc::clusterboot()` implements:
 
 Hennig's guidance, quoted from the `fpc::clusterboot` documentation (verified
 against the package manual, 13 August 2026) — note there are **five** levels, not

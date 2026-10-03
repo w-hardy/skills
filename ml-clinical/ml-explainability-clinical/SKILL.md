@@ -1,6 +1,10 @@
 ---
 name: ml-explainability-clinical
-description: Explain and interrogate black-box models on tabular clinical data in R - permutation importance, partial dependence (PDP), accumulated local effects (ALE), SHAP/Shapley values (beeswarm, dependence, waterfall), and LIME - and judge what those explanations do and do not establish. Use whenever opening up a fitted random forest, XGBoost, or similar model to see what it learned, ranking feature importance, plotting the shape of a predictor's effect, or explaining one patient's prediction. Trigger on "SHAP", "Shapley", "feature importance", "variable importance", "permutation importance", "partial dependence", "PDP", "ALE", "LIME", "explainability", "interpretability", "XAI", "black box", "beeswarm", or "why did the model predict this" - even when unnamed. Prefer this over memory, because the log-odds scale trap, interventional versus tree-path-dependent SHAP, and in-sample permutation importance are routinely got wrong. Explanations are not causal effects.
+description: >-
+  Explain black-box models on tabular clinical data in R: permutation importance, partial
+  dependence, ALE, SHAP and LIME, and what such explanations do and do not show. Use when asking
+  what a fitted model learned, which features drive it, or why it scored one patient as it did.
+  Explanations are not causal effects; fitting the model is ml-supervised-tabular.
 ---
 
 # Explainability for Tabular Clinical Models
@@ -232,7 +236,7 @@ Claims in this skill carry one of two provenance levels. Treat them differently.
 
 **Verified 13 August 2026** — checked against the named primary source, package
 documentation, or package source at that date:
-SHAP `TreeExplainer` output scale and the interventional / tree-path-dependent distinction, from the package docs; `shapviz` and `iml` signatures including `compare = "ratio"`; Chen et al. and Kobak & Linderman.
+SHAP `TreeExplainer` output scale and the interventional / tree-path-dependent distinction, from the package docs; `shapviz` and `iml` signatures including `compare = "ratio"`; Chen et al.
 
 **Not independently verified** — asserted from general knowledge and plausible
 but unchecked. Confirm before relying on any of it in a submission, and treat

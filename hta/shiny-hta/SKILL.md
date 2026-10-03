@@ -1,6 +1,10 @@
 ---
 name: shiny-hta
-description: "Wrap an existing R health-economic / cost-effectiveness model in an interactive Shiny web application for HTA, making a model accessible to non-R users (clients, payers, ERG/EAG reviewers) without exposing the R code. Use whenever the task is building, structuring, debugging, or reviewing the Shiny front-end of a health economic model: ui/server design, reactivity, controlling when a CEA recomputes, editable input tables (rhandsontable), dynamic/conditional UI (uiOutput, renderUI, modules), start-up object-availability errors (req, is.null), saving/restoring model state, or scaling a model with many interdependent inputs. Trigger on phrases like \"Shiny\", \"shiny app\", \"interactive model\", \"ui and server\", \"reactivity\", \"reactiveValues\", \"rhandsontable\", \"renderUI\", or \"deploy my HTA model\". This is a software-engineering skill, not a statistical one. For the model's methods defer to the relevant methods skill and to nice-economic-evaluation; build and validate the model first, then wrap it here."
+description: >-
+  Wrap an existing R cost-effectiveness model in a Shiny app so clients and reviewers can change
+  inputs without seeing the code: UI and server structure, reactivity and when the model
+  recomputes, editable input tables, dynamic UI, start-up errors and saving model state. A
+  software skill: build and validate the model with the methods skills first.
 ---
 
 # Shiny front-ends for HTA models

@@ -1,6 +1,11 @@
 ---
 name: cheers-2022-reporting
-description: Apply the CHEERS 2022 statement (Consolidated Health Economic Evaluation Reporting Standards, 28-item checklist) so health economic evaluations are completely and transparently reported. Reporting quality only — for methods quality use ispor-smdm-good-practices; for NICE compliance use nice-economic-evaluation. Use when auditing a draft manuscript against CHEERS, completing a checklist for journal submission, drafting or redrafting sections of an economic evaluation paper, or assessing reporting completeness of published evaluations in a systematic review. Trigger on "CHEERS", "reporting checklist", "reporting standards", "reporting quality", or any request to review, complete, or improve the write-up of a cost-effectiveness, cost-utility, cost-benefit, cost-minimisation, cost analysis, or distributional cost-effectiveness study, even when CHEERS is not named.
+description: >-
+  Check and draft the reporting of health economic evaluations against CHEERS 2022: auditing a
+  manuscript, completing the checklist for submission, or appraising reporting in a review,
+  including whether the currency and price year are stated. Reporting only: methods quality is
+  ispor-smdm-good-practices, NICE requirements nice-economic-evaluation, and prediction-model
+  papers tripod-ai-reporting.
 ---
 
 # CHEERS 2022 Reporting
@@ -14,13 +19,16 @@ Read `references/cheers-2022-checklist.md` before doing any of the work below �
 CHEERS assesses **quality of reporting, not quality of conduct**. A methodologically weak study can be perfectly reported; a strong study can be badly reported. Keep the two apart in every output:
 
 - A reporting audit never comments on whether the time horizon was *right*, only whether it was *stated and justified*. If methodological problems are noticed in passing, flag them in a clearly separated note (and point to `ispor-smdm-good-practices` for model conduct/validation or `nice-economic-evaluation` for reference-case compliance) rather than folding them into the checklist assessment.
+
 - **Never produce a CHEERS score.** No counts of items met, no percentages, no ratings derived from the checklist. There is no validated scoring system and the Task Force strongly discourages scoring because it misleads. This holds even if the user asks for a score: explain why, and offer the qualitative item-level assessment instead.
 
 Scope: any economic evaluation — cost analysis, cost-effectiveness/cost-utility, cost-minimisation, cost-benefit (reserve "CBA" for studies monetising health outcomes), extended and distributional CEA — whether trial-based, model-based, or using routine data, in any sector. Out of scope: budget impact analysis and constrained optimisation (other ISPOR guidance covers those; say so and stop rather than force-fitting CHEERS).
 
+**Price year.** Three skills meet at a cost's price year, and each owns one question: whether the currency and price year are *stated* is a reporting item (this skill); whether every cost sits in one current, indexed price year is a reference-case requirement (`nice-economic-evaluation`); `ispor-smdm-good-practices` claims neither. Raise a price-year finding under the skill that owns it, once.
+
 ## Core recording conventions (all modes)
 
-- Locate items by **section heading + paragraph number**, never page or line numbers — except for a manuscript still held as source (`.qmd`, `.Rmd`) with no typeset pages, where the actionable location is file path plus line number. See the location rules in the reference file.
+- Locate items by **section heading + paragraph number**, never page or line numbers — except for a manuscript still held as source (`.qmd`, `.Rmd`, `.tex`) with no typeset pages, where the actionable location is file path plus line number. See the location rules in the reference file.
 - **NA** = the item cannot apply to this study type (see the applicability table in the reference file — e.g. items 11–13 for cost analyses; item 16 for non-modelling studies). **NR** = the item applies but the information is absent. Never write "Not conducted".
 - **Inconsistent** = the item is reported, but what it reports contradicts the analysis actually run (e.g. Methods describing five reviewed price overrides where seven are applied). This is a reporting defect, not a methods criticism — the report misdescribes the study — so it belongs in the table, with both values and where each was found. Never let it pass as "Reported": a bare tick is what carries this class of error through successive audits.
 - An explicit statement of absence *is* adequate reporting: "no HEAP was developed" satisfies item 4; "distributional effects were not considered" satisfies item 19; "no patient or public involvement" satisfies item 21. Silence on these does not — record NR.

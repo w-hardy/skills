@@ -1,17 +1,10 @@
 ---
 name: missing-data-mice
 description: >-
-  Write correct, well-structured R code for handling missing data with multiple imputation,
-  following Stef van Buuren's "Flexible Imputation of Missing Data" (FIMD) and the mice package.
-  Use this whenever the person has missing values, NAs, item non-response, drop-out, or incomplete
-  cases in a real dataset and wants to impute, analyze, or report on it in R, including requests
-  phrased as "how do I deal with missing data", "impute these NAs", "run mice on my data", "is this
-  MAR or MNAR", "pool my regression after imputation", "missing data in a multilevel or
-  longitudinal study", or "what do I write about missing data in my methods section". Also covers
-  follow-ups on an existing mice workflow: convergence diagnostics, predictor selection, multilevel
-  (2l.) imputation, MNAR sensitivity analysis, or the reporting paragraph. Do not use this for
-  simple drop-NA or fillna one-liners where the person just wants rows or columns removed, with no
-  statistically principled imputation wanted.
+  Handle missing data by multiple imputation in R with mice, following van Buuren: whether
+  imputation is warranted, the imputation model, multilevel and longitudinal imputation,
+  convergence checks, pooling, sensitivity to data missing not at random, and reporting. Use when
+  incomplete data must be analysed properly, not when rows are simply dropped.
 ---
 
 # Missing data with mice (Flexible Imputation of Missing Data)

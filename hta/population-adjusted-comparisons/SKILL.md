@@ -1,6 +1,11 @@
 ---
 name: population-adjusted-comparisons
-description: "Plan, build, check, and report population-adjusted indirect treatment comparisons (PAICs) for HTA in R (MAIC, STC, and multilevel network meta-regression, ML-NMR) when effect modifiers are imbalanced across trials and standard NMA would be biased. Use whenever there is a mix of individual patient data (IPD) and aggregate data (AgD) and the analysis must adjust for effect-modifier imbalance, target a specific decision population, incorporate single-arm studies, or connect a disconnected network. Trigger on phrases like \"MAIC\", \"matching-adjusted indirect comparison\", \"STC\", \"simulated treatment comparison\", \"ML-NMR\", \"multilevel network meta-regression\", \"population adjustment\", \"anchored or unanchored indirect comparison\", \"target population\", \"effect modifier imbalance\", \"TSD 18\", or \"TSD 17\". Also trigger when a manufacturer has IPD on their own study but only AgD on comparators. Builds on network-meta-analysis-hta; defer to nice-economic-evaluation for how the absolute effects feed the economic model."
+description: >-
+  Plan, run and report population-adjusted indirect comparisons in R (MAIC, STC, ML-NMR) when
+  effect modifiers differ between trials. Use when patient-level data for some trials must be
+  compared with published aggregate data for others, a specific decision population is targeted,
+  or single-arm studies or a disconnected network are involved. Standard network meta-analysis is
+  network-meta-analysis-hta.
 ---
 
 # Population-adjusted indirect comparisons for HTA
@@ -69,7 +74,7 @@ The deliverables to the economic model are typically **absolute effects** in the
 - **Treating unanchored results as comparable to anchored.** Unanchored rests on conditional constancy of *absolute* effects — untestable, very strong; flag the elevated decision risk explicitly.
 - **Plug-in-means STC with a non-collapsible measure.** Aggregation + non-collapsibility bias; use G-computation STC.
 
-> **A note on the term "g-computation".** It is used here for *population adjustment* — standardising an outcome model fitted in one randomised trial's IPD over another study's covariate distribution, to move a marginal effect between populations. `biostatistics/causal-inference-gmethods` uses it for *identification* — standardising over confounders to recover a causal effect from observational data. The arithmetic is the same standardisation; the problem being solved is not. If the data are observational and the obstacle is confounding, that skill owns it; if the data are randomised and the obstacle is a covariate-distribution mismatch between studies, this one does.
+> **A note on the term "g-computation".** It is used here for *population adjustment* — standardising an outcome model fitted in one randomised trial's IPD over another study's covariate distribution, to move a marginal effect between populations. `biostatistics/causal-inference-gmethods` uses it for *identification* — standardising over confounders to recover a causal effect from observational data. The arithmetic is the same standardisation; the problem being solved is not. If the data are observational and the obstacle is confounding, that skill owns it; if the data are randomised and the obstacle is a covariate-distribution mismatch between studies, this one does. Standardising within a single randomised trial to report its own marginal effect, with no second population involved, also belongs to `causal-inference-gmethods`.
 - **Ignoring low ESS / extreme weights in MAIC.** Poor overlap → substantial bias and unstable variance; MAIC can't extrapolate out of it. Report ESS and the weight histogram every time.
 - **Trying to scale MAIC/STC to a >2-study network.** They don't synthesise networks coherently; separate MAICs against different AgD studies sit in different, non-comparable populations and reuse the IPD. Use ML-NMR.
 - **Conflating marginal and conditional estimands.** State which you're reporting; under non-collapsibility + effect modification they can rank treatments differently.

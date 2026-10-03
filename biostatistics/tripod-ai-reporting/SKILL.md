@@ -1,6 +1,10 @@
 ---
 name: tripod-ai-reporting
-description: Apply the TRIPOD+AI reporting statement (Collins et al., BMJ 2024 - 27 items, 52 subitems, plus a 13-item abstracts checklist) so studies developing, validating, or updating a clinical prediction model are completely and transparently reported. Use for the write-up or appraisal of a prediction model study - auditing a draft manuscript, completing the checklist for journal submission, drafting or redrafting sections of the paper, or assessing reporting completeness in a systematic review. Also covers PROBAST+AI (Moons et al., BMJ 2025) for risk-of-bias appraisal, and TRIPOD-Cluster for multi-centre data. Trigger on "TRIPOD", "PROBAST", "reporting checklist", "reporting guideline", "model card", "prediction model manuscript", or any request to review or improve the write-up of a diagnostic or prognostic model study, even when the guideline is not named. Reporting and appraisal only - for the modelling methods use clinical-prediction-models; for economic evaluation reporting use cheers-2022-reporting.
+description: >-
+  Check and draft the reporting of prediction model studies against TRIPOD+AI, with PROBAST+AI for
+  risk of bias and TRIPOD-Cluster for multi-centre data: auditing a manuscript, completing the
+  checklist or appraising studies in a review. Reporting and appraisal only: methods are
+  clinical-prediction-models; economic evaluations are cheers-2022-reporting.
 ---
 
 # TRIPOD+AI Reporting
@@ -157,9 +161,5 @@ documentation, or package source at that date:
 The 27 items / 52 subitems / 13 abstract items structure, that TRIPOD+AI supersedes TRIPOD 2015, and PROBAST+AI — all from multiple independent sources.
 
 **Not independently verified** — asserted from general knowledge and plausible
-but unchecked. Confirm before relying on any of it in a submission, and treat
-function signatures as a starting point rather than a guarantee:
+but unchecked. Confirm before relying on any of it in a submission:
 The TRIPOD-Cluster article number; the EU AI Act and device-regulation specifics, which move quickly and should be checked against current MHRA/EU/FDA guidance.
-
-Package APIs move. Re-check any code block that fails, and prefer the package's
-own current documentation over this file where they disagree.

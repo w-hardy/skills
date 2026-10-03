@@ -1,6 +1,11 @@
 ---
 name: clinical-prediction-models
-description: Develop, validate, and appraise clinical prediction models (diagnostic or prognostic risk models) in R - the full workflow from decision problem through sample size, predictor specification, shrinkage, performance assessment, and validation. Use whenever a model estimates individual patient risk - sample size (pmsampsize, Riley criteria), predictor selection and why stepwise fails, shrinkage, discrimination (C-statistic/AUROC), calibration (plot, slope, intercept, O:E ratio), Brier scores, clinical utility (net benefit, decision curves), bootstrap optimism correction, external validation, or recalibration. Trigger on "prediction model", "risk model", "risk score", "calibration", "C-statistic", "AUROC", "decision curve", "net benefit", "optimism correction", "external validation", "pmsampsize", "EPV", or "does my model overfit" - even when unnamed. Prefer this over memory, because several repeated rules of thumb (10 EPV, accuracy/F1, Hosmer-Lemeshow) are superseded. For write-up use tripod-ai-reporting.
+description: >-
+  Develop, validate and appraise clinical prediction models in R: sample size, predictor handling,
+  shrinkage, discrimination, calibration, net benefit and decision curves, optimism correction,
+  external validation and recalibration. Use whenever a model estimates individual patient risk,
+  including one built with machine learning. Prefer it over memory: rules such as 10 events per
+  variable are superseded. Reporting is tripod-ai-reporting.
 ---
 
 # Clinical Prediction Models
@@ -215,7 +220,7 @@ Riley sample-size criteria (all three recomputed numerically); Van Calster et al
 **Not independently verified** — asserted from general knowledge and plausible
 but unchecked. Confirm before relying on any of it in a submission, and treat
 function signatures as a starting point rather than a guarantee:
-`pmsampsize` / `pmvalsampsize` argument behaviour; the Riley part-3 volume number; the "100 events and 100 non-events" external-validation floor; Harrell's knot percentile table (taken from a secondary source).
+`pmsampsize` / `pmvalsampsize` argument behaviour; the Riley part-3 volume number; the "100 events and 100 non-events" external-validation floor; Harrell's knot percentile table (transcribed from a secondary source, not from *Regression Modeling Strategies* itself).
 
 Package APIs move. Re-check any code block that fails, and prefer the package's
 own current documentation over this file where they disagree.

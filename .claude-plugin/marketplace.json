@@ -5,7 +5,7 @@
     "email": "51114571+w-hardy@users.noreply.github.com"
   },
   "metadata": {
-    "description": "w-hardy's fork of posit-dev/skills: the upstream Posit collection (Shiny, Quarto, r-lib, Connect, GitHub, open-source) plus health technology assessment (hta), biostatistics, clinical machine learning (ml-clinical), and a vendored copy of obra/superpowers.",
+    "description": "w-hardy's fork of posit-dev/skills: the upstream Posit collection (Shiny, Quarto, r-lib, Connect, GitHub, open-source, ggsql) plus health technology assessment (hta), biostatistics, clinical machine learning (ml-clinical), research methods, and vendored copies of obra/superpowers and the tidymodels tabular-data-ml skill.",
     "version": "0.1.0"
   },
   "plugins": [

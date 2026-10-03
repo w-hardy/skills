@@ -1,6 +1,10 @@
 ---
 name: continuous-predictors-splines
-description: Model continuous predictors properly in R - restricted cubic splines, fractional polynomials, knot placement and count, testing and reporting non-linearity - and make the case against categorising. Use whenever a continuous variable enters a regression or prediction model and the question is how to specify it, or when reviewing work that has dichotomised at a median, tertile, or "optimal" cut-point. Trigger on "spline", "restricted cubic spline", "natural spline", "rcs", "ns()", "fractional polynomial", "mfp", "knots", "non-linearity", "categorise", "dichotomise", "cut-point", "tertiles", "quartiles", "U-shaped", "J-shaped", "loess", or "should I categorise this variable" - even when unnamed. Prefer this over memory, because knot percentiles, the degrees-of-freedom arithmetic, and whether to test-then-simplify are commonly got wrong. For the wider model-building workflow use clinical-prediction-models; for penalised fitting use penalised-regression.
+description: >-
+  Model continuous predictors in R with restricted cubic splines or fractional polynomials: knot
+  number and placement, testing and reporting non-linearity, and why categorising or cut-points
+  lose information. Use when deciding how a continuous variable enters a regression or prediction
+  model, or reviewing work that dichotomised one. Penalised fitting is penalised-regression.
 ---
 
 # Continuous Predictors: Splines and Fractional Polynomials
@@ -161,7 +165,7 @@ The fractional polynomial power set and the 36 FP2 candidates (arithmetic checke
 **Not independently verified** — asserted from general knowledge and plausible
 but unchecked. Confirm before relying on any of it in a submission, and treat
 function signatures as a starting point rather than a guarantee:
-**Harrell's knot percentile table — taken from the source textbook, not from Harrell directly. Check before relying on it.** `mfp::mfp()`, `splines::ns()` and `mgcv::gam()` signatures; the pre-specify-df argument is a reading of Harrell's position, not a quotation.
+**Harrell's knot percentile table — transcribed from a secondary source, not from *Regression Modeling Strategies* itself. Check it against the book before relying on it.** `mfp::mfp()`, `splines::ns()` and `mgcv::gam()` signatures; the pre-specify-df argument is a reading of Harrell's position, not a quotation.
 
 Package APIs move. Re-check any code block that fails, and prefer the package's
 own current documentation over this file where they disagree.

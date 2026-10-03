@@ -1,0 +1,36 @@
+name: Check Skill Frontmatter
+
+# Fork-owned check: description length and format for the fork's own skill
+# categories. Upstream and vendored skills are not checked (see FORK.md).
+
+on:
+  pull_request:
+    paths:
+      - "hta/**/SKILL.md"
+      - "biostatistics/**/SKILL.md"
+      - "ml-clinical/**/SKILL.md"
+      - "research-methods/**/SKILL.md"
+      - ".github/scripts/check-skill-frontmatter.py"
+      - ".github/workflows/check-skill-frontmatter.yml"
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    env:
+      TIKTOKEN_CACHE_DIR: ${{ github.workspace }}/.tiktoken-cache
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: astral-sh/setup-uv@v6
+        with:
+          version: "0.8.17"
+
+      # tiktoken downloads its cl100k_base vocabulary on first use and checks
+      # it against a pinned hash; cache it so runs don't depend on the download.
+      - uses: actions/cache@v4
+        with:
+          path: .tiktoken-cache
+          key: tiktoken-cl100k_base-v1
+
+      - name: Check fork skill frontmatter
+        run: uv run .github/scripts/check-skill-frontmatter.py

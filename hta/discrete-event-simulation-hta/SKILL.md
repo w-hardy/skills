@@ -1,6 +1,11 @@
 ---
 name: discrete-event-simulation-hta
-description: "Design, build, and review discrete event simulation (DES) models for health economic evaluation in R, primarily with the simmer package. Use whenever the person is doing individual-level, continuous-time event-based simulation for cost-effectiveness where event history matters: entities moving through a care pathway via timed events, repeating/competing events, time-to-event sampling, resource/capacity constraints and queues, or a microsimulation that must remember an individual's past. Trigger on phrases like \"discrete event simulation\", \"DES\", \"simmer\", \"event-based simulation\", \"microsimulation with memory\", \"patient pathway simulation\", or \"model that depends on full event history\". Also trigger when deciding between DES and a state-transition / multistate model. For a Markov/multistate cohort where current state plus time-in-state is sufficient, prefer multistate-models-hta or decision-modelling-hta; reach here when the memoryless property is the obstacle, or resources/queues must be modelled."
+description: >-
+  Design, build and review discrete event simulations for health economic evaluation in R with
+  simmer: patients moving through care pathways by timed events, competing or repeating events,
+  resource capacity and queues, and outcomes that depend on each patient's history. Use when that
+  history or a capacity constraint makes a state-transition model inadequate; otherwise use
+  decision-modelling-hta or multistate-models-hta.
 ---
 
 # Discrete event simulation for HTA

@@ -181,11 +181,14 @@ a new resource-use table:
    year is updated, and nothing else in the model will report that.
 6. **Whose cost does the error move?** Classify every cost finding into one of three cases
    *before* grading it; only the first leaves the ICER untouched.
-   - *Cancels* — a mis-priced or mis-yeared resource consumed in the **same quantity** in both
-     arms enters both totals identically and drops out of the incremental cost entirely. In a
-     cost-utility analysis grade it as a presentational or total-cost finding. Equal quantity is
-     the condition, not merely being a resource both arms use: differential consumption of a
-     common resource is exactly where incremental cost comes from.
+   - *Cancels* — a mis-priced or mis-yeared resource consumed in the **same quantity at the same
+     times** in both arms enters both totals identically and drops out of the incremental cost
+     entirely. In a cost-utility analysis grade it as a presentational or total-cost finding.
+     Equal quantity and timing are the condition, not merely being a resource both arms use:
+     differential consumption of a common resource is exactly where incremental cost comes from,
+     and once costs are discounted the same total quantity consumed earlier in one arm (common in
+     a Markov model where survival differs) has a different present value, so a mis-price on it
+     does move the incremental cost — usually by little, so grade it by how far.
    - *Scales* — an error applied across the whole cost base (the wrong price year everywhere,
      one blanket inflator) multiplies every cost, and therefore the incremental cost, by the same
      factor, so the ICER moves by that same percentage rather than cancelling. Grade it by whether
@@ -195,8 +198,10 @@ a new resource-use table:
    - *Arm-differential* — a wrong intervention drug price, a resource item counted in one arm
      only, a component mis-yeared only where it appears — passes straight into the ICER. Material.
 
-   In a cost-comparison analysis or a budget-impact statement the total rather than the difference
-   is the decision quantity, so even a cancelling error is material there.
+   A cost-comparison analysis is decided on a difference too — whether the technology's costs are
+   similar to or lower than the comparator's — so a cancelling error cancels there as well. A
+   budget impact statement reports the net impact against current practice, which cancels in the
+   same way; only its gross totals, which bear on affordability, carry the error.
 
 ### Discounting (4.5.1–4.5.4)
 Reference case: **3.5%** for both costs and health effects; a 1.5% analysis may be

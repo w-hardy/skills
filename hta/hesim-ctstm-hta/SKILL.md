@@ -1,6 +1,11 @@
 ---
 name: hesim-ctstm-hta
-description: "Build, debug, run, and validate an individual-level continuous-time CTSTM (hesim IndivCtstm) for a health economic evaluation — implementation depth, not concepts. Use when writing or fixing hesim engine code: assembling create_IndivCtstmTrans() from flexsurvreg_list()/params_surv_list(); mixing clock-reset and clock-forward transitions (clock=\"mix\" vs \"mixt\"); wiring age-varying background mortality as a pwexp death transition with state-specific SMRs; PSA via define_rng()/create_params(); running sim_disease()/sim_qalys()/sim_costs() and the native CEA (cea()/cea_pw() for CEAC/CEAF/EVPI/ICER); or diagnosing a run that errors, returns NA life-years, double-counts arms, or silently uses background mortality. Triggers: hesim, IndivCtstm, params_surv_list, pwexp mortality, clock mixt, stateval_tbl, define_rng, cea_pw, CTSTM CEA. Defer concepts to multistate-models-hta, transition fitting to survival-analysis-hta, reference case to nice-economic-evaluation, EVPPI/EVSI to bayesian-cea-r-hta."
+description: >-
+  Write, debug and validate hesim IndivCtstm code for individual-level continuous-time economic
+  models: transitions built from flexsurv fits, mixed clock-reset and clock-forward transitions,
+  background mortality, PSA, simulation and hesim's own CEA outputs. Use for engine code and
+  failing runs. Model concepts belong to multistate-models-hta and fitting transitions to
+  survival-analysis-hta.
 ---
 
 # hesim CTSTM implementation

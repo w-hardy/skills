@@ -1,6 +1,10 @@
 ---
 name: dimensionality-reduction-clinical
-description: Reduce and visualise high-dimensional clinical or omics data in R - PCA, t-SNE, and UMAP - choosing components, setting perplexity and n_neighbors, and reading the output without over-reading it. Use whenever many correlated measurements are being summarised or projected to two dimensions for visualisation, or when reviewing a figure that shows patients as points in an abstract embedding. Trigger on "PCA", "principal components", "prcomp", "scree plot", "biplot", "loadings", "t-SNE", "Rtsne", "UMAP", "n_neighbors", "perplexity", "embedding", "dimension reduction", "curse of dimensionality", or "p greater than n visualisation" - even when unnamed. Prefer this over memory, because initialisation determines whether global structure survives, and the common claims that UMAP is faster and more stable than t-SNE are outdated. For grouping patients use clustering-clinical; never cluster on an embedding.
+description: >-
+  Reduce and visualise high-dimensional clinical or omics data in R with PCA, t-SNE and UMAP:
+  choosing components, perplexity and neighbours, initialisation, and reading the plots without
+  over-reading them. Use when many correlated measurements are summarised or projected to two
+  dimensions. Grouping patients is clustering-clinical.
 ---
 
 # Dimensionality Reduction for Clinical Data
@@ -140,7 +144,7 @@ Kobak & Linderman (2021) on initialisation, speed and global structure — read 
 **Not independently verified** — asserted from general knowledge and plausible
 but unchecked. Confirm before relying on any of it in a submission, and treat
 function signatures as a starting point rather than a guarantee:
-The `Rtsne(Y_init = ...)` scaling constant; PCA component-retention conventions and the Kaiser-rule criticism; Chari & Pachter and Apley & Zhu citation details; `PyALE`.
+The `Rtsne(Y_init = ...)` scaling constant; PCA component-retention conventions and the Kaiser-rule criticism; Chari & Pachter citation details.
 
 Package APIs move. Re-check any code block that fails, and prefer the package's
 own current documentation over this file where they disagree.
