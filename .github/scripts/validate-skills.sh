@@ -9,6 +9,10 @@
 #   base-ref    The base branch name to diff against (e.g. "main").
 #               When omitted or when the remote is unavailable, all skills are validated.
 #
+# The changed set is the committed diff against origin/<base-ref> plus any
+# uncommitted or untracked changes, so a local run checks what is actually on
+# disk. In CI the working tree is clean and only the committed diff counts.
+#
 # skill-validator reports errors and warnings separately, and signals which it
 # found through its exit status: 0 clean, 1 errors, 2 warnings only. Warnings
 # are advisory (deep reference nesting, description style), so only errors fail
@@ -39,6 +43,8 @@ diff_ok=0
 if [ -n "$BASE_REF" ]; then
   if changed_files=$(git diff --name-only "origin/${BASE_REF}...HEAD" 2>/dev/null); then
     diff_ok=1
+    changed_files+=$'\n'"$(git diff --name-only HEAD 2>/dev/null)"
+    changed_files+=$'\n'"$(git ls-files --others --exclude-standard 2>/dev/null)"
     while IFS= read -r file; do
       root=$(find_skill_root "$file") && changed_skills+=("$root")
     done < <(printf '%s\n' "$changed_files" | grep -v '^$')
@@ -108,7 +114,7 @@ if [ $FAILED -ne 0 ]; then
   echo "Skill validation failed!"
   echo ""
   echo "See the Job Summary for detailed validation results:"
-  echo "  https://github.com/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID"
+  echo "  https://github.com/${GITHUB_REPOSITORY:-<owner>/<repo>}/actions/runs/${GITHUB_RUN_ID:-<run>}"
   echo ""
 fi
 
