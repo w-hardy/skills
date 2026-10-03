@@ -207,7 +207,7 @@ For customization or offline use:
 1. Clone this repository:
 
    ```bash
-   git clone https://github.com/posit-dev/skills.git
+   git clone https://github.com/w-hardy/skills.git
    cd skills
    ```
 
