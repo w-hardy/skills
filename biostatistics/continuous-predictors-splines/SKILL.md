@@ -165,7 +165,7 @@ The fractional polynomial power set and the 36 FP2 candidates (arithmetic checke
 **Not independently verified** — asserted from general knowledge and plausible
 but unchecked. Confirm before relying on any of it in a submission, and treat
 function signatures as a starting point rather than a guarantee:
-**Harrell's knot percentile table — taken from the source textbook, not from Harrell directly. Check before relying on it.** `mfp::mfp()`, `splines::ns()` and `mgcv::gam()` signatures; the pre-specify-df argument is a reading of Harrell's position, not a quotation.
+**Harrell's knot percentile table — transcribed from a secondary source, not from *Regression Modeling Strategies* itself. Check it against the book before relying on it.** `mfp::mfp()`, `splines::ns()` and `mgcv::gam()` signatures; the pre-specify-df argument is a reading of Harrell's position, not a quotation.
 
 Package APIs move. Re-check any code block that fails, and prefer the package's
 own current documentation over this file where they disagree.

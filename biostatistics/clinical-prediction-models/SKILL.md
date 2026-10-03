@@ -220,7 +220,7 @@ Riley sample-size criteria (all three recomputed numerically); Van Calster et al
 **Not independently verified** — asserted from general knowledge and plausible
 but unchecked. Confirm before relying on any of it in a submission, and treat
 function signatures as a starting point rather than a guarantee:
-`pmsampsize` / `pmvalsampsize` argument behaviour; the Riley part-3 volume number; the "100 events and 100 non-events" external-validation floor; Harrell's knot percentile table (taken from a secondary source).
+`pmsampsize` / `pmvalsampsize` argument behaviour; the Riley part-3 volume number; the "100 events and 100 non-events" external-validation floor; Harrell's knot percentile table (transcribed from a secondary source, not from *Regression Modeling Strategies* itself).
 
 Package APIs move. Re-check any code block that fails, and prefer the package's
 own current documentation over this file where they disagree.

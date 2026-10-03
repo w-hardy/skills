@@ -144,7 +144,7 @@ Kobak & Linderman (2021) on initialisation, speed and global structure — read 
 **Not independently verified** — asserted from general knowledge and plausible
 but unchecked. Confirm before relying on any of it in a submission, and treat
 function signatures as a starting point rather than a guarantee:
-The `Rtsne(Y_init = ...)` scaling constant; PCA component-retention conventions and the Kaiser-rule criticism; Chari & Pachter and Apley & Zhu citation details; `PyALE`.
+The `Rtsne(Y_init = ...)` scaling constant; PCA component-retention conventions and the Kaiser-rule criticism; Chari & Pachter citation details.
 
 Package APIs move. Re-check any code block that fails, and prefer the package's
 own current documentation over this file where they disagree.

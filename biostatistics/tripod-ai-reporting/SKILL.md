@@ -161,9 +161,5 @@ documentation, or package source at that date:
 The 27 items / 52 subitems / 13 abstract items structure, that TRIPOD+AI supersedes TRIPOD 2015, and PROBAST+AI — all from multiple independent sources.
 
 **Not independently verified** — asserted from general knowledge and plausible
-but unchecked. Confirm before relying on any of it in a submission, and treat
-function signatures as a starting point rather than a guarantee:
+but unchecked. Confirm before relying on any of it in a submission:
 The TRIPOD-Cluster article number; the EU AI Act and device-regulation specifics, which move quickly and should be checked against current MHRA/EU/FDA guidance.
-
-Package APIs move. Re-check any code block that fails, and prefer the package's
-own current documentation over this file where they disagree.

@@ -236,7 +236,7 @@ Claims in this skill carry one of two provenance levels. Treat them differently.
 
 **Verified 13 August 2026** — checked against the named primary source, package
 documentation, or package source at that date:
-SHAP `TreeExplainer` output scale and the interventional / tree-path-dependent distinction, from the package docs; `shapviz` and `iml` signatures including `compare = "ratio"`; Chen et al. and Kobak & Linderman.
+SHAP `TreeExplainer` output scale and the interventional / tree-path-dependent distinction, from the package docs; `shapviz` and `iml` signatures including `compare = "ratio"`; Chen et al.
 
 **Not independently verified** — asserted from general knowledge and plausible
 but unchecked. Confirm before relying on any of it in a submission, and treat

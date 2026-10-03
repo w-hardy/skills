@@ -94,8 +94,8 @@ why:
   rightmost column of a constant value (`"x"`) protects the row structure. Harmless in R-written
   files, but keep it if anyone else will touch the file in Excel.
 - **Dates are `YYYYMMDD` character strings**, not R `Date` objects.
-- **Full stops in ICD-10 and OPCS-4 codes are stripped automatically.** The RDF Picture feature
-  is no longer needed for that.
+- **Full stops in ICD-10 and OPCS-4 codes are stripped automatically,** so no RDF
+  Picture is needed for that.
 - **One decision needs care: the spell identifier.** APC records are sorted and grouped by
   provider code plus `PROVSPNO` plus `EPIORDER`. An alternative spell identifier may be
   substituted for the Hospital Provider Spell Number, but it must be unique within provider
