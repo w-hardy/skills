@@ -1,0 +1,512 @@
+[
+ {
+  "id": "P01",
+  "cls": "positive",
+  "prompt": "I have 5,000 simulated pairs of incremental costs and QALYs from my model. How do I show the probability the new drug is good value across a range of thresholds, and whether more research would be worth paying for?",
+  "expect": [
+   "bayesian-cea-r-hta"
+  ],
+  "never": [],
+  "holdout": false
+ },
+ {
+  "id": "P02",
+  "cls": "positive",
+  "prompt": "My Bayesian multilevel logistic regression in R (the Stan formula-interface package) gives divergent transitions with only five sites. What should I change?",
+  "expect": [
+   "brms-modelling"
+  ],
+  "never": [],
+  "holdout": false
+ },
+ {
+  "id": "P03",
+  "cls": "positive",
+  "prompt": "Using registry data, I want to estimate what 1-year mortality would be if every eligible patient got statins versus none. Which adjustment approach should I use, and how do I check overlap?",
+  "expect": [
+   "causal-inference-gmethods"
+  ],
+  "never": [],
+  "holdout": false
+ },
+ {
+  "id": "P04",
+  "cls": "positive",
+  "prompt": "Can you go through my cost-utility manuscript and tell me what a journal reviewer would say is missing from the write-up?",
+  "expect": [
+   "cheers-2022-reporting"
+  ],
+  "never": [],
+  "holdout": false
+ },
+ {
+  "id": "P05",
+  "cls": "positive",
+  "prompt": "I've built a model that gives each patient's 5-year stroke risk. How do I check whether the predicted risks match what actually happens at a new hospital?",
+  "expect": [
+   "clinical-prediction-models"
+  ],
+  "never": [],
+  "holdout": true
+ },
+ {
+  "id": "P06",
+  "cls": "positive",
+  "prompt": "I want to find natural groupings of asthma patients from 30 lab and symptom variables, with no outcome to guide it. How many groups, and are they real?",
+  "expect": [
+   "clustering-clinical"
+  ],
+  "never": [],
+  "holdout": false
+ },
+ {
+  "id": "P07",
+  "cls": "positive",
+  "prompt": "Should I turn age into age bands for my regression, or is there a better way to allow a curved relationship?",
+  "expect": [
+   "continuous-predictors-splines"
+  ],
+  "never": [],
+  "holdout": false
+ },
+ {
+  "id": "P08",
+  "cls": "positive",
+  "prompt": "Build me a three-state cohort model (well, sick, dead) with yearly cycles in R to compare the costs and QALYs of two strategies.",
+  "expect": [
+   "decision-modelling-hta"
+  ],
+  "never": [],
+  "holdout": false
+ },
+ {
+  "id": "P09",
+  "cls": "positive",
+  "prompt": "I need to simulate patients waiting for a limited number of MRI slots, where each patient's past waits change their outcomes, for a cost-effectiveness analysis.",
+  "expect": [
+   "discrete-event-simulation-hta"
+  ],
+  "never": [],
+  "holdout": true
+ },
+ {
+  "id": "P10",
+  "cls": "positive",
+  "prompt": "I want a 2-D picture of 2,000 patients' 500 gene-expression values to see whether there's structure. Which projection should I use and how should I set it up?",
+  "expect": [
+   "dimensionality-reduction-clinical"
+  ],
+  "never": [],
+  "holdout": false
+ },
+ {
+  "id": "P11",
+  "cls": "positive",
+  "prompt": "My individual-level continuous-time simulation in hesim returns NA life-years since I added the background-mortality transition. Help me debug it.",
+  "expect": [
+   "hesim-ctstm-hta"
+  ],
+  "never": [],
+  "holdout": false
+ },
+ {
+  "id": "P12",
+  "cls": "positive",
+  "prompt": "Half my A&E attendances come back as UZ01Z when I run them through the NHS costing software. What's wrong with my input file?",
+  "expect": [
+   "hrg4-costing-grouper"
+  ],
+  "never": [],
+  "holdout": false
+ },
+ {
+  "id": "P13",
+  "cls": "positive",
+  "prompt": "Before we write any code, critique our model's conceptual design: perspective, time horizon, state structure and cycle length, against modelling good practice.",
+  "expect": [
+   "ispor-smdm-good-practices"
+  ],
+  "never": [],
+  "holdout": false
+ },
+ {
+  "id": "P14",
+  "cls": "positive",
+  "prompt": "How much of the effect of the exercise programme on depression works through better sleep?",
+  "expect": [
+   "mediation-analysis"
+  ],
+  "never": [],
+  "holdout": true
+ },
+ {
+  "id": "P15",
+  "cls": "positive",
+  "prompt": "30% of my baseline covariates have gaps. How should I deal with that properly in R before fitting my analysis model?",
+  "expect": [
+   "missing-data-mice"
+  ],
+  "never": [],
+  "holdout": false
+ },
+ {
+  "id": "P16",
+  "cls": "positive",
+  "prompt": "My boosted-tree model predicts sepsis well. Which variables drive it, and why did it flag this particular patient?",
+  "expect": [
+   "ml-explainability-clinical"
+  ],
+  "never": [],
+  "holdout": false
+ },
+ {
+  "id": "P17",
+  "cls": "positive",
+  "prompt": "Should I use a forest, boosting or plain logistic regression to predict readmission from 40 EHR variables, and how should I tune it?",
+  "expect": [
+   "ml-supervised-tabular"
+  ],
+  "never": [],
+  "holdout": false
+ },
+ {
+  "id": "P18",
+  "cls": "positive",
+  "prompt": "Patients move between remission, relapse and death, and I have exact transition times. How do I estimate the transition hazards and decide whether time resets after each relapse?",
+  "expect": [
+   "multistate-models-hta"
+  ],
+  "never": [],
+  "holdout": false
+ },
+ {
+  "id": "P19",
+  "cls": "positive",
+  "prompt": "We have six trials comparing four treatments, but none compares A with D directly. How do I combine them to rank all four?",
+  "expect": [
+   "network-meta-analysis-hta"
+  ],
+  "never": [],
+  "holdout": true
+ },
+ {
+  "id": "P20",
+  "cls": "positive",
+  "prompt": "Does our submission's 3.5% discount rate and 40-year horizon meet what the English appraisal body expects, and does the severity weighting apply?",
+  "expect": [
+   "nice-economic-evaluation"
+  ],
+  "never": [],
+  "holdout": false
+ },
+ {
+  "id": "P21",
+  "cls": "positive",
+  "prompt": "I have 200 candidate biomarkers and 150 patients. How do I shrink the coefficients and choose the penalty strength sensibly?",
+  "expect": [
+   "penalised-regression"
+  ],
+  "never": [],
+  "holdout": false
+ },
+ {
+  "id": "P22",
+  "cls": "positive",
+  "prompt": "We have individual data from our trial but only published summaries for the competitor's, and the populations differ in age and severity. How do we compare the treatments fairly?",
+  "expect": [
+   "population-adjusted-comparisons"
+  ],
+  "never": [],
+  "holdout": false
+ },
+ {
+  "id": "P23",
+  "cls": "positive",
+  "prompt": "Our client wants a web front end for our R cost-effectiveness model so reviewers can change inputs without seeing the code.",
+  "expect": [
+   "shiny-hta"
+  ],
+  "never": [],
+  "holdout": true
+ },
+ {
+  "id": "P24",
+  "cls": "positive",
+  "prompt": "Trial follow-up is 3 years but the economic model needs a lifetime horizon. Which parametric curves should I fit, and how do I justify the long-term tail?",
+  "expect": [
+   "survival-analysis-hta"
+  ],
+  "never": [],
+  "holdout": false
+ },
+ {
+  "id": "P25",
+  "cls": "positive",
+  "prompt": "I have patient-level costs and EQ-5D scores from a trial, with skewed costs and lots of missing follow-up. How do I model costs and QALYs per arm in a Bayesian way?",
+  "expect": [
+   "trial-based-cea-hta"
+  ],
+  "never": [],
+  "holdout": false
+ },
+ {
+  "id": "P26",
+  "cls": "positive",
+  "prompt": "I'm writing up the development and validation of a deep-learning risk score. What must the paper report?",
+  "expect": [
+   "tripod-ai-reporting"
+  ],
+  "never": [],
+  "holdout": false
+ },
+ {
+  "id": "P27",
+  "cls": "positive",
+  "prompt": "My discussion section reads like a list of results. Can you help me restructure the paper around a clear argument?",
+  "expect": [
+   "scientific-writing"
+  ],
+  "never": [],
+  "holdout": false
+ },
+ {
+  "id": "B01",
+  "cls": "boundary",
+  "prompt": "Progression risk depends on how long patients have been in the progressive state, and I have individual transition times. I want a continuous-time model.",
+  "expect": [
+   "multistate-models-hta"
+  ],
+  "never": [
+   "decision-modelling-hta"
+  ],
+  "holdout": false
+ },
+ {
+  "id": "B02",
+  "cls": "boundary",
+  "prompt": "Write the hesim code that mixes clock-reset and clock-forward transitions in one IndivCtstm.",
+  "expect": [
+   "hesim-ctstm-hta"
+  ],
+  "never": [],
+  "holdout": false
+ },
+ {
+  "id": "B03",
+  "cls": "boundary",
+  "prompt": "Which reporting checklist applies to my cost-effectiveness paper, and does my draft meet it?",
+  "expect": [
+   "cheers-2022-reporting"
+  ],
+  "never": [
+   "tripod-ai-reporting"
+  ],
+  "holdout": false
+ },
+ {
+  "id": "B04",
+  "cls": "boundary",
+  "prompt": "Which reporting checklist applies to my paper validating a sepsis risk model, and does my draft meet it?",
+  "expect": [
+   "tripod-ai-reporting"
+  ],
+  "never": [
+   "cheers-2022-reporting"
+  ],
+  "holdout": true
+ },
+ {
+  "id": "B05",
+  "cls": "boundary",
+  "prompt": "From observational data, I want the total effect of a smoking-cessation programme on hospitalisation.",
+  "expect": [
+   "causal-inference-gmethods"
+  ],
+  "never": [
+   "mediation-analysis"
+  ],
+  "holdout": false
+ },
+ {
+  "id": "B06",
+  "cls": "boundary",
+  "prompt": "My random forest is trained. Now I need to check its calibration and net benefit on external data.",
+  "expect": [
+   "clinical-prediction-models"
+  ],
+  "never": [],
+  "holdout": false
+ },
+ {
+  "id": "B07",
+  "cls": "boundary",
+  "prompt": "A standard network meta-analysis of 12 RCTs with aggregate data only: how do I check for inconsistency?",
+  "expect": [
+   "network-meta-analysis-hta"
+  ],
+  "never": [
+   "population-adjusted-comparisons"
+  ],
+  "holdout": false
+ },
+ {
+  "id": "B08",
+  "cls": "boundary",
+  "prompt": "I already have posterior draws of costs and QALYs per arm from my trial model. Now produce the cost-effectiveness plane and acceptability curve.",
+  "expect": [
+   "bayesian-cea-r-hta"
+  ],
+  "never": [],
+  "holdout": false
+ },
+ {
+  "id": "B09",
+  "cls": "boundary",
+  "prompt": "Patients compete for limited dialysis capacity and the queue changes their outcomes. How should I model this for an economic evaluation?",
+  "expect": [
+   "discrete-event-simulation-hta"
+  ],
+  "never": [
+   "decision-modelling-hta"
+  ],
+  "holdout": true
+ },
+ {
+  "id": "B10",
+  "cls": "boundary",
+  "prompt": "Pool overall-survival hazard ratios across five trials of three drugs.",
+  "expect": [
+   "network-meta-analysis-hta"
+  ],
+  "never": [],
+  "holdout": false
+ },
+ {
+  "id": "C1",
+  "cls": "issue-20",
+  "prompt": "We updated the utility values and unit costs in our existing cost-effectiveness model. What needs re-checking downstream?",
+  "expect": [
+   "bayesian-cea-r-hta"
+  ],
+  "never": [],
+  "holdout": false
+ },
+ {
+  "id": "C2",
+  "cls": "issue-20",
+  "prompt": "Refactor R/extrapolation_utils.R in our package: rename the functions and add roxygen documentation.",
+  "expect": [],
+  "never": [
+   "survival-analysis-hta"
+  ],
+  "holdout": false
+ },
+ {
+  "id": "C3a",
+  "cls": "issue-20",
+  "prompt": "Our manuscript doesn't state the price year for its costs. Is that a problem?",
+  "expect": [
+   "cheers-2022-reporting"
+  ],
+  "never": [
+   "ispor-smdm-good-practices"
+  ],
+  "holdout": false
+ },
+ {
+  "id": "C3b",
+  "cls": "issue-20",
+  "prompt": "In our NICE submission the unit costs come from different years. What's required?",
+  "expect": [
+   "nice-economic-evaluation"
+  ],
+  "never": [
+   "ispor-smdm-good-practices"
+  ],
+  "holdout": true
+ },
+ {
+  "id": "C4",
+  "cls": "issue-20",
+  "prompt": "How do I put a Dirichlet prior on the transition probabilities of a hand-built cohort Markov model in base R?",
+  "expect": [
+   "decision-modelling-hta"
+  ],
+  "never": [],
+  "holdout": false
+ },
+ {
+  "id": "K1",
+  "cls": "collision",
+  "prompt": "Explain the Markov chain Monte Carlo sampler settings in Stan for a general audience.",
+  "expect": [
+   "brms-modelling",
+   ""
+  ],
+  "never": [
+   "decision-modelling-hta",
+   "multistate-models-hta"
+  ],
+  "holdout": false
+ },
+ {
+  "id": "K2",
+  "cls": "collision",
+  "prompt": "Calibrate the colour theme of my Shiny dashboard for our sales team.",
+  "expect": [],
+  "never": [
+   "shiny-hta"
+  ],
+  "holdout": false
+ },
+ {
+  "id": "K3",
+  "cls": "collision",
+  "prompt": "Extrapolate this quarterly revenue forecast in my Excel workbook out to 2030.",
+  "expect": [
+   "xlsx"
+  ],
+  "never": [
+   "survival-analysis-hta"
+  ],
+  "holdout": true
+ },
+ {
+  "id": "K4",
+  "cls": "collision",
+  "prompt": "Spread my Kubernetes pods across regions for resilience.",
+  "expect": [],
+  "never": [
+   "clustering-clinical"
+  ],
+  "holdout": false
+ },
+ {
+  "id": "K5",
+  "cls": "collision",
+  "prompt": "Merge these three PDFs and add page numbers.",
+  "expect": [
+   "pdf"
+  ],
+  "never": [],
+  "holdout": false
+ },
+ {
+  "id": "K6",
+  "cls": "collision",
+  "prompt": "Is this calibration plot from my weather-forecasting model acceptable?",
+  "expect": [],
+  "never": [
+   "clinical-prediction-models"
+  ],
+  "holdout": true
+ },
+ {
+  "id": "K7",
+  "cls": "collision",
+  "prompt": "Fix the failing GitHub Actions workflow in this repository.",
+  "expect": [],
+  "never": [],
+  "holdout": false
+ }
+]
