@@ -214,13 +214,13 @@ For customization or offline use:
 2. Copy individual skills to your Claude Code skills directory:
 
    ```bash
-   cp -r open-source/release-post ~/.config/claude-code/skills/
+   cp -r open-source/release-post ~/.claude/skills/
    ```
 
 3. Or install all skills from a category:
    ```bash
    for skill in open-source/*/; do
-     cp -r "$skill" ~/.config/claude-code/skills/
+     cp -r "$skill" ~/.claude/skills/
    done
    ```
 
