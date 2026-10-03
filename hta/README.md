@@ -14,6 +14,11 @@ identifiable job in the analytic pipeline an HTA analyst walks:
 | Costing inputs | `hrg4-costing-grouper` |
 | Delivery and reporting | `shiny-hta`, `cheers-2022-reporting` |
 
+Where two skills could claim the same finding, one owns it. The price year of costs is the case
+that came up in practice: `cheers-2022-reporting` owns whether it is stated, `nice-economic-evaluation`
+owns whether every cost sits in one current, indexed price year, and `ispor-smdm-good-practices` owns
+neither.
+
 Statistical machinery these skills depend on but do not own lives in `biostatistics/` —
 `brms-modelling` for Bayesian regression, `missing-data-mice` for imputation,
 `causal-inference-gmethods` for identification from observational data.

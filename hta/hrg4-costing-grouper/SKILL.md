@@ -1,6 +1,10 @@
 ---
 name: hrg4-costing-grouper
-description: Prepare inputs for, run, and interpret output from the NHS England HRG4+ National Costs Grouper (National Casemix Office) - covering Record Definition Files, the seven dataset specifications (APC, NAC, EM, NRD, ACC, PCC, NCC), batch and command-line invocation, joining grouped HRGs back to source records in R, and diagnosing UZ01Z and other validation failures. Use whenever the work involves deriving HRGs from patient-level activity, National Cost Collection submissions, grouping HES or local PAS extracts, spell versus episode HRGs, unbundled or critical care HRGs, Record Definition Files, or grouper error codes - including implicit cases like "I need HRGs on my costing extract", "half my A&E records failed to group", or "which output file gives one row per spell".
+description: >-
+  Prepare inputs for, run and interpret the NHS England HRG4+ National Costs Grouper: Record
+  Definition Files, the seven dataset specifications, batch runs, joining HRGs back to source
+  records in R, and diagnosing UZ01Z and other grouping failures. Use when deriving HRGs from
+  patient-level activity for costing or the National Cost Collection.
 ---
 
 # HRG4+ National Costs Grouper

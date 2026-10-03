@@ -1,6 +1,11 @@
 ---
 name: brms-modelling
-description: Write, debug, and review Bayesian regression models fitted in R with brms (Bayesian Regression Models using Stan). Use any time brms code is being written or touched — model specification and formulas, prior choice and prior/fake-data predictive checks, brm() fitting arguments (backend, chains, iter, control/adapt_delta), convergence diagnostics (Rhat, ESS, divergences), posterior predictive checks (pp_check), model comparison (loo/PSIS, k-fold, loo_compare, Pareto-k), or reporting for a paper. Covers all model families — multilevel/hierarchical, GLMs, distributional (zero-inflated, hurdle, ordinal), survival/time-to-event, and meta-analysis — plus cross-cutting predictor terms like repeated-measures autocorrelation, monotonic effects (mo), smooths (s), and measurement error (me/mi). Trigger proactively whenever the user mentions brms, Stan-via-brms, or cmdstanr/rstan in an R modelling context, or pastes code with brm(), even without explicitly asking for a "review" or "help me write a model."
+description: >-
+  Write, debug and review Bayesian regression models in R with brms: formulas and families
+  (multilevel, distributional, ordinal, survival, meta-analysis), priors and predictive checks,
+  sampler settings, convergence diagnostics, model comparison with loo, and reporting. Use
+  whenever brms, or Stan through brms, is involved. Cost and QALY models for a trial-based CEA are
+  trial-based-cea-hta.
 ---
 
 # brms modelling

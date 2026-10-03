@@ -1,20 +1,11 @@
 ---
 name: nice-economic-evaluation
 description: >-
-  Align health economic work to the NICE reference case and methods (PMG36, the
-  NICE technology appraisal and HST manual). Use whenever
-  the user is building, reviewing, or sanity-checking an economic evaluation for
-  NICE: cost-utility / cost-effectiveness models, ICERs, QALYs, EQ-5D utilities,
-  comparator choice, time horizon, discounting, probabilistic / scenario /
-  sensitivity analysis, survival extrapolation, fully incremental analysis, net
-  health benefit, the severity modifier (absolute and proportional QALY
-  shortfall), HST evaluations, or a draft manufacturer submission or EAG/ERG
-  report. Trigger it even when the user just asks "does this meet NICE
-  requirements?", "is my time horizon / discount rate / utility source OK for
-  NICE?", or wants a severity weight, ICER, or efficiency frontier checked — and
-  even when they say "NICE", "HTA", "cost per QALY" or "reference case" without
-  naming this skill. Prefer it over memory, because the current manual's
-  thresholds and modifiers differ from older NICE methods.
+  Check economic evaluations against the NICE reference case and methods manual (PMG36):
+  comparators, time horizon, discounting, utilities, uncertainty analysis, the severity modifier,
+  HST, and whether all costs sit in one current price year. Use when building or reviewing a NICE
+  submission or EAG report, or asking whether something meets NICE requirements. Prefer it over
+  memory: thresholds and modifiers have changed.
 ---
 
 # NICE economic evaluation: reference-case alignment
@@ -63,6 +54,8 @@ from older NICE methods. Based on what the user brings, read the relevant file(s
   perspective, type of evaluation, time horizon, QALYs/EQ-5D, costs (including price year,
   indexation and a cost-side reviewer checklist), **discounting**, equity. Read this for almost
   any alignment review.
+
+**Price year.** Three skills meet at a cost's price year, and each owns one question: whether the currency and price year are *stated* is a reporting item (`cheers-2022-reporting`); whether every cost sits in one current, indexed price year is a reference-case requirement (this skill); `ispor-smdm-good-practices` claims neither. Raise a price-year finding under the skill that owns it, once.
 - `modelling-and-uncertainty.md` — model structure, surrogates, **survival extrapolation**,
   treatment switching, and the three sources of uncertainty (structural, source, precision)
   with PSA / scenario / sensitivity expectations (4.6–4.7).

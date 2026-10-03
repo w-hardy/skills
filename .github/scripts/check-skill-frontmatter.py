@@ -115,7 +115,8 @@ def check(skill_dir: Path, enc, known: set[str]) -> tuple[list[str], list[str], 
     if "''" in desc:
         errors.append("description contains a literal '' (escaped quote)")
 
-    body = text[m.end():]
+    # Package vignettes are often named like skills; lines that cite them are skipped.
+    body = "\n".join(l for l in text[m.end():].splitlines() if "vignette" not in l.lower())
     for source, where in ((desc, "description"), (body, "body")):
         for groups in SKILL_REF.findall(source):
             ref = next(g for g in groups if g)

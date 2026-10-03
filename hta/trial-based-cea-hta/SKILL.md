@@ -1,18 +1,11 @@
 ---
 name: trial-based-cea-hta
 description: >-
-  Build or review Bayesian models of patient-level trial cost and outcome data
-  in R, producing paired posterior draws of population-average cost and effect
-  per arm for a within-trial cost-effectiveness analysis. Use whenever the data
-  are individual patients with costs and QALYs (or another effect measure):
-  QALYs from repeated utilities, baseline-utility adjustment, modelling costs
-  and effects jointly so their correlation survives, distributions for skewed
-  costs and bounded QALYs, structural zeros or QALYs piled at 1, missing
-  economic outcomes, arm-level means. Use it equally to review or critique an
-  existing within-trial economic evaluation — its code, model choices or draws.
-  Trigger on "trial-based economic evaluation", "within-trial CEA", "joint model
-  of costs and QALYs", "QALYs from EQ-5D", "skewed costs", or "structural
-  zeros". Hands draws to bayesian-cea-r-hta for CE planes, CEACs and VOI.
+  Build or review Bayesian models of patient-level trial costs and QALYs in R for a within-trial
+  cost-effectiveness analysis: QALYs from repeated utilities, baseline adjustment, joint cost-
+  effect models, skewed costs, structural zeros and missing outcomes, ending in paired draws of
+  arm-level means. Use for individual patient data from a trial. The draws then go to bayesian-
+  cea-r-hta for CE planes, CEACs and value of information.
 ---
 
 # Trial-based Bayesian cost-effectiveness analysis

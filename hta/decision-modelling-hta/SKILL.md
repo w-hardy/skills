@@ -1,6 +1,11 @@
 ---
 name: decision-modelling-hta
-description: "Build, review, or debug decision-analytic models for health economic evaluation (decision trees and cohort Markov models) in R using the heemod package. Use whenever the person is structuring a cost-effectiveness model, comparing strategies over a decision tree or Markov state structure, calculating ICERs/INMB, setting up transition probabilities (including from survival models), or running probabilistic sensitivity analysis (PSA). Trigger on phrases like \"decision tree\", \"Markov model\", \"transition matrix\", \"transition probabilities\", \"cohort model\", \"heemod\", \"state-transition model\", or \"cost-effectiveness model\", even if heemod is not named, since most of this work goes through it. Also trigger when reviewing or extending an existing heemod model, or deciding whether a decision tree or Markov structure fits a pathway. Not for continuous-time multistate models or discrete event simulation (see multistate-models-hta and discrete-event-simulation-hta); heemod here is cohort-level, discrete-time only."
+description: >-
+  Build, review or debug discrete-time cohort models for economic evaluation in R with heemod:
+  decision trees, Markov state-transition models, transition probabilities (from survival fits or
+  Dirichlet priors), ICERs and PSA. Use for cohort-level, fixed-cycle model structure. Continuous-
+  time or individual-level structure belongs to multistate-models-hta; event histories and queues
+  to discrete-event-simulation-hta.
 ---
 
 # Decision modelling for HTA (decision trees & cohort Markov models)

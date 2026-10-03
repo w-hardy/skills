@@ -1,6 +1,11 @@
 ---
 name: survival-analysis-hta
-description: "Fit, choose between, extrapolate, and report parametric survival (time-to-event) models for health economic evaluation in R, using flexsurv, flexsurvcure, survHE and survextrap, by maximum likelihood or Bayesian estimation. Use whenever survival analysis informs an economic evaluation or HTA submission: fitting parametric distributions to trial data, choosing a distribution for extrapolation, estimating mean or restricted mean survival, a treatment effect as a hazard ratio or AFT, spline/cure/relative-survival models, Bayesian fitting with priors and posterior survival bands, anchoring extrapolation with external data, reconstructing IPD from a published Kaplan-Meier curve, or turning a fit into transition probabilities. Trigger on \"survival analysis\", \"time-to-event\", \"parametric survival\", \"extrapolate survival\", \"flexsurv\", \"survextrap\", \"cure model\", \"digitise a KM curve\", or \"survival extrapolation for NICE\". For network meta-analysis of survival across trials, hands off to network-meta-analysis-hta."
+description: >-
+  Fit, compare, extrapolate and report parametric survival models of time-to-event trial data for
+  economic evaluation in R with flexsurv, flexsurvcure, survHE and survextrap, including cure and
+  spline models, Bayesian fits and reconstructed Kaplan-Meier data. Use when survival data feed an
+  economic model or HTA submission; extrapolation here means survival over time, not other
+  forecasting. Pooling across trials is network-meta-analysis-hta.
 ---
 
 # Survival analysis for HTA

@@ -1,6 +1,11 @@
 ---
 name: ml-supervised-tabular
-description: Apply and appraise supervised machine learning on tabular clinical data in R - decision trees, bagging, random forests, gradient boosting (XGBoost/LightGBM), and neural networks - including train/validation/test design, cross-validation, hyperparameter tuning, and variable importance. Use whenever an ML algorithm is being fitted, tuned, or compared on rows-of-patients data, or when deciding whether ML is warranted over regression at all. Trigger on "random forest", "XGBoost", "LightGBM", "gradient boosting", "decision tree", "ranger", "tidymodels", "neural network", "deep learning", "hyperparameter", "grid search", "cross-validation", "train test split", "out-of-bag", "class imbalance", or "SMOTE" - even when unnamed. Prefer this over memory, because tree ensembles are poorly calibrated by default and class-imbalance corrections actively damage risk estimates. For evaluating the resulting model use clinical-prediction-models; for explaining it use ml-explainability-clinical.
+description: >-
+  Fit, tune and appraise supervised machine learning on tabular clinical data in R: trees, random
+  forests, gradient boosting, neural networks, resampling design, hyperparameter tuning and class
+  imbalance, and whether ML beats regression at all. Use when an ML algorithm is fitted or
+  compared on patient-level rows. Evaluating risk predictions is clinical-prediction-models;
+  explaining the model is ml-explainability-clinical.
 ---
 
 # Supervised Machine Learning on Tabular Clinical Data

@@ -1,6 +1,11 @@
 ---
 name: penalised-regression
-description: Fit, tune, and interpret penalised regression in R - ridge (L2), LASSO (L1), elastic net, and post-hoc uniform shrinkage - using glmnet, and judge when penalisation actually helps. Use whenever coefficients are being shrunk or predictors selected by penalty - choosing lambda by cross-validation, lambda.min versus lambda.1se, choosing alpha, reading a regularisation path or CV curve, standardising predictors, or deciding between penalised fitting and ordinary regression. Trigger on "LASSO", "ridge regression", "elastic net", "penalised regression", "regularisation", "glmnet", "lambda.1se", "shrinkage", "L1", "L2", or "too many predictors" - even when unnamed. Prefer this over memory, because penalisation is widely oversold - tuning parameters are estimated with large uncertainty and are least reliable exactly when overfitting is worst. For the wider prediction-model workflow use clinical-prediction-models; for spline specification use continuous-predictors-splines.
+description: >-
+  Fit, tune and interpret penalised regression in R with glmnet: ridge, LASSO, elastic net and
+  uniform shrinkage, choosing lambda and alpha by cross-validation, and judging whether
+  penalisation helps at all. Use when many candidate predictors must be shrunk or selected. The
+  wider prediction workflow is clinical-prediction-models; splines are continuous-predictors-
+  splines.
 ---
 
 # Penalised Regression

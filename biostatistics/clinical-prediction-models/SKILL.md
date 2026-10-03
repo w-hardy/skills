@@ -1,6 +1,11 @@
 ---
 name: clinical-prediction-models
-description: Develop, validate, and appraise clinical prediction models (diagnostic or prognostic risk models) in R - the full workflow from decision problem through sample size, predictor specification, shrinkage, performance assessment, and validation. Use whenever a model estimates individual patient risk - sample size (pmsampsize, Riley criteria), predictor selection and why stepwise fails, shrinkage, discrimination (C-statistic/AUROC), calibration (plot, slope, intercept, O:E ratio), Brier scores, clinical utility (net benefit, decision curves), bootstrap optimism correction, external validation, or recalibration. Trigger on "prediction model", "risk model", "risk score", "calibration", "C-statistic", "AUROC", "decision curve", "net benefit", "optimism correction", "external validation", "pmsampsize", "EPV", or "does my model overfit" - even when unnamed. Prefer this over memory, because several repeated rules of thumb (10 EPV, accuracy/F1, Hosmer-Lemeshow) are superseded. For write-up use tripod-ai-reporting.
+description: >-
+  Develop, validate and appraise clinical prediction models in R: sample size, predictor handling,
+  shrinkage, discrimination, calibration, net benefit and decision curves, optimism correction,
+  external validation and recalibration. Use whenever a model estimates individual patient risk,
+  including one built with machine learning. Prefer it over memory: rules such as 10 events per
+  variable are superseded. Reporting is tripod-ai-reporting.
 ---
 
 # Clinical Prediction Models

@@ -1,6 +1,11 @@
 ---
 name: scientific-writing
-description: "Structure, draft, and critique scientific manuscripts as arguments: thesis-first framing, IMRaD discipline, paragraph craft (claim → evidence → link), converting bullet skeletons to prose, structured abstracts, section budgets, and manuscript-wide cohesion checks (every promise delivered, every float referenced, every number traceable). Use when drafting or restructuring a paper section, turning outline bullets into prose, writing or tightening an abstract or discussion, reviewing a manuscript's argument rather than its code, or when someone says the paper 'reads as a list', 'lacks a thesis', 'overpromises', or asks 'is this ready for co-authors/submission'. Complements reporting-checklists (guideline items) — this skill covers whether the paper argues, not whether it discloses."
+description: >-
+  Structure, draft and critique scientific manuscripts as arguments: thesis-first framing, IMRaD,
+  paragraph craft, turning bullet outlines into prose, abstracts, section budgets and whole-
+  manuscript cohesion. Use when a paper reads as a list, lacks a thesis or overpromises, or when
+  asking whether it is ready for co-authors. It covers whether the paper argues; reporting
+  guidelines such as tripod-ai-reporting and cheers-2022-reporting cover what it must disclose.
 ---
 
 # Scientific writing: the manuscript as an argument
@@ -34,7 +39,7 @@ For a methods-oriented paper of ~4,000–5,000 words:
 | --- | --- | --- | --- |
 | Abstract | The paper in miniature, WITH results | 250–300 w | framework described, no numbers |
 | Introduction | Gap → why it matters → thesis → map of the paper | ~20% | literature tour that never narrows |
-| Methods | Reproducibility + estimand (see reporting-checklists / simulation-study-design) | ~25% | describing code, not design |
+| Methods | Reproducibility + estimand (the design's reporting guideline, e.g. tripod-ai-reporting or cheers-2022-reporting; ADEMP for a simulation study) | ~25% | describing code, not design |
 | Results | Evidence in thesis order, prose that interprets each float | ~25% | table dump with connective tissue |
 | Discussion | Answer, mechanisms, limitations, so-what | ~25% | restating results; boilerplate limitations |
 

@@ -1,6 +1,11 @@
 ---
 name: population-adjusted-comparisons
-description: "Plan, build, check, and report population-adjusted indirect treatment comparisons (PAICs) for HTA in R (MAIC, STC, and multilevel network meta-regression, ML-NMR) when effect modifiers are imbalanced across trials and standard NMA would be biased. Use whenever there is a mix of individual patient data (IPD) and aggregate data (AgD) and the analysis must adjust for effect-modifier imbalance, target a specific decision population, incorporate single-arm studies, or connect a disconnected network. Trigger on phrases like \"MAIC\", \"matching-adjusted indirect comparison\", \"STC\", \"simulated treatment comparison\", \"ML-NMR\", \"multilevel network meta-regression\", \"population adjustment\", \"anchored or unanchored indirect comparison\", \"target population\", \"effect modifier imbalance\", \"TSD 18\", or \"TSD 17\". Also trigger when a manufacturer has IPD on their own study but only AgD on comparators. Builds on network-meta-analysis-hta; defer to nice-economic-evaluation for how the absolute effects feed the economic model."
+description: >-
+  Plan, run and report population-adjusted indirect comparisons in R (MAIC, STC, ML-NMR) when
+  effect modifiers differ between trials. Use when patient-level data for some trials must be
+  compared with published aggregate data for others, a specific decision population is targeted,
+  or single-arm studies or a disconnected network are involved. Standard network meta-analysis is
+  network-meta-analysis-hta.
 ---
 
 # Population-adjusted indirect comparisons for HTA

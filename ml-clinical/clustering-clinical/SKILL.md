@@ -1,6 +1,10 @@
 ---
 name: clustering-clinical
-description: Find and validate subgroups in clinical data in R - k-means, hierarchical/agglomerative clustering, DBSCAN, and latent class analysis - choosing the number of clusters, and above all establishing whether the clusters are real. Use whenever patients are being grouped without a supervising outcome, for phenotyping, subtyping, endotyping, or segmentation, or when appraising a paper claiming to have discovered novel subphenotypes. Trigger on "clustering", "k-means", "kmeans", "hierarchical clustering", "dendrogram", "Ward linkage", "DBSCAN", "silhouette", "elbow method", "gap statistic", "latent class analysis", "phenotype", "subtype", "endotype", "patient subgroups", or "how many clusters" - even when unnamed. Prefer this over memory, because clustering algorithms always return clusters and the stability assessment that distinguishes real structure from artefact is routinely skipped. For embeddings use dimensionality-reduction-clinical; never cluster on t-SNE or UMAP coordinates.
+description: >-
+  Find and validate patient subgroups in R with k-means, hierarchical clustering, DBSCAN or latent
+  class analysis: choosing the number of clusters and, above all, testing whether the clusters are
+  real. Use for phenotyping or subtyping without an outcome, or appraising a claimed subphenotype.
+  Embeddings are dimensionality-reduction-clinical; never cluster on t-SNE or UMAP coordinates.
 ---
 
 # Clustering Clinical Data

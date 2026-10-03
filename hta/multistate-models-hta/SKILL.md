@@ -1,6 +1,11 @@
 ---
 name: multistate-models-hta
-description: "Build, estimate, simulate, and review continuous-time and individual-level multistate models for health economic evaluation in R, using flexsurv (fully-observed transition data), msm (panel/intermittent data), and hesim (individual-level simulation and CEA). Use whenever the person works with a multistate / state-transition model beyond a discrete-time cohort Markov model: several competing transitions, clock-forward vs clock-reset (Markov vs semi-Markov) timing, transition intensities, or continuous-time disease progression. Trigger on phrases like \"multistate model\", \"state-transition model\", \"transition intensities\", \"clock-reset\", \"clock-forward\", \"semi-Markov\", \"competing risks transitions\", \"illness-death model\", \"hesim\", \"msm package\", or \"IndivCtstm\". For a simple discrete-time cohort Markov model use decision-modelling-hta; for full event-history simulation with queueing/resources use discrete-event-simulation-hta; this skill is the continuous-time / individual-level generalisation in between."
+description: >-
+  Build, estimate, simulate and review continuous-time and individual-level multistate models for
+  economic evaluation in R with flexsurv, msm and hesim: competing transitions, clock-forward
+  versus clock-reset timing, transition intensities and illness-death structures. Use when a
+  discrete-time cohort model is not enough. Cohort models are decision-modelling-hta; hesim engine
+  code is hesim-ctstm-hta; queues are discrete-event-simulation-hta.
 ---
 
 # Multistate models for HTA (continuous-time & individual-level)

@@ -1,6 +1,10 @@
 ---
 name: mediation-analysis
-description: Decompose a total causal effect into direct and indirect pathways in R using the modern counterfactual framework - natural direct and indirect effects, controlled direct effects, interventional (randomised analogue) effects, exposure-mediator interaction, and sensitivity analysis. Use whenever the question is how or through what an exposure acts, or when appraising a paper reporting a "percentage mediated". Trigger on "mediation", "mediator", "indirect effect", "direct effect", "pathway analysis", "Baron and Kenny", "Sobel test", "percentage mediated", "proportion mediated", "regmedint", "CMAverse", or "does X act through Y" - even when unnamed. Prefer this over memory, because Baron-Kenny and product-of-coefficients are superseded, natural effects are not identified when a mediator-outcome confounder is affected by the exposure, and the cross-world assumption cannot be verified by any experiment. For total effects use causal-inference-gmethods.
+description: >-
+  Decompose an exposure's effect into direct and indirect pathways in R with counterfactual
+  mediation methods: natural, controlled and interventional effects, exposure-mediator interaction
+  and sensitivity analysis. Use when the question is how, or through what, an exposure acts, or
+  when appraising a percentage mediated. Total effects are causal-inference-gmethods.
 ---
 
 # Mediation Analysis
