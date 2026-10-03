@@ -4,8 +4,8 @@ description: >-
   Fit, tune and interpret penalised regression in R with glmnet: ridge, LASSO, elastic net and
   uniform shrinkage, choosing lambda and alpha by cross-validation, and judging whether
   penalisation helps at all. Use when many candidate predictors must be shrunk or selected. The
-  wider prediction workflow is clinical-prediction-models; splines are continuous-predictors-
-  splines.
+  wider prediction workflow is clinical-prediction-models; splines are
+  continuous-predictors-splines.
 ---
 
 # Penalised Regression

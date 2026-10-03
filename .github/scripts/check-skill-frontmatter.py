@@ -23,8 +23,9 @@ Errors (exit 1):
     count-skill-tokens.py), or over 1,024 characters
   - a line of the description starts at column 0 (Claude Code drops such
     descriptions even though the YAML parses)
-  - the description contains `<` or `>` (rejected on upload to claude.ai) or a
-    literal `''` (a single-quote escape that survived into the text)
+  - the description contains `<` or `>` (rejected on upload to claude.ai), a
+    literal `''` (a single-quote escape that survived into the text), or a
+    hyphenated word broken across lines (folded YAML turns it into "word- word")
 
 Warnings: a description or body that points at a skill name that does not exist.
 
@@ -112,6 +113,8 @@ def check(skill_dir: Path, enc, known: set[str]) -> tuple[list[str], list[str], 
             break
     if "<" in desc or ">" in desc:
         errors.append("description contains < or >")
+    if re.search(r"[A-Za-z]- [A-Za-z]", desc):
+        errors.append("description has a hyphenated word split by a line break (folded YAML turns it into '- ')")
     if "''" in desc:
         errors.append("description contains a literal '' (escaped quote)")
 

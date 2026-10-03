@@ -3,9 +3,9 @@ name: decision-modelling-hta
 description: >-
   Build, review or debug discrete-time cohort models for economic evaluation in R with heemod:
   decision trees, Markov state-transition models, transition probabilities (from survival fits or
-  Dirichlet priors), ICERs and PSA. Use for cohort-level, fixed-cycle model structure. Continuous-
-  time or individual-level structure belongs to multistate-models-hta; event histories and queues
-  to discrete-event-simulation-hta.
+  Dirichlet priors), ICERs and PSA. Use for cohort-level, fixed-cycle model structure.
+  Continuous-time or individual-level structure belongs to multistate-models-hta; event histories
+  and queues to discrete-event-simulation-hta.
 ---
 
 # Decision modelling for HTA (decision trees & cohort Markov models)

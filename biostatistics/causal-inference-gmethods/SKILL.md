@@ -4,8 +4,8 @@ description: >-
   Estimate causal treatment effects from observational or trial data in R: DAGs and confounder
   choice, propensity scores and weighting, g-computation, doubly robust estimators (AIPW, TMLE),
   target trial emulation and sensitivity to unmeasured confounding. Use when the question is what
-  would happen under an intervention, or when appraising such a claim. Pathways are mediation-
-  analysis; prediction is clinical-prediction-models.
+  would happen under an intervention, or when appraising such a claim. Pathways are
+  mediation-analysis; prediction is clinical-prediction-models.
 ---
 
 # Causal Inference and G-Methods

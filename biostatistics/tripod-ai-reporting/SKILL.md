@@ -3,8 +3,8 @@ name: tripod-ai-reporting
 description: >-
   Check and draft the reporting of prediction model studies against TRIPOD+AI, with PROBAST+AI for
   risk of bias and TRIPOD-Cluster for multi-centre data: auditing a manuscript, completing the
-  checklist or appraising studies in a review. Reporting and appraisal only: methods are clinical-
-  prediction-models; economic evaluations are cheers-2022-reporting.
+  checklist or appraising studies in a review. Reporting and appraisal only: methods are
+  clinical-prediction-models; economic evaluations are cheers-2022-reporting.
 ---
 
 # TRIPOD+AI Reporting

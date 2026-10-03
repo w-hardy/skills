@@ -1,9 +1,9 @@
 ---
 name: ispor-smdm-good-practices
 description: >-
-  Apply the ISPOR-SMDM modelling good-practice reports to the design and credibility of decision-
-  analytic models: decision problem and scope, choice of model type, state structure and cycle
-  length, uncertainty, calibration, transparency and validation. Use when conceptualising,
+  Apply the ISPOR-SMDM modelling good-practice reports to the design and credibility of
+  decision-analytic models: decision problem and scope, choice of model type, state structure and
+  cycle length, uncertainty, calibration, transparency and validation. Use when conceptualising,
   reviewing or defending a model's design rather than its code. Reporting is
   cheers-2022-reporting; NICE requirements are nice-economic-evaluation.
 ---

@@ -2,9 +2,9 @@
 name: scientific-writing
 description: >-
   Structure, draft and critique scientific manuscripts as arguments: thesis-first framing, IMRaD,
-  paragraph craft, turning bullet outlines into prose, abstracts, section budgets and whole-
-  manuscript cohesion. Use when a paper reads as a list, lacks a thesis or overpromises, or when
-  asking whether it is ready for co-authors. It covers whether the paper argues; reporting
+  paragraph craft, turning bullet outlines into prose, abstracts, section budgets and
+  whole-manuscript cohesion. Use when a paper reads as a list, lacks a thesis or overpromises, or
+  when asking whether it is ready for co-authors. It covers whether the paper argues; reporting
   guidelines such as tripod-ai-reporting and cheers-2022-reporting cover what it must disclose.
 ---
 
