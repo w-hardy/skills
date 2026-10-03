@@ -32,9 +32,12 @@ which skill Claude reaches for.
 | current, runs 1 and 2 | 39, 39 | 10, 10 |
 | deployed, runs 1 and 2 | 34, 34 | 10, 10 |
 | rewritten, runs 1 and 2 | 39, 39 | 10, 10 |
+| rewritten as merged (after ea25a1a), runs 1 and 2 | 39, 39 | 10, 10 |
+
+The first two rewritten runs saw seven descriptions with a hyphenated word split by line wrapping ("bayesian- cea-r-hta"); ea25a1a repaired them, and the `rewritten-final-*` runs re-checked the repaired listing.
 
 The rewrite routes as well as the full descriptions it replaces, at 41% of their length
-(10,750 characters across the 27, from 26,267), and passes all four #20 cases.
+(10,742 characters across the 27, from 26,267), and passes all four #20 cases.
 
 The deployed listing's five failures are the three skills missing from claude.ai (P11 and B02
 want `hesim-ctstm-hta`, P25 `trial-based-cea-hta`, P27 `scientific-writing`) and C1, which the
