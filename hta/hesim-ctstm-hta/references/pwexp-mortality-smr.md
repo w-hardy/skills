@@ -67,7 +67,7 @@ log_state_rate <- log_mr + log(smr_for(key, smr_tbl))
 - Keys resolve by string: `paste0("smr_", key)` aligns the state's `mortality_key` to its SMR column. **[EXPO 0.5.8]**
 - SMRs are **multiplicative on the rate**, so **additive on the log scale** — add `log(SMR)` to the per-period `log_mr`, per period, before building the `pwexp` coef list.
 - On the all-OAT simplification, on-treatment states share one `smr_ontx` (arm-conditional cost/retention differ, but mortality does not); after the OnOther→OnTx collapse there is a single on-treatment mortality key.
-- Peri-exit is a **time-in-state** elevation (first 4 weeks off), so it is either a reset death edge or an `OffTx_early` sub-state (resolve via the D4/P2b spike in `parameterisation-and-clocks.md`), not an attained-age band.
+- Peri-exit is a **time-in-state** elevation (first 4 weeks off), so it is either a reset death edge or an `OffTx_early` sub-state (EXPO uses the `OffTx_early` sub-state, chosen after the D4/P2b spike showed both work; see `parameterisation-and-clocks.md`), not an attained-age band.
 
 ### Fail loud, not quiet **[EXPO 0.5.8]**
 

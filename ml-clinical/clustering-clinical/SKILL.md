@@ -87,11 +87,8 @@ much the new grouping resembles the original using the **Jaccard index** —
 intersection over union of cluster membership, best-matched cluster to cluster,
 averaged over resamples.
 
-Hennig's bands, which `fpc::clusterboot()` implements:
-
 Hennig's guidance, quoted from the `fpc::clusterboot` documentation (verified
-against the package manual, 13 August 2026) — note there are **five** levels, not
-three:
+against the package manual, 13 August 2026):
 
 | Mean Jaccard | Reading |
 |---|---|
