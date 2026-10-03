@@ -153,16 +153,16 @@ Install skills from this repository into any supported coding agent (Claude Code
 
 ```bash
 # List available skills without installing
-npx skills add posit-dev/skills --list
+npx skills add w-hardy/skills --list
 
 # Install skills via an interactive menu
-npx skills add posit-dev/skills --all
+npx skills add w-hardy/skills --all
 
 # Install specific skills by category name
-npx skills add posit-dev/skills --skill cli --skill lifecycle
+npx skills add w-hardy/skills --skill cli --skill lifecycle
 
 # Install to Claude Code only, globally
-npx skills add posit-dev/skills --agent claude-code --global
+npx skills add w-hardy/skills --agent claude-code --global
 ```
 
 ### Claude Code
@@ -299,7 +299,7 @@ under the MIT License. See [tidymodels/tabular-data-ml/LICENSE](./tidymodels/tab
 
 ## Support
 
-If you have questions or encounter issues, check the [Claude Skills documentation](https://support.claude.com/en/articles/12512180-using-skills-in-claude) or [open an issue](https://github.com/posit-dev/skills/issues/new) on GitHub.
+If you have questions or encounter issues, check the [Claude Skills documentation](https://support.claude.com/en/articles/12512180-using-skills-in-claude) or [open an issue](https://github.com/w-hardy/skills/issues/new) on GitHub.
 
 ---
 
