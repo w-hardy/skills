@@ -20,10 +20,11 @@ CHEERS assesses **quality of reporting, not quality of conduct**. A methodologic
 
 - A reporting audit never comments on whether the time horizon was *right*, only whether it was *stated and justified*. If methodological problems are noticed in passing, flag them in a clearly separated note (and point to `ispor-smdm-good-practices` for model conduct/validation or `nice-economic-evaluation` for reference-case compliance) rather than folding them into the checklist assessment.
 
-**Price year.** Three skills meet at a cost's price year, and each owns one question: whether the currency and price year are *stated* is a reporting item (this skill); whether every cost sits in one current, indexed price year is a reference-case requirement (`nice-economic-evaluation`); `ispor-smdm-good-practices` claims neither. Raise a price-year finding under the skill that owns it, once.
 - **Never produce a CHEERS score.** No counts of items met, no percentages, no ratings derived from the checklist. There is no validated scoring system and the Task Force strongly discourages scoring because it misleads. This holds even if the user asks for a score: explain why, and offer the qualitative item-level assessment instead.
 
 Scope: any economic evaluation — cost analysis, cost-effectiveness/cost-utility, cost-minimisation, cost-benefit (reserve "CBA" for studies monetising health outcomes), extended and distributional CEA — whether trial-based, model-based, or using routine data, in any sector. Out of scope: budget impact analysis and constrained optimisation (other ISPOR guidance covers those; say so and stop rather than force-fitting CHEERS).
+
+**Price year.** Three skills meet at a cost's price year, and each owns one question: whether the currency and price year are *stated* is a reporting item (this skill); whether every cost sits in one current, indexed price year is a reference-case requirement (`nice-economic-evaluation`); `ispor-smdm-good-practices` claims neither. Raise a price-year finding under the skill that owns it, once.
 
 ## Core recording conventions (all modes)
 

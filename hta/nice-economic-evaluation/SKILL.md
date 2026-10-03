@@ -54,8 +54,6 @@ from older NICE methods. Based on what the user brings, read the relevant file(s
   perspective, type of evaluation, time horizon, QALYs/EQ-5D, costs (including price year,
   indexation and a cost-side reviewer checklist), **discounting**, equity. Read this for almost
   any alignment review.
-
-**Price year.** Three skills meet at a cost's price year, and each owns one question: whether the currency and price year are *stated* is a reporting item (`cheers-2022-reporting`); whether every cost sits in one current, indexed price year is a reference-case requirement (this skill); `ispor-smdm-good-practices` claims neither. Raise a price-year finding under the skill that owns it, once.
 - `modelling-and-uncertainty.md` — model structure, surrogates, **survival extrapolation**,
   treatment switching, and the three sources of uncertainty (structural, source, precision)
   with PSA / scenario / sensitivity expectations (4.6–4.7).
@@ -77,6 +75,8 @@ from older NICE methods. Based on what the user brings, read the relevant file(s
 
 If the work spans several areas (a full model or submission), read more than one. When in
 doubt, start with `reference-case.md`.
+
+**Price year.** Three skills meet at a cost's price year, and each owns one question: whether the currency and price year are *stated* is a reporting item (`cheers-2022-reporting`); whether every cost sits in one current, indexed price year is a reference-case requirement (this skill); `ispor-smdm-good-practices` claims neither. Raise a price-year finding under the skill that owns it, once.
 
 **Read only what the change needs.** For a costing-only audit — a unit-cost rewrite, a price-year
 update, a new resource-use table — the applicable guidance is `reference-case.md` (perspective on
