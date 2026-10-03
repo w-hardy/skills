@@ -110,13 +110,13 @@ Consequences of the single-list assembly (all **[EXPO 0.5.8]**):
 
 **EXPO requires `"mixt"`**: clock-reset retention/discontinuation and clock-forward (attained-age) mortality leave the *same* origin state, so per-state mixing cannot express it. The original attempt with `"mix"` silently mis-clocked mortality; the D4 spike established `"mixt"` as the working mechanism (survival vs analytic background 0.008; reset-retention check 0.0002). **[EXPO 0.5.8]**
 
-### The coexisting-death-edges spike (D4/P2b — run before committing structure)
+### The coexisting-death-edges spike (D4/P2b — answered yes on hesim 0.5.8; re-run on any other version)
 
-Open question: can a **reset-clock death edge** (peri-discontinuation elevation, weeks 1–4 in-state) and a **forward-clock age death edge** coexist on **one origin state** under `"mixt"`? Do not assume — spike it:
+Question: can a **reset-clock death edge** (peri-discontinuation elevation, weeks 1–4 in-state) and a **forward-clock age death edge** coexist on **one origin state** under `"mixt"`? EXPO's spike answered **yes** on hesim 0.5.8. Re-run it on any other version before relying on it:
 
-1. Build a minimal 2-state + Death model: origin state with **two death transitions** in `tmat` — one pwexp on the age axis (forward), one exp/pwexp on sojourn time (reset) — under `clock = "mixt"`.
+1. Build a minimal 2-state + Death model: origin state with **two death transitions** in `tmat` — one pwexp on the age axis (forward), one exp/pwexp on sojourn time (reset) — under `clock = "mixt"` (two transitions need two absorbing targets, e.g. `Death` and `DeadPeri`).
 2. Simulate at large `n` patients with `uncertainty = "none"`; compare simulated survival against the closed-form combined hazard (the two rates add).
-3. **If it matches** → model peri-exit mortality as a native reset death edge, no sub-state. **If hesim rejects the structure or the survival is wrong** → the *evidenced* fallback is an early-exit sub-state (`OffTx_early`, two 2-week tunnel cycles) carrying the elevated rate — "the framework forced it" is a stronger justification than "we chose it".
+3. **If it matches**, a native reset death edge is available; EXPO chose the `OffTx_early` sub-state anyway (two 2-week tunnel cycles carrying the elevated rate), because its death edge rides the age clock exactly while a reset excess edge fixes background mortality at one age. **If hesim rejects the structure or the survival is wrong**, the sub-state is the fallback.
 
 Generalise the habit: whenever two transitions from one origin need different time-scales, test coexistence empirically against an analytic target before building the full structure.
 
