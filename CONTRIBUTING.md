@@ -268,7 +268,7 @@ Before submitting:
 
 1. **Install locally**:
    ```bash
-   cp -r category-name/your-skill-name ~/.claude/skills/
+   cp -r category-name/your-skill-name ~/.config/claude-code/skills/
    ```
 
 2. **Test with Claude Code**: Verify Claude activates your skill appropriately

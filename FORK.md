@@ -16,16 +16,28 @@ skills stay current, and is the source of truth for the personal ones.
 | `superpowers/` | Vendored from [obra/superpowers](https://github.com/obra/superpowers), MIT (14 skills) |
 | `tidymodels/` | Vendored from [tidymodels/skills](https://github.com/tidymodels/skills), MIT (1 skill) |
 | `.claude/settings.json` | Registers this fork's marketplace and enables every plugin for sessions opened in this repo |
-| `sync-skills.sh` | Drift check between this repo and the local claude.ai sync |
+| `.claude/CLAUDE.md` | Claude Code guidance for the fork, loaded alongside upstream's root `CLAUDE.md` |
+| `sync-skills.sh` | Drift check between this repo and the local claude.ai sync, and zips for upload |
+| `.github/scripts/check-skill-frontmatter.py`, `.github/workflows/check-skill-frontmatter.yml` | Frontmatter check for the fork's categories (description length and format) |
+| `docs/reviews/` | Review and field-test records for the fork's skills |
 | `.github/workflows/sync-upstream.yml` | Weekly upstream merge PR |
 | `.github/workflows/refresh-vendored-skills.yml` | Weekly refresh PR for the vendored families |
 | `.github/vendored-skills.json` | Manifest of vendored sources the refresh workflow reads |
 | `FORK.md` | This file |
 
 Everything else comes from upstream and is left untouched, so upstream merges
-stay clean. The only shared files this fork edits are `README.md` and
-`.claude-plugin/marketplace.json`, which is where new skills have to be
-registered — expect occasional conflicts in those two and nowhere else.
+stay clean. The fork does edit a few upstream files, and upstream merges can
+conflict in these and nowhere else:
+
+| File | Why the fork edits it |
+| --- | --- |
+| `README.md`, `.claude-plugin/marketplace.json` | New skills and plugins are registered here; the README points at the fork |
+| `.github/scripts/validate-skills.sh`, `.github/workflows/validate-skills.yml` | Skip the vendored families; validate uncommitted work locally |
+| `posit-dev/critical-code-reviewer/` (`SKILL.md`, `references/github-review-publishing.md`, `references/language-checklists.md`) | Field-test edits (2026-09) |
+| `r-lib/testing-r-packages/` (`SKILL.md`, `references/advanced.md`) | Field-test edits (2026-09) |
+
+Fork-specific guidance for Claude Code lives in `.claude/CLAUDE.md`, not in
+upstream's root `CLAUDE.md`, so that file stays upstream's.
 
 Anthropic-provided skills that ship with Claude (`docx`, `pdf`, `pptx`, `xlsx`,
 `skill-creator`, `morning`) are deliberately not vendored here.
@@ -118,18 +130,28 @@ skill is edited in the claude.ai editor rather than here.
 ./sync-skills.sh diff <skill>    # inspect one skill's differences
 ./sync-skills.sh pull <skill>    # take the local copy into the repo, then commit
 ./sync-skills.sh pull --all      # take every differing local copy
+./sync-skills.sh package <skill> # zip a committed skill for upload (or --all)
 ```
 
-`pull` moves changes **into** the repo. Going the other way — publishing a
-repo-edited skill back to claude.ai — is a manual upload through the claude.ai
-skill editor; there is no CLI for it. Do that after committing, so git stays
-ahead.
+`pull` moves changes **into** the repo. It refuses a local copy that matches an
+older committed version of the skill — that copy is stale, not edited — unless
+you pass `--force`, and it never deletes files that exist only in the repo
+(such as `evals/`).
+
+Going the other way — publishing a repo-edited skill back to claude.ai — is a
+manual upload through the claude.ai skill editor; there is no CLI for it.
+`package` writes `dist/<skill>.zip` (gitignored) from the committed version,
+with the skill folder at the root of the zip and `evals/` left out. Do that
+after committing, so git stays ahead. A skill that other skills point at must
+be uploaded too, or those pointers dangle on claude.ai.
 
 ## Adding a skill
 
 1. Create `<category>/<skill-name>/SKILL.md` with `name` and `description`
-   frontmatter. Keep the description under 1024 characters — the CI validator
-   errors above that.
+   frontmatter. Keep the description under 100 tokens, aiming for about 80, and
+   write it as an indented `>-` block (see `.claude/CLAUDE.md`). CI enforces
+   this for the fork's categories with `check-skill-frontmatter.py`; the
+   validator's own 1,024-character limit is only a ceiling.
 2. Register it in `.claude-plugin/marketplace.json` under the right plugin.
 3. Add it to the matching section of `README.md`.
 4. Validate before pushing:
@@ -140,4 +162,8 @@ ahead.
    ```
 
    Warnings are advisory — several upstream Posit skills emit them too. Errors
-   are not.
+   are not. To check everything you have changed, committed or not, run
+   `bash .github/scripts/validate-skills.sh main` and
+   `uv run .github/scripts/check-skill-frontmatter.py`.
+5. After merging, package the skill (`./sync-skills.sh package <skill-name>`)
+   and upload the zip in the claude.ai skill editor.
