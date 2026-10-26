@@ -9,8 +9,8 @@ brainstorming, planning, TDD, systematic debugging, code review, and skill autho
 | | |
 | --- | --- |
 | Upstream | https://github.com/obra/superpowers |
-| Upstream version | 6.3.0 |
-| Vendored commit | `b36e0829c6d0140e93cfef2ca599b1b07d4a7797` (2026-08-12) |
+| Upstream version | 7.0.1 |
+| Vendored commit | `2ce8aa15d05bd57213e6f746f953aafb7ded7a8b` (2026-10-21) |
 | Licence | MIT — see [LICENSE](./LICENSE), Copyright (c) 2025 Jesse Vincent |
 
 The 14 skill directories here are copied **verbatim** from upstream `skills/`, so
