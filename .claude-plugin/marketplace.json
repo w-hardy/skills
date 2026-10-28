@@ -153,11 +153,16 @@
     },
     {
       "name": "research-methods",
-      "description": "General research methodology and manuscript craft — not specific to a statistical or clinical domain",
+      "description": "General research methodology, manuscript craft, and plan stress-testing — interviews, specs, glossaries and decision records, not specific to a statistical or clinical domain",
       "source": "./",
       "strict": false,
       "skills": [
-        "./research-methods/scientific-writing"
+        "./research-methods/scientific-writing",
+        "./research-methods/grilling",
+        "./research-methods/grill-me",
+        "./research-methods/grill-with-docs",
+        "./research-methods/to-spec",
+        "./research-methods/domain-modeling"
       ]
     },
     {
