@@ -119,6 +119,13 @@ Machine learning on tabular clinical data in R.
 General research methodology and manuscript craft — not specific to a statistical or clinical domain.
 
 - **[scientific-writing](./research-methods/scientific-writing/)** - Structure, draft, and critique scientific manuscripts as arguments, covering thesis-first framing, IMRaD discipline, paragraph craft, converting bullet skeletons to prose, structured abstracts, and manuscript-wide cohesion checks
+- **[grilling](./research-methods/grilling/)** - Interview the user relentlessly about a plan, decision, or analysis approach, a round of questions at a time, until every branch is settled; the engine behind grill-me and grill-with-docs
+- **[grill-me](./research-methods/grill-me/)** - Run a grilling session with no files written
+- **[grill-with-docs](./research-methods/grill-with-docs/)** - Run a grilling session that also builds the project glossary and decision records as decisions crystallise
+- **[to-spec](./research-methods/to-spec/)** - Synthesise the current conversation into a working spec for an analysis or for software, with unsettled points listed as open questions
+- **[domain-modeling](./research-methods/domain-modeling/)** - Build and sharpen a project's glossary of terms and its record of hard-to-reverse decisions (ADRs, analysis-plan deviations)
+
+Five of these (grilling, grill-me, grill-with-docs, to-spec, domain-modeling) are adapted from [mattpocock/skills](https://github.com/mattpocock/skills) (MIT); each carries its LICENSE.
 
 ### Superpowers
 
